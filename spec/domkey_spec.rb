@@ -5,12 +5,7 @@ describe Domkey do
     Domkey::VERSION.should_not be_nil
   end
 
-  it 'should first first' do
-    false.should be_true
-  end
-
   it 'should start a browser' do
-    b = Watir::Browser.new
-
+    b = Domkey.browser
   end
 end

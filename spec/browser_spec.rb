@@ -9,6 +9,10 @@ describe Domkey do
       Watir::Browser.should_receive(:new).once.and_return('browser')
     end
 
+    after :all do
+      Domkey.browser = nil
+    end
+
     it '.browser gives us default browser' do
       b = Domkey.browser
       b.should eq 'browser'
