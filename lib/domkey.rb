@@ -1,6 +1,7 @@
 require 'domkey/version'
 require 'watir-webdriver'
 require 'domkey/browser_session'
+require 'domkey/page_object'
 
 module Domkey
 
