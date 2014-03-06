@@ -5,7 +5,8 @@ module Domkey
     attr_accessor :elements, :container
 
     # Compose page object with dom elements and container which is browser by default
-    def initialize elements, container=Domkey.browser
+    # elements is hash of procs. key in hash corresponds to key in model
+    def initialize elements, container=lambda { Domkey.browser }
       @elements  = elements
       @container = container
     end
@@ -23,7 +24,7 @@ module Domkey
 
     # runtime dom element in a specified container
     def dom key
-      container.instance_exec(&elements[key])
+      container.call.instance_exec(&elements[key])
     end
   end
 end
