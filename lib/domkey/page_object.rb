@@ -6,9 +6,9 @@ module Domkey
 
     # Compose page object with dom elements and container which is browser by default
     # elements is hash of procs. key in hash corresponds to key in model
-    def initialize elements, container=lambda { Domkey.browser }
-      @elements  = elements
-      @container = container
+    def initialize pageobjects, container=lambda { Domkey.browser }
+      @pageobjects = pageobjects
+      @container   = container
     end
 
     # set page object
@@ -17,14 +17,19 @@ module Domkey
     end
 
     def value
-      Hash[elements.map { |k, _| [k, dom(k).value] }]
+      Hash[@pageobjects.map { |k, _| [k, dom(k).value] }]
+    end
+
+    # runtime accessors to actual watir elements composing this page object
+    def elements
+      Hash[@pageobjects.map { |k, v| [k, dom(k)] }]
     end
 
     private
 
     # runtime dom element in a specified container
     def dom key
-      container.call.instance_exec(&elements[key])
+      container.call.instance_exec(&@pageobjects[key])
     end
   end
 end
