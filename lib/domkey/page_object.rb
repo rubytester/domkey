@@ -16,8 +16,8 @@ module Domkey
       model.each_pair { |k, v| dom(k).set(v) }
     end
 
-    def value model
-      Hash[model.map { |k, v| [k, dom(k).value] }]
+    def value
+      Hash[elements.map { |k, _| [k, dom(k).value] }]
     end
 
     private
