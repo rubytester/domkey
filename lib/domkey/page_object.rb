@@ -2,49 +2,72 @@ module Domkey
 
   class PageObject
 
-    attr_accessor :elements, :container
+    attr_accessor :watirproc, :container
 
-    # Compose page object with dom elements and container which is browser by default
-    # elements is hash of procs. key in hash corresponds to key in model
-    def initialize pageobjects, container=lambda { Domkey.browser }
-      # single element or has of elements
-      # each element can be an already defined pageobject or watir_object definition
-      @pageobjects = initialize_them pageobjects
-      @container   = container
+    # Compose pageobject where watirspec is either
+    # - single element definition or collection of element definitions
+    # - and each element definition can be watirspec definition or pageobject
+    # and container is either
+    # - browser by default
+    # - or some other pageobject
+    # what is a watirproc? object that responds to call, watirproc or each_pair. In the end a proc
+    # waht is a container? it's a proc, a callable object that plays a role of a container for watirproc
+    # example: watirproc = lambda {text_field(:id, 'street')}
+    # example:
+    #   PageObject.new lambda watirproc, lambda {Domkey.browser} #=> single watirproc
+    def initialize watirproc, container=lambda { Domkey.browser }
+      # single element or hash of elements
+      # each element can be an already defined watirproc or watirproc definition
+      @container = container
+      @watirproc = initialize_this watirproc
     end
 
-    def single_object
-      :page_object_single_object_defined
+    # recursive
+    def initialize_this watirproc
+      if watirproc.respond_to?(:each_pair)
+        #composing this pageobject from several elements
+        Hash[watirproc.map { |key, watirproc| [key, PageObject.new(watirproc, container)] }]
+      else
+        if watirproc.respond_to?(:call)
+          # watir object definition at the basic level
+          watirproc
+        elsif watirproc.respond_to?(:watirproc)
+          #pageobject with watirproc, we don't care what container owns it. the new container now owns it
+          watirproc.watirproc
+        else
+          fail Domkey::UnknownPageObjectDefinition, "Unable to construct PageObject for watirproc: #{watirproc}"
+        end
+      end
     end
 
-    def initialize_them pageobjects
-      return pageobjects if pageobjects.respond_to?(:each_pair)
-      {single_object => pageobjects}
-    end
-
-    # set page object
-    def set model
-      return dom(single_object).set(model) unless model.respond_to?(:each_pair)
-      model.each_pair { |k, v| dom(k).set(v) }
+    # pageobject is a settable object.
+    def set value
+      return dom.set(value) unless value.respond_to?(:each_pair)
+      value.each_pair { |k, v| watirproc[k].set(v) }
     end
 
     def value
-      return dom(single_object).value if @pageobjects[single_object]
-      Hash[@pageobjects.map { |k, _| [k, dom(k).value] }]
+      return dom.value unless watirproc.respond_to?(:each_pair)
+      Hash[watirproc.map { |key, pageobject| [key, pageobject.value] }]
     end
 
     # runtime accessors to actual watir elements composing this page object
     # or return the single element
-    def elements
-      objects = Hash[@pageobjects.map { |k, v| [k, dom(k)] }]
-      objects[single_object] || objects
+    # what is the element object? just one or a collection?
+    def element
+      return dom unless watirproc.respond_to?(:each_pair)
+      Hash[watirproc.map { |key, watirproc| [key, watirproc.dom] }]
     end
 
-    private
+    #private
 
     # runtime dom element in a specified container
-    def dom key
-      container.call.instance_exec(&@pageobjects[key])
+    def dom
+      container_call.instance_exec(&watirproc)
+    end
+
+    def container_call
+      container.call
     end
   end
 end

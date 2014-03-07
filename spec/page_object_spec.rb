@@ -1,58 +1,111 @@
 require 'spec_helper'
 
+# methods each pageobject should have
+# set value options elements
+
 describe Domkey::PageObject do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
-  it 'pageobject single element in container browser' do
-    # single element is just a wrapper around watir object. no hashkey
-
-    element   = lambda { text_field(id: 'street1') }
-    container = lambda { Domkey.browser }
-    street    = Domkey::PageObject.new element, container
-
-    street.set 'Lamar' #sending string here so no hash like in composed object
-    street.value.should eql 'Lamar'
-    street.elements.should be_kind_of(Watir::TextField)
+  after :all do
+    Domkey.browser.quit
   end
 
-  it 'pageobject elements in container browser' do
-    # pageobjects is an object on the page. it can be an element (singluar text_field)
-    # or composed of elements
-    # elements = { key => proc }
-    elements  = {
-        street1: lambda { text_field(id: 'street1') },
-        city:    lambda { text_field(id: 'city') }
-    }
+  context 'single element definition' do
 
-    # container (browser in this case)
-    container = -> { Domkey.browser }
+    context 'container is browser' do
 
-    # compose page object from elements and container
-    # pageobject = PageObject.new elements, container
-    address   = Domkey::PageObject.new elements, container
+      before :all do
+        @container = lambda { Domkey.browser }
+      end
 
-    address.elements[:street1].set 'helloworld'
-    address.elements[:street1].value.should eql 'helloworld'
+      #context 'does not respond to errors' do
+      #
+      #  it 'set' do
+      #    container = lambda { Domkey.browser }
+      #    watirproc = lambda { 'hello world' }
+      #    po        = Domkey::PageObject.new watirproc, container
+      #    po.set 'hello'
+      #  end
+      #
+      #  it 'value'
+      #  it 'options'
+      #  it 'element'
+      #end
 
-    # pageobject.set value
-    # sends values to each element.set value
-    value = {city: 'Berlin', street1: 'Fredrichstrasse'}
-    address.set value
 
-    ## pageobject.value => returns value from the page
-    # asks each element for its value and aggregates value for entire pageobject
-    expected_value = address.value
+      it 'watirproc' do
+        watirproc = lambda { text_field(id: 'street1') }
+        street    = Domkey::PageObject.new watirproc, @container
 
-    # compare to value we sent earlier
-    expected_value.should eql(value)
+        street.set 'Lamar'
+        street.value.should eql 'Lamar'
+        street.element.should be_kind_of(Watir::TextField) #one default element
+      end
 
-    address.elements[:city].value.should eql 'Berlin'
-    address.elements[:city].set 'Austin'
-    address.elements[:city].value.should eql 'Austin'
+      it 'pageobject' do
+        watir_object             = lambda { text_field(id: 'street1') }
+        street_from_watir_object = Domkey::PageObject.new watir_object, @container
+        street                   = Domkey::PageObject.new street_from_watir_object, @container
+
+        street.set 'zooom' #sending string here so no hash like in composed object
+        street.value.should eql 'zooom'
+        street.element.should be_kind_of(Watir::TextField)
+      end
+    end
+
   end
 
+  context 'collection of elements definition' do
 
+    context 'container is browser' do
+
+      before :all do
+        @container = lambda { Domkey.browser }
+      end
+
+      it 'watirproc only' do
+        elements = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city') }}
+        address  = Domkey::PageObject.new elements, @container
+
+        address.watirproc.should respond_to(:each_pair)
+        address.element.should respond_to(:each_pair)
+        address.element[:street1].set 'helloworld'
+        address.element[:street1].value.should eql 'helloworld'
+
+        # pageobject.set value
+        # sends values to each element.set value
+        value = {city: 'Berlin', street1: 'Fredrichstrasse'}
+        address.set value
+
+        ## pageobject.value => returns value from the page
+        # asks each element for its value and aggregates value for entire pageobject
+        expected_value = address.value
+
+        # compare to value we sent earlier
+        expected_value.should eql(value)
+
+        # element by element
+        address.element[:city].value.should eql 'Berlin'
+        address.element[:city].set 'Austin'
+        address.element[:city].value.should eql 'Austin'
+      end
+
+      it 'pageobject' do
+        city     = Domkey::PageObject.new lambda { text_field(id: 'city') }
+        elements = {street1: lambda { text_field(id: 'street1') }, city: city}
+
+        address = Domkey::PageObject.new elements, @container
+
+        address.watirproc.should respond_to(:each_pair)
+        address.element.should respond_to(:each_pair)
+        address.element[:street1].set 'helloworld'
+        address.element[:street1].value.should eql 'helloworld'
+
+      end
+
+    end
+  end
 end
