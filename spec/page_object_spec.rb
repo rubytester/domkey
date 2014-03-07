@@ -94,7 +94,7 @@ describe Domkey::PageObject do
 
 
         it 'x' do
-          watir_object = {switch: lambda { checkbox(id: 'feature_checkbox') }, blurb: lambda { text_field(id: 'feature_textarea') }}
+          watir_object = {switch: lambda { checkbox(id: 'feature_checkbox1') }, blurb: lambda { text_field(id: 'feature_textarea1') }}
           foo = Domkey::PageObject.new watir_object, @container
           #foo.set switch: true, blurb: 'I am a blurb'
           #foo.set switch: true
