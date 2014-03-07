@@ -6,6 +6,18 @@ describe Domkey::PageObject do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
+  it 'pageobject single element in container browser' do
+    # single element is just a wrapper around watir object. no hashkey
+
+    element   = lambda { text_field(id: 'street1') }
+    container = lambda { Domkey.browser }
+    street    = Domkey::PageObject.new element, container
+
+    street.set 'Lamar' #sending string here so no hash like in composed object
+    street.value.should eql 'Lamar'
+    street.elements.should be_kind_of(Watir::TextField)
+  end
+
   it 'pageobject elements in container browser' do
     # pageobjects is an object on the page. it can be an element (singluar text_field)
     # or composed of elements
