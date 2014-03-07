@@ -21,19 +21,25 @@ describe Domkey::PageObject do
         @container = lambda { Domkey.browser }
       end
 
-      #context 'does not respond to errors' do
-      #
-      #  it 'set' do
-      #    container = lambda { Domkey.browser }
-      #    watirproc = lambda { 'hello world' }
-      #    po        = Domkey::PageObject.new watirproc, container
-      #    po.set 'hello'
-      #  end
-      #
-      #  it 'value'
-      #  it 'options'
-      #  it 'element'
-      #end
+      context 'errors' do
+
+        before :all do
+          watirproc = lambda { Object.new } #inappropriate object defined
+          @po       = Domkey::PageObject.new watirproc, @container
+        end
+
+        it 'init' do
+          expect { Domkey::PageObject.new 'hello', @container }.to raise_error(Domkey::PageObjectError, /Unable to construct PageObject/)
+        end
+
+        it 'set'
+
+        it 'value'
+
+        it 'options'
+
+        it 'element'
+      end
 
 
       it 'watirproc' do

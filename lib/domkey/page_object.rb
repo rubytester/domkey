@@ -1,5 +1,9 @@
 module Domkey
 
+  class PageObjectError < ArgumentError
+
+  end
+
   class PageObject
 
     attr_accessor :watirproc, :container
@@ -35,7 +39,7 @@ module Domkey
           #pageobject with watirproc, we don't care what container owns it. the new container now owns it
           watirproc.watirproc
         else
-          fail Domkey::UnknownPageObjectDefinition, "Unable to construct PageObject for watirproc: #{watirproc}"
+          fail Domkey::PageObjectError, "Unable to construct PageObject using definition: #{watirproc}"
         end
       end
     end
