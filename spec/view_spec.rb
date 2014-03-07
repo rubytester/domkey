@@ -4,32 +4,59 @@ require 'spec_helper'
 
 module Domkey
 
+  #view owns access to browser driver, provides browser as container to page objects
+  #view is responsible for constructing pageobjects available in that view
   class View
 
-    def initialize browser=nil #Domkey.browser
+    attr_accessor :browser
+
+    def initialize browser=nil
       @browser = browser
     end
 
-    def container
-      lambda { Domkey.browser }
+    def browser
+      @browser ||= Domkey.browser
     end
 
+    # pageobject factory
     def self.dom(key, &watirspec)
       send :define_method, key do
-        PageObject.new watirspec, &container
+        PageObject.new watirspec, Proc.new { browser }
       end
     end
 
-    # single element
+    # single element with default container browser
     dom(:street) { text_field(id: 'street1') }
-    #dom(:city) { street }
+
+    # single element take pageobject as its definition
+    #dom(:street_again) { street }
+
+    # single element where container is another pageobject
+    dom(:city2) do
+      PageObject.new(
+          lambda { text_field(class: 'city') },
+          lambda { div(id: 'container') }
+      )
+    end
+
+    # TODO: pageobject matcher. Return page objects collection based on criteria runtime
     #dom(:city) { |arg| text_field(id:, arg) }
 
+    dom(:street) { text_field(id: 'street1') }
+    dom(:city) { text_field(id: 'city') }
+
+    dom(:address_composed) do
+      {city: city, street: street}
+    end
+
+    dom(:address) do
+      {city: lambda { text_field(id: 'street1') },
+       street: lambda { text_field(id: 'street1') }}
+    end
+
     # composed element
-    #dom(:address) do
-    #  dom(street:) { text_field(id: 'street1') }
-    #  dom(city:) { text_field(id:, 'city') }
-    #
+    #dom(:address_bla) do
+    #  dom(street:) { text_field(id: 'street1') }, dom(city:) { text_field(id:, 'city') }
     #end
 
     # pageobject from other page objects
@@ -64,8 +91,13 @@ describe Domkey::View do
     view = Domkey::View.new
     view.should respond_to(:street) #.value.should eql 'Lamar'
     view.street.should be_kind_of(Domkey::PageObject)
+
+    # runtime
+    view.street.element.exists?.should be_false #not there yet
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
     view.street.set 'BlaBlaBla'
+
+    view.city2.set 'asdfasdfasdfadsf'
 
   end
 
