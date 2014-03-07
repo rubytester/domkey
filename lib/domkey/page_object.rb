@@ -47,7 +47,7 @@ module Domkey
     # pageobject is a settable object.
     def set value
       return dom.set(value) unless value.respond_to?(:each_pair)
-      value.each_pair { |k, v| watirproc[k].set(v) }
+      value.each_pair { |k, v| watirproc.fetch(k).set(v) }
     end
 
     def value
@@ -58,7 +58,9 @@ module Domkey
     # runtime accessors to actual watir elements composing this page object
     # or return the single element
     # what is the element object? just one or a collection?
-    def element
+    def element(key=false)
+      #from collection of pairs
+      return watirproc.fetch(key).dom if key
       return dom unless watirproc.respond_to?(:each_pair)
       Hash[watirproc.map { |key, watirproc| [key, watirproc.dom] }]
     end
@@ -67,11 +69,13 @@ module Domkey
 
     # runtime dom element in a specified container
     def dom
-      container_call.instance_exec(&watirproc)
+      container_at_runtime.instance_exec(&watirproc)
     end
 
-    def container_call
-      container.call
+    # container at runtime could be a proc or an actual page object
+    # proc we call. pageobject we send dom message to get gack runtime container
+    def container_at_runtime
+      container.respond_to?(:call) ? container.call : container.dom
     end
   end
 end

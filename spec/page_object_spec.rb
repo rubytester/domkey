@@ -10,10 +10,25 @@ describe Domkey::PageObject do
   end
 
   after :all do
-    Domkey.browser.quit
+#    Domkey.browser.quit
   end
 
   context 'single element definition' do
+
+    context 'container is pageobject' do
+
+      it 'pageobject.dom becomes container' do
+        browser   = lambda { Domkey.browser }
+        container = Domkey::PageObject.new Proc.new { div(:id, 'container') }, browser
+        e         = lambda { text_field(class: 'city') }
+        city      = Domkey::PageObject.new e, container
+        city.set 'Hellocontainer'
+
+        #verify
+        Domkey.browser.div(:id, 'container').text_field(:class, 'city').value.should == 'Hellocontainer'
+      end
+
+    end
 
     context 'container is browser' do
 
@@ -94,9 +109,13 @@ describe Domkey::PageObject do
         expected_value.should eql(value)
 
         # element by element
-        address.element[:city].value.should eql 'Berlin'
-        address.element[:city].set 'Austin'
-        address.element[:city].value.should eql 'Austin'
+        address.element(:city).value.should eql 'Berlin'
+        address.element(:city).set 'Austin'
+        address.element(:city).value.should eql 'Austin'
+
+        expect { address.element(:wrongkey) }.to raise_error(KeyError)
+        expect { address.set wrongkey: 'Value' }.to raise_error(KeyError)
+
       end
 
       it 'pageobject' do
