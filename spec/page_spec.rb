@@ -2,9 +2,10 @@ require 'spec_helper'
 
 # Page is a context for pageobject collection
 
-#view owns access to browser driver, provides browser as container to page objects
-#view is responsible for constructing pageobjects available in that view
-class TestPage
+#page owns access to browser driver, provides browser as container to page objects
+#page is responsible for constructing pageobjects available in that page
+class ExamplePage
+  # client class needs to inluce this to play a role of a page
   include Domkey::Page
 
   # single element with default container browser
@@ -64,7 +65,7 @@ describe Domkey::Page do
     #street.value.should eql 'Lamar'
     #street.element.should be_kind_of(Watir::TextField) #one default element
 
-    view = TestPage.new
+    view = ExamplePage.new
     view.should respond_to(:street) #.value.should eql 'Lamar'
     view.street.should be_kind_of(Domkey::Page::PageObject)
 

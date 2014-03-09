@@ -11,11 +11,12 @@ describe Domkey::Page::PageObject do
 
   context 'single element definition' do
 
-    context 'container is pageobject' do
+    context 'when container is pageobject' do
 
       it 'pageobject.dom becomes container' do
         browser   = lambda { Domkey.browser }
         container = Domkey::Page::PageObject.new Proc.new { div(:id, 'container') }, browser
+
         e         = lambda { text_field(class: 'city') }
         city      = Domkey::Page::PageObject.new e, container
         city.set 'Hellocontainer'
@@ -26,7 +27,7 @@ describe Domkey::Page::PageObject do
 
     end
 
-    context 'container is browser' do
+    context 'when container is browser by default' do
 
       before :all do
         @container = lambda { Domkey.browser }
