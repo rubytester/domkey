@@ -52,10 +52,6 @@ describe 'Domkey::View' do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
-  after :all do
-    Domkey.browser = nil
-  end
-
   before :all do
     @container = lambda { Domkey.browser }
   end

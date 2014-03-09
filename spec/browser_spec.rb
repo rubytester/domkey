@@ -6,7 +6,7 @@ describe Domkey do
 
     before do
       Domkey.browser = nil
-      @browser = double('browser')
+      @browser       = double('browser')
       @browser.stub(:exist?).and_return(true)
       Watir::Browser.should_receive(:new).once.and_return(@browser)
     end
@@ -21,12 +21,9 @@ describe Domkey do
     end
 
     it 'once we start browser we reuse it' do
-      b = Domkey.browser
+      b  = Domkey.browser
       b2 = Domkey.browser
       b.should eql b2
     end
-
   end
-
-
 end

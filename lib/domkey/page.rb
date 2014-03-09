@@ -5,9 +5,9 @@ module Domkey
     module ClassMethods
 
       # pageobject factory
-      def dom(key, &watirspec)
+      def dom(key, &watirproc)
         send :define_method, key do
-          PageObject.new watirspec, Proc.new { browser }
+          PageObject.new watirproc, Proc.new { browser }
         end
       end
     end

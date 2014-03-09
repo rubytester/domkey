@@ -6,9 +6,9 @@ module Domkey
 
       attr_accessor :watirproc, :container
 
-      # Compose pageobject where watirspec is either
+      # Compose pageobject where watirproc is either
       # - single element definition or collection of element definitions
-      # - and each element definition can be watirspec definition or pageobject
+      # - and each element definition can be watirproc definition or pageobject
       # and container is either
       # - browser by default
       # - or some other pageobject

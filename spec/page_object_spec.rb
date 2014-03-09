@@ -9,10 +9,6 @@ describe Domkey::Page::PageObject do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
-  after :all do
-    Domkey.browser = nil
-  end
-
   context 'single element definition' do
 
     context 'container is pageobject' do
