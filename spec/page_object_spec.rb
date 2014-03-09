@@ -3,14 +3,14 @@ require 'spec_helper'
 # methods each pageobject should have
 # set value options elements
 
-describe Domkey::PageObject do
+describe Domkey::Page::PageObject do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
   after :all do
-#    Domkey.browser.quit
+    Domkey.browser = nil
   end
 
   context 'single element definition' do
@@ -18,10 +18,10 @@ describe Domkey::PageObject do
     context 'container is pageobject' do
 
       it 'pageobject.dom becomes container' do
-        browser = lambda { Domkey.browser }
-        container = Domkey::PageObject.new Proc.new { div(:id, 'container') }, browser
-        e = lambda { text_field(class: 'city') }
-        city = Domkey::PageObject.new e, container
+        browser   = lambda { Domkey.browser }
+        container = Domkey::Page::PageObject.new Proc.new { div(:id, 'container') }, browser
+        e         = lambda { text_field(class: 'city') }
+        city      = Domkey::Page::PageObject.new e, container
         city.set 'Hellocontainer'
 
         #verify
@@ -40,11 +40,11 @@ describe Domkey::PageObject do
 
         before :all do
           watirproc = lambda { Object.new } #inappropriate object defined
-          @po = Domkey::PageObject.new watirproc, @container
+          @po       = Domkey::Page::PageObject.new watirproc, @container
         end
 
         it 'init' do
-          expect { Domkey::PageObject.new 'hello', @container }.to raise_error(Domkey::PageObjectError, /Unable to construct PageObject/)
+          expect { Domkey::Page::PageObject.new 'hello', @container }.to raise_error(Domkey::PageObjectError, /Unable to construct PageObject/)
         end
 
         it 'set'
@@ -59,7 +59,7 @@ describe Domkey::PageObject do
 
       it 'watirproc' do
         watirproc = lambda { text_field(id: 'street1') }
-        street = Domkey::PageObject.new watirproc, @container
+        street    = Domkey::Page::PageObject.new watirproc, @container
 
         street.set 'Lamar'
         street.value.should eql 'Lamar'
@@ -67,9 +67,9 @@ describe Domkey::PageObject do
       end
 
       it 'pageobject' do
-        watir_object = lambda { text_field(id: 'street1') }
-        street_from_watir_object = Domkey::PageObject.new watir_object, @container
-        street = Domkey::PageObject.new street_from_watir_object, @container
+        watir_object             = lambda { text_field(id: 'street1') }
+        street_from_watir_object = Domkey::Page::PageObject.new watir_object, @container
+        street                   = Domkey::Page::PageObject.new street_from_watir_object, @container
 
         street.set 'zooom' #sending string here so no hash like in composed object
         street.value.should eql 'zooom'
@@ -81,9 +81,9 @@ describe Domkey::PageObject do
 
         it 'x' do
 
-          watir_object = {day: lambda {text_field(id: 'day_field')}, month: lambda {text_field(id: 'month_field')}, year: lambda {text_field(id: 'year_field')}}
-          foo = Domkey::PageObject.new watir_object, @container
-          dmy = Domkey::Decorators::DateSelector.new foo
+          watir_object = {day: lambda { text_field(id: 'day_field') }, month: lambda { text_field(id: 'month_field') }, year: lambda { text_field(id: 'year_field') }}
+          foo          = Domkey::Page::PageObject.new watir_object, @container
+          dmy          = Domkey::Decorators::DateSelector.new foo
           dmy.set Date.today
           dmy.value.should eql Date.today
         end
@@ -95,11 +95,11 @@ describe Domkey::PageObject do
 
         it 'x' do
           watir_object = {switch: lambda { checkbox(id: 'feature_checkbox1') }, blurb: lambda { text_field(id: 'feature_textarea1') }}
-          foo = Domkey::PageObject.new watir_object, @container
+          foo          = Domkey::Page::PageObject.new watir_object, @container
           #foo.set switch: true, blurb: 'I am a blurb'
           #foo.set switch: true
           #foo.set switch: false
-          tbcf = DomKey::Decorators::TextboxCheckField.new foo
+          tbcf         = DomKey::Decorators::TextboxCheckField.new foo
           tbcf.set true
           tbcf.set false
           tbcf.set 'hhkhkjhj'
@@ -122,7 +122,7 @@ describe Domkey::PageObject do
 
       it 'watirproc only' do
         elements = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city') }}
-        address = Domkey::PageObject.new elements, @container
+        address  = Domkey::Page::PageObject.new elements, @container
 
         address.watirproc.should respond_to(:each_pair)
         address.element.should respond_to(:each_pair)
@@ -152,10 +152,10 @@ describe Domkey::PageObject do
       end
 
       it 'pageobject' do
-        city = Domkey::PageObject.new lambda { text_field(id: 'city') }
+        city     = Domkey::Page::PageObject.new lambda { text_field(id: 'city') }
         elements = {street1: lambda { text_field(id: 'street1') }, city: city}
 
-        address = Domkey::PageObject.new elements, @container
+        address = Domkey::Page::PageObject.new elements, @container
 
         address.watirproc.should respond_to(:each_pair)
         address.element.should respond_to(:each_pair)

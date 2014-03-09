@@ -6,7 +6,9 @@ describe Domkey do
 
     before do
       Domkey.browser = nil
-      Watir::Browser.should_receive(:new).once.and_return('browser')
+      @browser = double('browser')
+      @browser.stub(:exist?).and_return(true)
+      Watir::Browser.should_receive(:new).once.and_return(@browser)
     end
 
     after :all do
@@ -15,7 +17,7 @@ describe Domkey do
 
     it '.browser gives us default browser' do
       b = Domkey.browser
-      b.should eq 'browser'
+      b.should eq @browser
     end
 
     it 'once we start browser we reuse it' do

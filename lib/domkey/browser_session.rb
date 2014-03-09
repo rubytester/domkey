@@ -7,7 +7,8 @@ module Domkey
     attr_accessor :browser
 
     def browser
-      @browser ||= Watir::Browser.new
+      return @browser if (@browser && @browser.exist?)
+      @browser = Watir::Browser.new
     end
   end
 end

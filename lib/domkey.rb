@@ -1,7 +1,9 @@
 require 'domkey/version'
 require 'watir-webdriver'
 require 'domkey/browser_session'
-require 'domkey/page_object'
+require 'domkey/error'
+require 'domkey/page'
+require 'domkey/page/page_object'
 require 'domkey/decorators/date_selector'
 require 'domkey/decorators/textbox_check_field'
 
