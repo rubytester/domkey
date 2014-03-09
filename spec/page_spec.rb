@@ -46,7 +46,7 @@ class TestPage
 
 end
 
-describe 'Domkey::View' do
+describe Domkey::Page do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
