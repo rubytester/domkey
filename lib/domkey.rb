@@ -4,8 +4,6 @@ require 'domkey/browser_session'
 require 'domkey/error'
 require 'domkey/page'
 require 'domkey/page/page_object'
-require 'domkey/decorators/date_selector'
-require 'domkey/decorators/textbox_check_field'
 
 module Domkey
 

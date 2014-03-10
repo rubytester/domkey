@@ -17,8 +17,8 @@ describe Domkey::Page::PageObject do
         browser   = lambda { Domkey.browser }
         container = Domkey::Page::PageObject.new Proc.new { div(:id, 'container') }, browser
 
-        e         = lambda { text_field(class: 'city') }
-        city      = Domkey::Page::PageObject.new e, container
+        e    = lambda { text_field(class: 'city') }
+        city = Domkey::Page::PageObject.new e, container
         city.set 'Hellocontainer'
 
         #verify
@@ -71,38 +71,6 @@ describe Domkey::Page::PageObject do
         street.set 'zooom' #sending string here so no hash like in composed object
         street.value.should eql 'zooom'
         street.element.should be_kind_of(Watir::TextField)
-      end
-
-      context 'date selector' do
-
-
-        it 'x' do
-
-          watir_object = {day: lambda { text_field(id: 'day_field') }, month: lambda { text_field(id: 'month_field') }, year: lambda { text_field(id: 'year_field') }}
-          foo          = Domkey::Page::PageObject.new watir_object, @container
-          dmy          = Domkey::Decorators::DateSelector.new foo
-          dmy.set Date.today
-          dmy.value.should eql Date.today
-        end
-      end
-
-
-      context 'checkbox textfield' do
-
-
-        it 'x' do
-          watir_object = {switch: lambda { checkbox(id: 'feature_checkbox1') }, blurb: lambda { text_field(id: 'feature_textarea1') }}
-          foo          = Domkey::Page::PageObject.new watir_object, @container
-          #foo.set switch: true, blurb: 'I am a blurb'
-          #foo.set switch: true
-          #foo.set switch: false
-          tbcf         = DomKey::Decorators::TextboxCheckField.new foo
-          tbcf.set true
-          tbcf.set false
-          tbcf.set 'hhkhkjhj'
-
-        end
-
       end
 
     end
