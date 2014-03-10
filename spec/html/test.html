@@ -18,15 +18,29 @@
 
 <div id='feature_1' class='pageobject'>
     <label for='feature_checkbox1'>Nude Beach</label>
-    <input id='feature_checkbox1' type='checkbox' class="check"/><br/>
-    <textarea id='feature_textarea1'>CheckboxTextField 1</textarea>
+    <input id="feature_checkbox1" type="checkbox" class="check" onclick="featureEnabler('feature_checkbox1','feature_textarea1');"/><br/>
+    <textarea id='feature_textarea1' readonly disabled>CheckboxTextField 1</textarea>
 </div>
 
 <div id='feature_2' class='pageobject'>
     <label for='feature_checkbox2'>Golf Course</label>
-    <input id='feature_checkbox2' type='checkbox' class="check"/><br/>
-    <textarea id='feature_textarea2'>CheckboxTextField 2</textarea>
+    <input id='feature_checkbox2' type='checkbox' class="check" onclick="featureEnabler('feature_checkbox2','feature_textarea2');"/><br/>
+    <textarea id='feature_textarea2' readonly disabled>CheckboxTextField 2</textarea>
 </div>
+
+<script type="text/javascript">
+    function featureEnabler(cbe, txte) {
+        var cb = document.getElementById(cbe);
+        var txt = document.getElementById(txte);
+        if (cb.checked == true) {
+            txt.readOnly = "";
+            txt.disabled = "";
+        } else {
+            txt.readOnly = 'readonly';
+            txt.disabled = 'disabled';
+        }
+    }
+</script>
 
 <div>
     <p>DateSelector</p>
