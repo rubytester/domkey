@@ -77,7 +77,7 @@ describe Domkey::Page::PageObject do
 
   end
 
-  context 'collection of elements definition' do
+  context 'pageobject composed from several elements' do
 
     context 'container is browser' do
 
@@ -86,7 +86,7 @@ describe Domkey::Page::PageObject do
       end
 
       it 'watirproc only' do
-        elements = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city') }}
+        elements = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
         address  = Domkey::Page::PageObject.new elements, @container
 
         address.watirproc.should respond_to(:each_pair)

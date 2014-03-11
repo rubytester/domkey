@@ -4,6 +4,7 @@ require 'domkey/browser_session'
 require 'domkey/error'
 require 'domkey/page'
 require 'domkey/page/page_object'
+require 'domkey/page/page_object_collection'
 
 module Domkey
 
