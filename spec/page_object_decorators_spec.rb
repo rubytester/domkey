@@ -6,7 +6,7 @@ require 'spec_helper'
 # DateSelector is a type of decoration for domain specific pageobject
 module Domkey
 
-  module Page
+  module View
 
     #example of specialized domain specific pageobject.
     # behavior of set and value
@@ -24,7 +24,6 @@ module Domkey
     end
   end
 end
-
 
 
 module DomkeySpecHelper
@@ -98,7 +97,7 @@ describe 'PageObject Decorators' do
                       month: lambda { text_field(id: 'month_field') },
                       year:  lambda { text_field(id: 'year_field') }}
 
-      foo = Domkey::Page::PageObject.new watir_object, @container
+      foo = Domkey::View::PageObject.new watir_object, @container
       dmy = DomkeySpecHelper::DateSelector.new foo
 
       dmy.set Date.today
@@ -112,10 +111,10 @@ describe 'PageObject Decorators' do
                       year:  lambda { text_field(id: 'year_field') }}
 
       #foo = Domkey::Page::PageObject.new watir_object, @container
-      dmy          = Domkey::Page::DateSelectorPageObject.new watir_object, @container
+      dmy          = Domkey::View::DateSelectorPageObject.new watir_object, @container
 
       dmy.set Date.today
-      pp dmy.value#.should eql Date.today
+      pp dmy.value #.should eql Date.today
     end
 
 
@@ -130,7 +129,7 @@ describe 'PageObject Decorators' do
       watir_object = {switch: lambda { checkbox(id: 'feature_checkbox1') },
                       blurb:  lambda { text_field(id: 'feature_textarea1') }}
 
-      foo  = Domkey::Page::PageObject.new watir_object, @container
+      foo  = Domkey::View::PageObject.new watir_object, @container
 
       #foo.set switch: true, blurb: 'I am a blurb'
       #foo.set switch: true
@@ -149,7 +148,7 @@ describe 'PageObject Decorators' do
       #predictable pattern that singals the presence of pageobjects
       foo = lambda { divs(:id, /^feature_/) }
 
-      divs = Domkey::Page::PageObjectCollection.new foo
+      divs = Domkey::View::PageObjectCollection.new foo
 
       features = divs.map do |div|
 
@@ -159,7 +158,7 @@ describe 'PageObject Decorators' do
                         blurb:  lambda { text_field(id: "feature_textarea#{id}") },
                         label:  lambda { label(for: "feature_checkbox#{id}") }}
 
-        foo = Domkey::Page::PageObject.new watir_object, @container
+        foo = Domkey::View::PageObject.new watir_object, @container
 
         #foo.set switch: true, blurb: 'I am a blurb'
         #foo.set switch: true

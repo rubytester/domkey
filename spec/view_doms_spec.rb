@@ -1,12 +1,12 @@
 require 'spec_helper'
 module DomkeyExample
   class Doms
-    include Domkey::Page
+    include Domkey::View
     doms(:streets) { text_fields(class: 'street1') }
   end
 end
 
-describe Domkey::Page do
+describe Domkey::View do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
@@ -15,8 +15,8 @@ describe Domkey::Page do
   it 'doms collection' do
     view = DomkeyExample::Doms.new
     view.should respond_to(:streets)
-    view.streets.should be_kind_of(Domkey::Page::PageObjectCollection)
-    view.streets.each { |e| e.should be_kind_of(Domkey::Page::PageObject) }
+    view.streets.should be_kind_of(Domkey::View::PageObjectCollection)
+    view.streets.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
     view.streets.should_not respond_to(:value) # or should it?
     view.streets.should_not respond_to(:set) # or should it?
 

@@ -1,14 +1,14 @@
 require 'spec_helper'
 module DomkeyExample
   class DomIsWatirproc
-    include Domkey::Page
+    include Domkey::View
     #pageobject is watirproc
     dom(:street) { text_field(id: 'street1') }
     dom(:city) { text_field(id: 'city1') }
   end
 
   class DomIsHashOfDom # or doom
-    include Domkey::Page
+    include Domkey::View
 
     # Possible api to compose pageobject with pair of hash => lambda definition
     dom(:address) do
@@ -39,7 +39,7 @@ module DomkeyExample
   end
 end
 
-describe Domkey::Page do
+describe Domkey::View do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
@@ -48,7 +48,7 @@ describe Domkey::Page do
   it 'domw is watirproc' do
     view = DomkeyExample::DomIsWatirproc.new
     view.should respond_to(:street)
-    view.street.should be_kind_of(Domkey::Page::PageObject)
+    view.street.should be_kind_of(Domkey::View::PageObject)
 
     # talk to browser
     view.street.set 'hello dom'
@@ -65,7 +65,7 @@ describe Domkey::Page do
 
     view.address.watirproc.each_pair do |k, v|
       k.should be_kind_of(Symbol)
-      v.should be_kind_of(Domkey::Page::PageObject) #should respond to set and value
+      v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
     end
 
     view.address.element.should respond_to(:each_pair)

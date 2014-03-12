@@ -1,6 +1,8 @@
+require 'domkey/view/page_object'
+require 'domkey/view/page_object_collection'
 module Domkey
 
-  module Page
+  module View
 
     module ClassMethods
 

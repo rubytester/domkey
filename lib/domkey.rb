@@ -2,9 +2,7 @@ require 'domkey/version'
 require 'watir-webdriver'
 require 'domkey/browser_session'
 require 'domkey/error'
-require 'domkey/page'
-require 'domkey/page/page_object'
-require 'domkey/page/page_object_collection'
+require 'domkey/view'
 
 module Domkey
 

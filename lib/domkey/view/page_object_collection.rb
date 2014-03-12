@@ -1,7 +1,6 @@
-require 'domkey/page/page_object'
 module Domkey
 
-  module Page
+  module View
 
     class PageObjectCollection
       include Enumerable
@@ -41,7 +40,7 @@ module Domkey
 
       def each(&blk)
         if watirproc.respond_to?(:each_pair)
-          watirproc.map { |k, v| [k, PageObjectCollection.new(lambda { v }, @container)] }.each { |k, v| yield Hash[k,v] }
+          watirproc.map { |k, v| [k, PageObjectCollection.new(lambda { v }, @container)] }.each { |k, v| yield Hash[k, v] }
         else
           instantiator.each { |e| yield PageObject.new(lambda { e }, @container) }
         end

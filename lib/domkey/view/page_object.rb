@@ -1,6 +1,6 @@
 module Domkey
 
-  module Page
+  module View
 
     class PageObject
 

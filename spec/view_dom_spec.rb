@@ -2,7 +2,7 @@ require 'spec_helper'
 module DomkeyExample
 
   class SingleDom
-    include Domkey::Page
+    include Domkey::View
     dom(:street) { text_field(class: 'street1') }
 
     def container
@@ -11,13 +11,13 @@ module DomkeyExample
   end
 
   class SingleDomContainer
-    include Domkey::Page
+    include Domkey::View
     dom(:street) { text_field(class: 'street1') }
   end
 
 end
 
-describe Domkey::Page do
+describe Domkey::View do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
@@ -26,7 +26,7 @@ describe Domkey::Page do
   it 'dom single element' do
     view = DomkeyExample::SingleDom.new
     view.should respond_to(:street)
-    view.street.should be_kind_of(Domkey::Page::PageObject)
+    view.street.should be_kind_of(Domkey::View::PageObject)
     view.street.value.should == ''
     view.street.set 'bla'
     view.street.value.should == 'bla'
@@ -41,11 +41,11 @@ end
 #  howmany = 50
 #  # setup browser
 #  Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
-#  page = DomkeyExample::SingleDom.new Domkey.browser
+#  view = DomkeyExample::SingleDom.new Domkey.browser
 #  bm.report('domkey') do
 #    howmany.times do
-#      page.street.set 'value'
-#      page.street.value
+#      view.street.set 'value'
+#      view.street.value
 #    end
 #  end
 #  bm.report('watir-') do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Domkey::Page::PageObjectCollection do
+describe Domkey::View::PageObjectCollection do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
@@ -12,19 +12,19 @@ describe Domkey::Page::PageObjectCollection do
     # we have 3 text_fields with class that begins with street
     # if we define a single element we go boom
     watirproc = lambda { text_fields(class: /^street/) }
-    cbs       = Domkey::Page::PageObjectCollection.new watirproc
+    cbs       = Domkey::View::PageObjectCollection.new watirproc
 
     # count or size
     cbs.count.should == 3
 
     #each returns PageObject
     cbs.each do |e|
-      e.should be_kind_of(Domkey::Page::PageObject)
+      e.should be_kind_of(Domkey::View::PageObject)
     end
 
     # PageOobject by index
-    cbs[0].should be_kind_of(Domkey::Page::PageObject)
-    cbs[1].should be_kind_of(Domkey::Page::PageObject)
+    cbs[0].should be_kind_of(Domkey::View::PageObject)
+    cbs[1].should be_kind_of(Domkey::View::PageObject)
 
     # find_all of some condition
     cbs.find_all { |e| e.value == 'hello pageobject' }.should be_empty
@@ -53,7 +53,7 @@ describe Domkey::Page::PageObjectCollection do
     watirproc = {street: lambda { text_fields(class: /^street/) },
                  city:   lambda { text_fields(class: /^city/) }}
 
-    cbs = Domkey::Page::PageObjectCollection.new watirproc
+    cbs = Domkey::View::PageObjectCollection.new watirproc
 
     # to_a array array of hashes. Each hash key and value is pageobjectcollection
     cbs.to_a.should have(2).items
@@ -62,14 +62,14 @@ describe Domkey::Page::PageObjectCollection do
     street_hash = cbs.to_a[0]
     street_hash.should be_kind_of(Hash)
     street_collection = street_hash[:street]
-    street_collection.should be_kind_of(Domkey::Page::PageObjectCollection)
+    street_collection.should be_kind_of(Domkey::View::PageObjectCollection)
     streets = street_collection.to_a
     streets.should have(3).items
-    streets.each { |e| e.should be_kind_of(Domkey::Page::PageObject) }
+    streets.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
 
     # each
     cbs.each do |hash|
-      hash.each_pair { |k, v| v.should be_kind_of(Domkey::Page::PageObjectCollection) }
+      hash.each_pair { |k, v| v.should be_kind_of(Domkey::View::PageObjectCollection) }
     end
   end
 end

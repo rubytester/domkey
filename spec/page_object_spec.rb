@@ -3,7 +3,7 @@ require 'spec_helper'
 # methods each pageobject should have
 # set value options elements
 
-describe Domkey::Page::PageObject do
+describe Domkey::View::PageObject do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
@@ -17,7 +17,7 @@ describe Domkey::Page::PageObject do
 
     it 'watirproc is watirproc' do
       watirproc = lambda { text_field(id: 'street1') }
-      street    = Domkey::Page::PageObject.new watirproc, @container
+      street    = Domkey::View::PageObject.new watirproc, @container
 
       street.watirproc.should be_kind_of(Proc)
       street.element.should be_kind_of(Watir::TextField) #one default element
@@ -30,10 +30,10 @@ describe Domkey::Page::PageObject do
     it 'watirproc is pageobject' do
       # setup
       watir_object = lambda { text_field(id: 'street1') }
-      pageobject   = Domkey::Page::PageObject.new watir_object, @container
+      pageobject   = Domkey::View::PageObject.new watir_object, @container
 
       # test
-      street       = Domkey::Page::PageObject.new pageobject, @container
+      street       = Domkey::View::PageObject.new pageobject, @container
 
       street.watirproc.should be_kind_of(Proc)
       street.element.should be_kind_of(Watir::TextField)
@@ -47,12 +47,12 @@ describe Domkey::Page::PageObject do
     it 'watirproc is proc hash where values are watirprocs' do
       hash      = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
       watirproc = lambda { hash }
-      address   = Domkey::Page::PageObject.new watirproc, @container
+      address   = Domkey::View::PageObject.new watirproc, @container
 
       address.watirproc.should respond_to(:each_pair)
       address.watirproc.each_pair do |k, v|
         k.should be_kind_of(Symbol)
-        v.should be_kind_of(Domkey::Page::PageObject) #should respond to set and value
+        v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
       end
 
       address.element.should respond_to(:each_pair)
@@ -66,12 +66,12 @@ describe Domkey::Page::PageObject do
 
       hash = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
 
-      address = Domkey::Page::PageObject.new hash, @container
+      address = Domkey::View::PageObject.new hash, @container
 
       address.watirproc.should respond_to(:each_pair)
       address.watirproc.each_pair do |k, v|
         k.should be_kind_of(Symbol)
-        v.should be_kind_of(Domkey::Page::PageObject) #should respond to set and value
+        v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
       end
 
       address.element.should respond_to(:each_pair)
@@ -108,10 +108,10 @@ describe Domkey::Page::PageObject do
 
     it 'pageobject.dom becomes container' do
       browser   = lambda { Domkey.browser }
-      container = Domkey::Page::PageObject.new Proc.new { div(:id, 'container') }, browser
+      container = Domkey::View::PageObject.new Proc.new { div(:id, 'container') }, browser
 
       e    = lambda { text_field(class: 'city') }
-      city = Domkey::Page::PageObject.new e, container
+      city = Domkey::View::PageObject.new e, container
       city.set 'Hellocontainer'
 
       #verify
