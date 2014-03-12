@@ -6,18 +6,13 @@ describe Domkey::Page::PageObjectCollection do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
-
-  before :all do
-    @container = lambda { Domkey.browser }
-  end
-
   it 'single watirproc defining collection' do
 
     # watirproc is now defininig a collection and not a single element
     # we have 3 text_fields with class that begins with street
     # if we define a single element we go boom
     watirproc = lambda { text_fields(class: /^street/) }
-    cbs       = Domkey::Page::PageObjectCollection.new watirproc, @container
+    cbs       = Domkey::Page::PageObjectCollection.new watirproc
 
     # count or size
     cbs.count.should == 3
@@ -58,7 +53,7 @@ describe Domkey::Page::PageObjectCollection do
     watirproc = {street: lambda { text_fields(class: /^street/) },
                  city:   lambda { text_fields(class: /^city/) }}
 
-    cbs = Domkey::Page::PageObjectCollection.new watirproc, @container
+    cbs = Domkey::Page::PageObjectCollection.new watirproc
 
     # to_a array array of hashes. Each hash key and value is pageobjectcollection
     cbs.to_a.should have(2).items
