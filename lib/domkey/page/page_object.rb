@@ -26,30 +26,27 @@ module Domkey
 
       # recursive
       def initialize_this watirproc
-        if watirproc.respond_to?(:each_pair)
-          # watirproc is a hash
-          #composing this pageobject from several elements
+        if watirproc.respond_to?(:each_pair) #hash
           Hash[watirproc.map { |key, watirproc| [key, PageObject.new(watirproc, container)] }]
         else
-          if watirproc.respond_to?(:call)
-            #watirproc is a watirproc
+          if watirproc.respond_to?(:call) #proc
             begin
-              # suitcase could be watirproc or hash. open suitcase and see. This is ugly crap.
-              hash = watirproc.call
+              # peek inside suitcase that is proc. XXX ouch, ugly
+              peeked_inside = watirproc.call
             rescue NoMethodError
-              # watirproc is not a hash, just a single watirproc
-              return watirproc
-              # watir object definition at the basic level
+              return watirproc #suitecase exploded, proc returned
             end
-            if hash.respond_to?(:each_pair)
-              initialize_this hash
+            if peeked_inside.respond_to?(:each_pair) # hash
+              return initialize_this peeked_inside
+            elsif peeked_inside.respond_to?(:wd) # watir element
+              return lambda { peeked_inside }
+            elsif peeked_inside.respond_to?(:watirproc) #pageobject
+              return peeked_inside.watirproc
             else
               fail Domkey::PageObjectError, "Unable to construct PageObject using definition: #{watirproc}"
             end
-          elsif watirproc.respond_to?(:watirproc)
-            # watirproc is a pageobject
-            # pageobject with watirproc, we don't care what container owns it. the new container now owns it
-            watirproc.watirproc
+          elsif watirproc.respond_to?(:watirproc) #pageobject
+            return watirproc.watirproc
           else
             fail Domkey::PageObjectError, "Unable to construct PageObject using definition: #{watirproc}"
           end
