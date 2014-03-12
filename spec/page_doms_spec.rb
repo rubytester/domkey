@@ -33,17 +33,17 @@ end
 #  howmany = 50
 #  # setup browser
 #  Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
-#  page = DomkeyExample::SingleDom.new Domkey.browser
+#  view = DomkeyExample::Doms.new Domkey.browser
 #  bm.report('domkey') do
 #    howmany.times do
-#      page.street.set 'value'
-#      page.street.value
+#      view.streets.each { |e| e.set "hello" }
+#      view.streets.map { |e| e.value }
 #    end
 #  end
 #  bm.report('watir-') do
 #    howmany.times do
-#      Domkey.browser.text_field(class: 'street1').set 'value'
-#      Domkey.browser.text_field(class: 'street1').value
+#      Domkey.browser.text_fields(class: 'street1').each { |e| e.set "hello" }
+#      Domkey.browser.text_field(class: 'street1').map { |e| e.value }
 #    end
 #  end
 #end
