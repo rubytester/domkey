@@ -7,10 +7,21 @@ module Domkey
 
       attr_accessor :watirproc, :container
 
-      # watirproc is either
-      #   a proc that defines watir collection i.e lambda {class: /^street/}
-      #   or a hash where value in each key is a proc
-      # basically some widgetry to interaction with watir collection
+      # PageObjectCollection see PageObject for detailes.
+      # Compose PageObjectCollection with watirproc and container
+      #
+      # What is a container? see PageObject container
+      #
+      # What is watirproc? see PageObject watirproc except the following:
+      # watirproc can be one of the following:
+      #   - definition of watir elements collection i.e. `-> { text_fields(:class, /^foo/)}`
+      #   - a pageobject i.e. previously instantiated definition watir elements collection
+      #   - hash where key defines subelement and value a definition or pageobject
+      # Usage:
+      # Clients would not usually instantate this class.
+      # A client class which acts as a View would use a :doms factory method to create PageObjectCollection
+      # Example:
+      #
       def initialize watirproc, container=lambda { Domkey.browser }
         @container = container
         @watirproc = initialize_this watirproc
@@ -19,10 +30,10 @@ module Domkey
       # --
       # recursive
       def initialize_this watirproc
-        if watirproc.respond_to?(:each_pair)
+        if watirproc.respond_to?(:each_pair) #hash
           Hash[watirproc.map { |key, watirproc| [key, PageObjectCollection.new(watirproc, container)] }]
         else
-          if watirproc.respond_to?(:call)
+          if watirproc.respond_to?(:call) #proc
             watirproc
           elsif watirproc.respond_to?(:watirproc)
             watirproc.watirproc
@@ -33,9 +44,9 @@ module Domkey
       end
 
       def element(key=false)
-        return watirproc.fetch(key).instantiator if key
         return instantiator unless watirproc.respond_to?(:each_pair)
-        Hash[watirproc.map { |key, watirproc| [key, watirproc.instantiator] }]
+        return watirproc.fetch(key).element if key
+        Hash[watirproc.map { |key, watirproc| [key, watirproc.element] }]
       end
 
       def each(&blk)
@@ -46,22 +57,21 @@ module Domkey
         end
       end
 
-      # runtime dom element in a specified container or collection of dom elements
-      def instantiator
-        container_at_runtime.instance_exec(&watirproc)
-      end
-
-      # container at runtime could be a proc or an actual page object
-      # proc we call. pageobject we send dom message to get gack runtime container
-      def container_at_runtime
-        container.respond_to?(:call) ? container.call : container.instantiator
-      end
-
       def [] idx
         to_a[idx]
       end
 
       alias_method :size, :count
+
+      private
+
+      def instantiator
+        container_at_runtime.instance_exec(&watirproc)
+      end
+
+      def container_at_runtime
+        container.respond_to?(:call) ? container.call : container.send(:instantiator)
+      end
 
     end
   end

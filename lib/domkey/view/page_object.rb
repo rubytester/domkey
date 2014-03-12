@@ -6,20 +6,51 @@ module Domkey
 
       attr_accessor :watirproc, :container
 
-      # Compose pageobject where watirproc is either
-      # - single element definition or collection of element definitions
-      # - and each element definition can be watirproc definition or pageobject
-      # and container is either
-      # - browser by default
-      # - or some other pageobject
-      # what is a watirproc? object that responds to call, watirproc or each_pair. In the end a proc
-      # waht is a container? it's a proc, a callable object that plays a role of a container for watirproc
-      # example: watirproc = lambda {text_field(:id, 'street')}
-      # example:
-      #   PageObject.new lambda watirproc, lambda {Domkey.browser} #=> single watirproc
+      # PageObject represents an semantically essential area in a View
+      # It is an object that responds to set and value as the main way of sending data to it.
+      # it is composed of one or more watir elements.
+      # PageObject encapuslates the widgetry of DOM elements to provide semantic interfact to the user of the widgetry
+      #
+      # Compose PageObject with watirproc and container
+      #
+      # What is a container? it's a proc, a callable object that plays a role of a container for watirproc widgetry
+      # container can be one of:
+      # - browser (default)
+      # - a pageobject
+      #
+      # What is watirproc? it's a proc of DOM elements widgetry that can be found inside the container
+      # watirproc can be one of the following:
+      #   - definition of single watir element i.e. `-> { text_field(:id, 'foo')}`
+      #   - a pageobject i.e. previously instantiated definition
+      #   - hash where key defines subelement and value a definition or pageobject
+      #
+      # Usage:
+      # Clients would not usually instantate this class.
+      # A client class which acts as a View would use a :dom factory method to create PageObjects
+      # Example:
+      #
+      #        class MyView
+      #          include Domkey::View
+      #
+      #          dom(:headline) { text_field(id:, 'some_desc_text') }
+      #
+      #          def property
+      #            PropertyPanel.new browser.div(id: 'container')
+      #          end
+      #        end
+      #
+      #        class PropertyPanel
+      #          include Domkey::View
+      #          dom(:headline) { text_field(class: 'headline_for_house') }
+      #        end
+      #
+      #        view = MyView.new
+      #        view.headline.set 'HomeAway Rules!'
+      #        view.value #=> returns 'HomeAway Rules!'
+      #        view.property.headline.set 'Awesome Vactaion Home'
+      #        view.property.headline.value #=> returns 'Awesome Vaction Home'
+      #
       def initialize watirproc, container=lambda { Domkey.browser }
-        # single element or hash of elements
-        # each element can be an already defined watirproc or watirproc definition
         @container = container
         @watirproc = initialize_this watirproc
       end
@@ -53,7 +84,6 @@ module Domkey
         end
       end
 
-      # pageobject is a settable object.
       def set value
         return instantiator.set(value) unless value.respond_to?(:each_pair)
         value.each_pair { |k, v| watirproc.fetch(k).set(v) }
@@ -64,27 +94,26 @@ module Domkey
         Hash[watirproc.map { |key, pageobject| [key, pageobject.value] }]
       end
 
-      # runtime accessors to actual watir elements composing this page object
-      # or return the single element
-      # what is the element object? just one or a collection?
+      # access widgetry of watir elements composing this page object
       def element(key=false)
-        #from collection of pairs
-        return watirproc.fetch(key).instantiator if key
         return instantiator unless watirproc.respond_to?(:each_pair)
-        Hash[watirproc.map { |key, watirproc| [key, watirproc.instantiator] }]
+        return watirproc.fetch(key).element if key
+        Hash[watirproc.map { |key, watirproc| [key, watirproc.element] }]
       end
 
-      #private
+      private
 
-      # runtime dom element in a specified container or collection of dom elements
+      # talk to the browser executor.
+      # returns runtime element in a specified container
+      # expects that element to respond to set and value
       def instantiator
-        container_at_runtime.instance_exec(&watirproc)
+        container_instantiator.instance_exec(&watirproc)
       end
 
-      # container at runtime could be a proc or an actual page object
-      # proc we call. pageobject we send dom message to get gack runtime container
-      def container_at_runtime
-        container.respond_to?(:call) ? container.call : container.instantiator
+      # talk to the browser
+      # returns runtime container element in a browser/driver
+      def container_instantiator
+        container.respond_to?(:call) ? container.call : container.send(:instantiator)
       end
     end
   end
