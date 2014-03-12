@@ -38,7 +38,7 @@ module Domkey
           elsif watirproc.respond_to?(:watirproc)
             watirproc.watirproc
           else
-            fail Domkey::PageObjectError, "Unable to construct PageObjectCollection using definition: #{watirproc}"
+            fail Exception::Error, "watirproc must be kind of hash, watirelement or pageobject but I got this: #{watirproc}"
           end
         end
       end

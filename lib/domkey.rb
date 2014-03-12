@@ -1,8 +1,8 @@
 require 'domkey/version'
 require 'watir-webdriver'
 require 'domkey/browser_session'
-require 'domkey/error'
 require 'domkey/view'
+require 'domkey/exception'
 
 module Domkey
 

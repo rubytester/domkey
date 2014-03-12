@@ -6,6 +6,11 @@ describe Domkey::View::PageObjectCollection do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
+  it 'init error' do
+    # TODO. tighter scope what can be a watirproc
+    expect { Domkey::View::PageObjectCollection.new 'foo' }.to raise_error(Domkey::Exception::Error)
+  end
+
   it 'single watirproc defining collection' do
 
     # watirproc is now defininig a collection and not a single element

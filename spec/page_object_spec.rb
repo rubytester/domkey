@@ -9,15 +9,17 @@ describe Domkey::View::PageObject do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
-  context 'when container is browser by default and' do
-
-    before :all do
-      @container = lambda { Domkey.browser }
+  context 'exceptions' do
+    it 'bad definition for pageobject' do
+      expect { Domkey::View::PageObject.new lambda { 'foo' } }.to raise_error(Domkey::Exception::Error)
     end
+  end
+
+  context 'when container is browser by default and' do
 
     it 'watirproc is watirproc' do
       watirproc = lambda { text_field(id: 'street1') }
-      street    = Domkey::View::PageObject.new watirproc, @container
+      street    = Domkey::View::PageObject.new watirproc
 
       street.watirproc.should be_kind_of(Proc)
       street.element.should be_kind_of(Watir::TextField) #one default element
@@ -30,10 +32,10 @@ describe Domkey::View::PageObject do
     it 'watirproc is pageobject' do
       # setup
       watir_object = lambda { text_field(id: 'street1') }
-      pageobject   = Domkey::View::PageObject.new watir_object, @container
+      pageobject   = Domkey::View::PageObject.new watir_object
 
       # test
-      street       = Domkey::View::PageObject.new pageobject, @container
+      street       = Domkey::View::PageObject.new pageobject
 
       street.watirproc.should be_kind_of(Proc)
       street.element.should be_kind_of(Watir::TextField)
@@ -47,7 +49,7 @@ describe Domkey::View::PageObject do
     it 'watirproc is proc hash where values are watirprocs' do
       hash      = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
       watirproc = lambda { hash }
-      address   = Domkey::View::PageObject.new watirproc, @container
+      address   = Domkey::View::PageObject.new watirproc
 
       address.watirproc.should respond_to(:each_pair)
       address.watirproc.each_pair do |k, v|
@@ -66,7 +68,7 @@ describe Domkey::View::PageObject do
 
       hash = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
 
-      address = Domkey::View::PageObject.new hash, @container
+      address = Domkey::View::PageObject.new hash
 
       address.watirproc.should respond_to(:each_pair)
       address.watirproc.each_pair do |k, v|

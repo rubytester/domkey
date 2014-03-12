@@ -74,12 +74,12 @@ module Domkey
             elsif peeked_inside.respond_to?(:watirproc) #pageobject
               return peeked_inside.watirproc
             else
-              fail Domkey::PageObjectError, "Unable to construct PageObject using definition: #{watirproc}"
+              fail Exception::Error, "watirproc must be kind of hash, watirelement or pageobject but I got this: #{watirproc}"
             end
           elsif watirproc.respond_to?(:watirproc) #pageobject
             return watirproc.watirproc
           else
-            fail Domkey::PageObjectError, "Unable to construct PageObject using definition: #{watirproc}"
+            fail Exception::Error, "watirproc must be kind of hash, watirelement or pageobject but I got this: #{watirproc}"
           end
         end
       end
