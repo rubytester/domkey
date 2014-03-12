@@ -49,8 +49,6 @@ describe Domkey::Page::PageObject do
       watirproc = lambda { hash }
       address   = Domkey::Page::PageObject.new watirproc, @container
 
-      address
-
       address.watirproc.should respond_to(:each_pair)
       address.watirproc.each_pair do |k, v|
         k.should be_kind_of(Symbol)

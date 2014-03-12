@@ -4,6 +4,12 @@ module Domkey
 
     module ClassMethods
 
+      def domkey(key)
+        x = yield
+        puts x
+      end
+
+
       # pageobject factory
       def dom(key, &watirproc)
         send :define_method, key do
