@@ -10,11 +10,11 @@ module DomkeyExample
   class DomIsHashOfDom # or doom
     include Domkey::Page
 
-    # literal hash with lambda values
+    # Possible api to compose pageobject with pair of hash => lambda definition
     dom(:address) do
       {
-          street: -> { text_field(id: 'street2') },
-          city:   -> { text_field(id: 'city2') }
+          street: -> { text_field(id: 'street1') },
+          city:   -> { text_field(id: 'city1') }
       }
     end
 
@@ -82,8 +82,9 @@ describe Domkey::Page do
     v = view.address.value
     v.should eql value
 
-    #TODO : set partial address
-    #value = {street: 'Lamar'}
+    #set partial address (omit some keys)
+    view.address.set street: 'Lamarski'
+    view.address.value.should eql street: 'Lamarski', city: 'Austin'
 
   end
 end
