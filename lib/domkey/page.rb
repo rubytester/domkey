@@ -4,13 +4,14 @@ module Domkey
 
     module ClassMethods
 
-      def domkey(key)
-        x = yield
-        puts x
+      # PageObjectCollection factory
+      def doms(key, &watirproc)
+        send :define_method, key do
+          PageObjectCollection.new watirproc, Proc.new { browser }
+        end
       end
 
-
-      # pageobject factory
+      # PageObject factory
       def dom(key, &watirproc)
         send :define_method, key do
           PageObject.new watirproc, Proc.new { browser }
