@@ -1,6 +1,10 @@
 # Domkey
 
-browser automation testing library for selenium-webdriver, watir-webdriver; page object, model view controller etc...
+Domain Specifc PageObject for Selenium Watir-Webdriver
+
+PageObject that models business domain first and browser code second.
+
+Watir-Webdriver is the Bee's Knees! Now with Domain Specific PageObject Factory!
 
 ## Installation
 
