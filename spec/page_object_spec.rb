@@ -10,8 +10,13 @@ describe Domkey::View::PageObject do
   end
 
   context 'exceptions' do
-    it 'bad definition for pageobject' do
+
+    it 'bad proc for watirproc argument' do
       expect { Domkey::View::PageObject.new lambda { 'foo' } }.to raise_error(Domkey::Exception::Error)
+    end
+
+    it 'bad object for watirproc argument' do
+      expect { Domkey::View::PageObject.new(Object.new) }.to raise_error(Domkey::Exception::Error)
     end
   end
 
