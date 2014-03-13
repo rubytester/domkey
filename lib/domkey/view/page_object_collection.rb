@@ -27,22 +27,6 @@ module Domkey
         @watirproc = initialize_this watirproc
       end
 
-      # --
-      # recursive
-      def initialize_this watirproc
-        if watirproc.respond_to?(:each_pair) #hash
-          Hash[watirproc.map { |key, watirproc| [key, PageObjectCollection.new(watirproc, container)] }]
-        else
-          if watirproc.respond_to?(:call) #proc
-            watirproc
-          elsif watirproc.respond_to?(:watirproc)
-            watirproc.watirproc
-          else
-            fail Exception::Error, "watirproc must be kind of hash, watirelement or pageobject but I got this: #{watirproc}"
-          end
-        end
-      end
-
       def element(key=false)
         return instantiator unless watirproc.respond_to?(:each_pair)
         return watirproc.fetch(key).element if key
@@ -64,6 +48,22 @@ module Domkey
       alias_method :size, :count
 
       private
+
+      # --
+      # recursive
+      def initialize_this watirproc
+        if watirproc.respond_to?(:each_pair) #hash
+          Hash[watirproc.map { |key, watirproc| [key, PageObjectCollection.new(watirproc, container)] }]
+        else
+          if watirproc.respond_to?(:call) #proc
+            watirproc
+          elsif watirproc.respond_to?(:watirproc)
+            watirproc.watirproc
+          else
+            fail Exception::Error, "watirproc must be kind of hash, watirelement or pageobject but I got this: #{watirproc}"
+          end
+        end
+      end
 
       def instantiator
         container_at_runtime.instance_exec(&watirproc)

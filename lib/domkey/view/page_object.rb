@@ -55,6 +55,25 @@ module Domkey
         @watirproc = initialize_this watirproc
       end
 
+      def set value
+        return instantiator.set(value) unless value.respond_to?(:each_pair)
+        value.each_pair { |k, v| watirproc.fetch(k).set(v) }
+      end
+
+      def value
+        return instantiator.value unless watirproc.respond_to?(:each_pair)
+        Hash[watirproc.map { |key, pageobject| [key, pageobject.value] }]
+      end
+
+      # access widgetry of watir elements composing this page object
+      def element(key=false)
+        return instantiator unless watirproc.respond_to?(:each_pair)
+        return watirproc.fetch(key).element if key
+        Hash[watirproc.map { |key, watirproc| [key, watirproc.element] }]
+      end
+
+      private
+
       # recursive
       def initialize_this watirproc
         if watirproc.respond_to?(:each_pair) #hash
@@ -83,25 +102,6 @@ module Domkey
           end
         end
       end
-
-      def set value
-        return instantiator.set(value) unless value.respond_to?(:each_pair)
-        value.each_pair { |k, v| watirproc.fetch(k).set(v) }
-      end
-
-      def value
-        return instantiator.value unless watirproc.respond_to?(:each_pair)
-        Hash[watirproc.map { |key, pageobject| [key, pageobject.value] }]
-      end
-
-      # access widgetry of watir elements composing this page object
-      def element(key=false)
-        return instantiator unless watirproc.respond_to?(:each_pair)
-        return watirproc.fetch(key).element if key
-        Hash[watirproc.map { |key, watirproc| [key, watirproc.element] }]
-      end
-
-      private
 
       # talk to the browser executor.
       # returns runtime element in a specified container
