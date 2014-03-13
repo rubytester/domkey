@@ -11,70 +11,120 @@ describe Domkey::View::PageObjectCollection do
     expect { Domkey::View::PageObjectCollection.new 'foo' }.to raise_error(Domkey::Exception::Error)
   end
 
-  it 'single watirproc defining collection' do
+  context 'when container is browser by default' do
 
-    # watirproc is now defininig a collection and not a single element
-    # we have 3 text_fields with class that begins with street
-    # if we define a single element we go boom
-    watirproc = lambda { text_fields(class: /^street/) }
-    cbs       = Domkey::View::PageObjectCollection.new watirproc
+    context 'watirproc is watirproc defining collection' do
 
-    # count or size
-    cbs.count.should == 3
+      before :each do
+        # watirproc is definition of watir collection
+        # watirproc when instantiated must respond to :each
+        # test sample:
+        # we have 3 text_fields with class that begins with street
+        watirproc = lambda { text_fields(class: /^street/) }
 
-    #each returns PageObject
-    cbs.each do |e|
-      e.should be_kind_of(Domkey::View::PageObject)
+        @cbs = Domkey::View::PageObjectCollection.new watirproc
+      end
+
+      it 'count or size' do
+        @cbs.count.should == 3
+      end
+
+      it 'each returns PageObject' do
+        @cbs.each do |e|
+          e.should be_kind_of(Domkey::View::PageObject)
+        end
+      end
+
+      it 'by index returns PageObject' do
+        @cbs[0].should be_kind_of(Domkey::View::PageObject)
+        @cbs[1].should be_kind_of(Domkey::View::PageObject)
+      end
+
+      it 'find_all example' do
+        # find_all of some condition
+        @cbs.find_all { |e| e.value == 'hello pageobject' }.should be_empty
+        @cbs.first.set 'hello pageobject'
+
+        # find_all returns the one we just set
+        @cbs.find_all { |e| e.value == 'hello pageobject' }.count.should eql(1)
+      end
+
+      it 'set one and map all example' do
+        # set value to later return
+        @cbs[1].set 'bye bye'
+
+        # map iterates and harvests value
+        @cbs.map { |e| e.value }.should eql ["hello pageobject", "bye bye", ""]
+      end
+
+      it 'element reaches to widgetry' do
+        @cbs.element.should be_kind_of(Watir::TextFieldCollection)
+      end
+
     end
 
-    # PageOobject by index
-    cbs[0].should be_kind_of(Domkey::View::PageObject)
-    cbs[1].should be_kind_of(Domkey::View::PageObject)
+    context 'watirproc is hash' do
 
-    # find_all of some condition
-    cbs.find_all { |e| e.value == 'hello pageobject' }.should be_empty
+      before :all do
+        # would we do that? give me all text_fields :street and all text_fields :city ? in one collection?
+        # it becomes a keyed collection?
+        # secondary usage
+        # given I have city 4 and street 3 textfields
+        Domkey.browser.text_fields(class: /^street/).count.should == 3
+        Domkey.browser.text_fields(class: /^city/).count.should == 4
 
-    cbs.first.set 'hello pageobject'
+        # when I define my keyed collection
+        watirproc = {street: lambda { text_fields(class: /^street/) },
+                     city:   lambda { text_fields(class: /^city/) }}
 
-    # find_all returns the one we just set
-    cbs.find_all { |e| e.value == 'hello pageobject' }.count.should eql(1)
+        @cbs = Domkey::View::PageObjectCollection.new watirproc
+      end
 
+      it 'count' do
+        @cbs.count.should == 2
+      end
 
-    # set value to later return
-    cbs[1].set 'bye bye'
+      it 'to_a returns array of hashes' do
+        @cbs.to_a.should have(2).items
+      end
 
-    # map iterates and harvests value
-    cbs.map { |e| e.value }.should eql ["hello pageobject", "bye bye", ""]
-  end
+      it 'each returns hash where value is a PageObjectCollection' do
+        @cbs.each do |hash|
+          hash.each_pair { |k, v| v.should be_kind_of(Domkey::View::PageObjectCollection) }
+        end
+      end
 
-  it 'hash watirprocs' do
-    #would we do that? give me all text_fields :street and all text_fields :city ? in one collection?
-    #secondary usage
-    # given I have city 4 and street 3 textfields
-    Domkey.browser.text_fields(class: /^street/).count.should == 3
-    Domkey.browser.text_fields(class: /^city/).count.should == 4
+      it 'by index returns hash' do
+        @cbs.to_a[0].should be_kind_of(Hash)
+      end
 
-    # when I define my keyed collection
-    watirproc = {street: lambda { text_fields(class: /^street/) },
-                 city:   lambda { text_fields(class: /^city/) }}
+      it 'each in key returns PageObject' do
+        collection = @cbs.to_a.find { |e| e[:street] }
+        collection[:street].should be_kind_of(Domkey::View::PageObjectCollection)
+        collection[:street].each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+      end
 
-    cbs = Domkey::View::PageObjectCollection.new watirproc
+      it 'element' do
+        @cbs.element(:street).should be_kind_of(Watir::TextFieldCollection)
+        @cbs.element.should be_kind_of(Hash)
+        @cbs.element.each_pair do |k, v|
+          k.should be_a(Symbol)
+          v.should be_a(Watir::TextFieldCollection)
+        end
+      end
 
-    # to_a array array of hashes. Each hash key and value is pageobjectcollection
-    cbs.to_a.should have(2).items
+    end
 
-    #street: pageobjectcollection
-    street_hash = cbs.to_a[0]
-    street_hash.should be_kind_of(Hash)
-    street_collection = street_hash[:street]
-    street_collection.should be_kind_of(Domkey::View::PageObjectCollection)
-    streets = street_collection.to_a
-    streets.should have(3).items
-    streets.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+    context 'watirproc is pageobjectcollection' do
 
-    # each
-    cbs.each do |hash|
-      hash.each_pair { |k, v| v.should be_kind_of(Domkey::View::PageObjectCollection) }
+      it 'initialize' do
+        watirproc            = lambda { text_fields(class: /^street/) }
+        pageobjectcollection = Domkey::View::PageObjectCollection.new watirproc
+
+        @cbs = Domkey::View::PageObjectCollection.new pageobjectcollection
+      end
+
     end
   end
+
 end
