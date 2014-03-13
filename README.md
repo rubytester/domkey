@@ -1,8 +1,8 @@
-# Domkey
-
-Domain Specifc PageObject for Selenium Watir-Webdriver
+# Domain Specifc PageObject for Selenium Watir-Webdriver
 
 PageObject that models business domain first and browser code second.
+
+Watir-Webdriver is the Bee's Knees! Now with Domain Specific PageObject Factory!
 
 Watir-Webdriver is the Bee's Knees! Now with Domain Specific PageObject Factory!
 
@@ -12,11 +12,15 @@ Add this line to your application's Gemfile:
 
     gem 'domkey'
 
+or this line to use gem directly from github
+
+    gem 'domkey', git: "git://github.com/rubytester/domkey.git"
+
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or install it from rubygems.org as:
 
     $ gem install domkey
 
