@@ -4,7 +4,38 @@ module Domkey
 
     class PageObject
 
-      attr_accessor :package, :container
+      # @api private
+      module WidgetryPackage
+
+        attr_accessor :package, :container
+
+        def initialize package, container=lambda { Domkey.browser }
+          @container = container
+          @package   = initialize_this package
+        end
+
+        # access widgetry of watir elements composing this page object
+        def element(key=false)
+          return instantiator unless package.respond_to?(:each_pair)
+          return package.fetch(key).element if key
+          Hash[package.map { |key, package| [key, package.element] }]
+        end
+
+        private
+
+        # talk to the browser executor.
+        # returns runtime element in a specified container
+        # expects that element to respond to set and value
+        def instantiator
+          container_instantiator.instance_exec(&package)
+        end
+
+        # talk to the browser
+        # returns runtime container element in a browser/driver
+        def container_instantiator
+          container.respond_to?(:call) ? container.call : container.send(:instantiator)
+        end
+      end
 
       # PageObject represents an semantically essential area in a View
       # It is an object that responds to set and value as the main way of sending data to it.
@@ -50,10 +81,7 @@ module Domkey
       #        view.property.headline.set 'Awesome Vactaion Home'
       #        view.property.headline.value #=> returns 'Awesome Vaction Home'
       #
-      def initialize package, container=lambda { Domkey.browser }
-        @container = container
-        @package   = initialize_this package
-      end
+      include WidgetryPackage
 
       def set value
         return instantiator.set(value) unless value.respond_to?(:each_pair)
@@ -63,13 +91,6 @@ module Domkey
       def value
         return instantiator.value unless package.respond_to?(:each_pair)
         Hash[package.map { |key, pageobject| [key, pageobject.value] }]
-      end
-
-      # access widgetry of watir elements composing this page object
-      def element(key=false)
-        return instantiator unless package.respond_to?(:each_pair)
-        return package.fetch(key).element if key
-        Hash[package.map { |key, package| [key, package.element] }]
       end
 
       private
@@ -101,19 +122,6 @@ module Domkey
             fail Exception::Error, "package must be kind of hash, watirelement or pageobject but I got this: #{package}"
           end
         end
-      end
-
-      # talk to the browser executor.
-      # returns runtime element in a specified container
-      # expects that element to respond to set and value
-      def instantiator
-        container_instantiator.instance_exec(&package)
-      end
-
-      # talk to the browser
-      # returns runtime container element in a browser/driver
-      def container_instantiator
-        container.respond_to?(:call) ? container.call : container.send(:instantiator)
       end
     end
   end

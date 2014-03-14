@@ -3,9 +3,9 @@ module Domkey
   module View
 
     class PageObjectCollection
-      include Enumerable
 
-      attr_accessor :package, :container
+      include PageObject::WidgetryPackage
+      include Enumerable
 
       # PageObjectCollection see PageObject for detailes.
       # Compose PageObjectCollection with package and container
@@ -21,17 +21,6 @@ module Domkey
       # Clients would not usually instantate this class.
       # A client class which acts as a View would use a :doms factory method to create PageObjectCollection
       # Example:
-      #
-      def initialize package, container=lambda { Domkey.browser }
-        @container = container
-        @package   = initialize_this package
-      end
-
-      def element(key=false)
-        return instantiator unless package.respond_to?(:each_pair)
-        return package.fetch(key).element if key
-        Hash[package.map { |key, package| [key, package.element] }]
-      end
 
       def each(&blk)
         if package.respond_to?(:each_pair)
@@ -64,15 +53,6 @@ module Domkey
           end
         end
       end
-
-      def instantiator
-        container_at_runtime.instance_exec(&package)
-      end
-
-      def container_at_runtime
-        container.respond_to?(:call) ? container.call : container.send(:instantiator)
-      end
-
     end
   end
 end
