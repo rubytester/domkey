@@ -1,8 +1,8 @@
 require 'spec_helper'
 module DomkeyExample
-  class DomIsWatirproc
+  class DomIspackage
     include Domkey::View
-    #pageobject is watirproc
+    #pageobject is package
     dom(:street) { text_field(id: 'street1') }
     dom(:city) { text_field(id: 'city1') }
   end
@@ -45,8 +45,8 @@ describe Domkey::View do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
-  it 'domw is watirproc' do
-    view = DomkeyExample::DomIsWatirproc.new
+  it 'dom is package' do
+    view = DomkeyExample::DomIspackage.new
     view.should respond_to(:street)
     view.street.should be_kind_of(Domkey::View::PageObject)
 
@@ -60,10 +60,10 @@ describe Domkey::View do
 
     view.should respond_to(:address)
 
-    view.address.watirproc.should respond_to(:each_pair)
-    view.address.watirproc.should_not be_empty
+    view.address.package.should respond_to(:each_pair)
+    view.address.package.should_not be_empty
 
-    view.address.watirproc.each_pair do |k, v|
+    view.address.package.each_pair do |k, v|
       k.should be_kind_of(Symbol)
       v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
     end

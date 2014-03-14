@@ -7,22 +7,22 @@ describe Domkey::View::PageObjectCollection do
   end
 
   it 'init error' do
-    # TODO. tighter scope what can be a watirproc
+    # TODO. tighter scope what can be a package
     expect { Domkey::View::PageObjectCollection.new 'foo' }.to raise_error(Domkey::Exception::Error)
   end
 
   context 'when container is browser by default' do
 
-    context 'watirproc is watirproc defining collection' do
+    context 'package is package defining collection' do
 
       before :each do
-        # watirproc is definition of watir collection
-        # watirproc when instantiated must respond to :each
+        # package is definition of watir collection
+        # package when instantiated must respond to :each
         # test sample:
         # we have 3 text_fields with class that begins with street
-        watirproc = lambda { text_fields(class: /^street/) }
+        package = lambda { text_fields(class: /^street/) }
 
-        @cbs = Domkey::View::PageObjectCollection.new watirproc
+        @cbs = Domkey::View::PageObjectCollection.new package
       end
 
       it 'count or size' do
@@ -63,7 +63,7 @@ describe Domkey::View::PageObjectCollection do
 
     end
 
-    context 'watirproc is hash' do
+    context 'package is hash' do
 
       before :all do
         # would we do that? give me all text_fields :street and all text_fields :city ? in one collection?
@@ -74,10 +74,10 @@ describe Domkey::View::PageObjectCollection do
         Domkey.browser.text_fields(class: /^city/).count.should == 4
 
         # when I define my keyed collection
-        watirproc = {street: lambda { text_fields(class: /^street/) },
-                     city:   lambda { text_fields(class: /^city/) }}
+        package = {street: lambda { text_fields(class: /^street/) },
+                   city:   lambda { text_fields(class: /^city/) }}
 
-        @cbs = Domkey::View::PageObjectCollection.new watirproc
+        @cbs = Domkey::View::PageObjectCollection.new package
       end
 
       it 'count' do
@@ -115,11 +115,11 @@ describe Domkey::View::PageObjectCollection do
 
     end
 
-    context 'watirproc is pageobjectcollection' do
+    context 'package is pageobjectcollection' do
 
       it 'initialize' do
-        watirproc            = lambda { text_fields(class: /^street/) }
-        pageobjectcollection = Domkey::View::PageObjectCollection.new watirproc
+        package              = lambda { text_fields(class: /^street/) }
+        pageobjectcollection = Domkey::View::PageObjectCollection.new package
 
         @cbs = Domkey::View::PageObjectCollection.new pageobjectcollection
       end

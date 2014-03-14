@@ -13,12 +13,12 @@ module Domkey
     class DateSelectorPageObject < PageObject
 
       def set value
-        watirproc.each_pair { |k, po| po.set(value.send(k)) }
+        package.each_pair { |k, po| po.set(value.send(k)) }
       end
 
       def value
         h = {}
-        watirproc.each_pair { |k, po| h[k] = po.value }
+        package.each_pair { |k, po| h[k] = po.value }
         Date.parse "%s/%s/%s" % [h[:year], h[:month], h[:day]]
       end
     end

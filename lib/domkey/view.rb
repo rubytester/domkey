@@ -7,16 +7,16 @@ module Domkey
     module ClassMethods
 
       # PageObjectCollection factory
-      def doms(key, &watirproc)
+      def doms(key, &package)
         send :define_method, key do
-          PageObjectCollection.new watirproc, Proc.new { browser }
+          PageObjectCollection.new package, Proc.new { browser }
         end
       end
 
       # PageObject factory
-      def dom(key, &watirproc)
+      def dom(key, &package)
         send :define_method, key do
-          PageObject.new watirproc, Proc.new { browser }
+          PageObject.new package, Proc.new { browser }
         end
       end
     end

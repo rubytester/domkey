@@ -11,22 +11,22 @@ describe Domkey::View::PageObject do
 
   context 'exceptions' do
 
-    it 'bad proc for watirproc argument' do
+    it 'bad proc for package argument' do
       expect { Domkey::View::PageObject.new lambda { 'foo' } }.to raise_error(Domkey::Exception::Error)
     end
 
-    it 'bad object for watirproc argument' do
+    it 'bad object for package argument' do
       expect { Domkey::View::PageObject.new(Object.new) }.to raise_error(Domkey::Exception::Error)
     end
   end
 
   context 'when container is browser by default and' do
 
-    it 'watirproc is watirproc' do
-      watirproc = lambda { text_field(id: 'street1') }
-      street    = Domkey::View::PageObject.new watirproc
+    it 'package is package' do
+      package = lambda { text_field(id: 'street1') }
+      street  = Domkey::View::PageObject.new package
 
-      street.watirproc.should be_kind_of(Proc)
+      street.package.should be_kind_of(Proc)
       street.element.should be_kind_of(Watir::TextField) #one default element
 
       # talk to browser
@@ -34,7 +34,7 @@ describe Domkey::View::PageObject do
       street.value.should eql 'Lamar'
     end
 
-    it 'watirproc is pageobject' do
+    it 'package is pageobject' do
       # setup
       watir_object = lambda { text_field(id: 'street1') }
       pageobject   = Domkey::View::PageObject.new watir_object
@@ -42,7 +42,7 @@ describe Domkey::View::PageObject do
       # test
       street       = Domkey::View::PageObject.new pageobject
 
-      street.watirproc.should be_kind_of(Proc)
+      street.package.should be_kind_of(Proc)
       street.element.should be_kind_of(Watir::TextField)
 
 
@@ -51,13 +51,13 @@ describe Domkey::View::PageObject do
       street.value.should eql 'zooom'
     end
 
-    it 'watirproc is proc hash where values are watirprocs' do
-      hash      = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
-      watirproc = lambda { hash }
-      address   = Domkey::View::PageObject.new watirproc
+    it 'package is proc hash where values are packages' do
+      hash    = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
+      package = lambda { hash }
+      address = Domkey::View::PageObject.new package
 
-      address.watirproc.should respond_to(:each_pair)
-      address.watirproc.each_pair do |k, v|
+      address.package.should respond_to(:each_pair)
+      address.package.each_pair do |k, v|
         k.should be_kind_of(Symbol)
         v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
       end
@@ -69,14 +69,14 @@ describe Domkey::View::PageObject do
 
     end
 
-    it 'watirproc is hash where values are watirprocs' do
+    it 'package is hash where values are packages' do
 
       hash = {street1: lambda { text_field(id: 'street1') }, city: lambda { text_field(id: 'city1') }}
 
       address = Domkey::View::PageObject.new hash
 
-      address.watirproc.should respond_to(:each_pair)
-      address.watirproc.each_pair do |k, v|
+      address.package.should respond_to(:each_pair)
+      address.package.each_pair do |k, v|
         k.should be_kind_of(Symbol)
         v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
       end

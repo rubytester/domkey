@@ -5,15 +5,15 @@ module Domkey
     class PageObjectCollection
       include Enumerable
 
-      attr_accessor :watirproc, :container
+      attr_accessor :package, :container
 
       # PageObjectCollection see PageObject for detailes.
-      # Compose PageObjectCollection with watirproc and container
+      # Compose PageObjectCollection with package and container
       #
       # What is a container? see PageObject container
       #
-      # What is watirproc? see PageObject watirproc except the following:
-      # watirproc can be one of the following:
+      # What is package? see PageObject package except the following:
+      # package can be one of the following:
       #   - definition of watir elements collection i.e. `-> { text_fields(:class, /^foo/)}`
       #   - a pageobject i.e. previously instantiated definition watir elements collection
       #   - hash where key defines subelement and value a definition or pageobject
@@ -22,20 +22,20 @@ module Domkey
       # A client class which acts as a View would use a :doms factory method to create PageObjectCollection
       # Example:
       #
-      def initialize watirproc, container=lambda { Domkey.browser }
+      def initialize package, container=lambda { Domkey.browser }
         @container = container
-        @watirproc = initialize_this watirproc
+        @package   = initialize_this package
       end
 
       def element(key=false)
-        return instantiator unless watirproc.respond_to?(:each_pair)
-        return watirproc.fetch(key).element if key
-        Hash[watirproc.map { |key, watirproc| [key, watirproc.element] }]
+        return instantiator unless package.respond_to?(:each_pair)
+        return package.fetch(key).element if key
+        Hash[package.map { |key, package| [key, package.element] }]
       end
 
       def each(&blk)
-        if watirproc.respond_to?(:each_pair)
-          watirproc.map { |k, v| [k, PageObjectCollection.new(lambda { v }, @container)] }.each { |k, v| yield Hash[k, v] }
+        if package.respond_to?(:each_pair)
+          package.map { |k, v| [k, PageObjectCollection.new(lambda { v }, @container)] }.each { |k, v| yield Hash[k, v] }
         else
           instantiator.each { |e| yield PageObject.new(lambda { e }, @container) }
         end
@@ -51,22 +51,22 @@ module Domkey
 
       # --
       # recursive
-      def initialize_this watirproc
-        if watirproc.respond_to?(:each_pair) #hash
-          Hash[watirproc.map { |key, watirproc| [key, PageObjectCollection.new(watirproc, container)] }]
+      def initialize_this package
+        if package.respond_to?(:each_pair) #hash
+          Hash[package.map { |key, package| [key, PageObjectCollection.new(package, container)] }]
         else
-          if watirproc.respond_to?(:call) #proc
-            watirproc
-          elsif watirproc.respond_to?(:watirproc)
-            watirproc.watirproc
+          if package.respond_to?(:call) #proc
+            package
+          elsif package.respond_to?(:package)
+            package.package
           else
-            fail Exception::Error, "watirproc must be kind of hash, watirelement or pageobject but I got this: #{watirproc}"
+            fail Exception::Error, "package must be kind of hash, watirelement or pageobject but I got this: #{package}"
           end
         end
       end
 
       def instantiator
-        container_at_runtime.instance_exec(&watirproc)
+        container_at_runtime.instance_exec(&package)
       end
 
       def container_at_runtime
