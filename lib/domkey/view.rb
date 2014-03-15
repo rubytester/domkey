@@ -27,10 +27,14 @@ module Domkey
 
     attr_accessor :browser
 
+    # @param [Watir::Browser] (false)
     def initialize browser=nil
       @browser = browser
     end
 
+    # browser for this view.
+    # if View was initialized without a browser then default Domkey.browser is provided
+    # @return [Watir::Browser]
     def browser
       @browser ||= Domkey.browser
     end
