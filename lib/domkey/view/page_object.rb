@@ -103,6 +103,8 @@ module Domkey
         value.each_pair { |k, v| package.fetch(k).set(v) }
       end
 
+      alias_method :value=, :set
+
       # Each Semantic PageObject defines what value means for itself
       # @return [SemanticValue] delegated to WebdriverElement and we expect it to respond to value message
       # @return [Hash{Symbol => SemanticValue}]
