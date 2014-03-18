@@ -118,44 +118,32 @@ describe 'PageObject Decorators' do
 
   end
 
-
-
-
-
-
-
-
-
-
-
-
-
   context 'CheckboxTextField' do
-
 
     it 'as pageobject component wrapped by decorator' do
 
       pageobject = Domkey::View::PageObject.new switch: -> { checkbox(id: 'feature_checkbox1') },
                                                 blurb:  -> { textarea(id: 'feature_textarea1') }
 
+      # turn switch on and enter text in text area
       pageobject.set switch: true, blurb: 'I am a blurb text after you turn on switch'
-      pageobject.set switch: false # => turn switch off, clear textarea entry
-      pageobject.set switch: true
+      pageobject.set switch: false # => turn switch off, clear textarea blurb entry
+      pageobject.set switch: true # => turn switch on
 
-      # decorator add specific behavior to set and value methods
-      tbcf = DomkeySpecHelper::CheckboxTextField.new(pageobject)
+      # wrap with decorator and handle specific behavior to set and value
+      cbtf = DomkeySpecHelper::CheckboxTextField.new(pageobject)
 
-      tbcf.set true
-      tbcf.set false
-      tbcf.set 'hhkhkjhj'
-
+      cbtf.set true
+      cbtf.set false
+      cbtf.set 'Domain Specific Behavior to set value - check checkbox and enter text'
+      cbtf.value.should eql('Domain Specific Behavior to set value - check checkbox and enter text')
     end
 
     context 'building array of CheckboxTextFields in the view' do
 
       it 'algorithm from predictable pattern' do
 
-        #given predictable pattern that singals the presence of pageobjects
+        #given predictable pattern that signals the presence of pageobjects
         divs = Domkey::View::PageObjectCollection.new lambda { divs(:id, /^feature_/) }
 
         features = divs.map do |div|
@@ -164,9 +152,9 @@ describe 'PageObject Decorators' do
           id           = div.element.id.split("_").last
 
           #definiton for each PageObject
-          watir_object = {switch: lambda { checkbox(id: "feature_checkbox#{id}") },
-                          blurb:  lambda { text_field(id: "feature_textarea#{id}") },
-                          label:  lambda { label(for: "feature_checkbox#{id}") }}
+          watir_object = {switch: -> { checkbox(id: "feature_checkbox#{id}") },
+                          blurb:  -> { text_field(id: "feature_textarea#{id}") },
+                          label:  -> { label(for: "feature_checkbox#{id}") }}
 
           pageobject = Domkey::View::PageObject.new watir_object
           #domain specific pageobject
