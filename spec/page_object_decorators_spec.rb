@@ -119,23 +119,31 @@ describe 'PageObject Decorators' do
   end
 
 
+
+
+
+
+
+
+
+
+
+
+
   context 'CheckboxTextField' do
 
 
     it 'as pageobject component wrapped by decorator' do
 
-      watir_object = {switch: lambda { checkbox(id: 'feature_checkbox1') },
-                      blurb:  lambda { text_field(id: 'feature_textarea1') }}
+      pageobject = Domkey::View::PageObject.new switch: -> { checkbox(id: 'feature_checkbox1') },
+                                                blurb:  -> { textarea(id: 'feature_textarea1') }
 
-      #pageobject as component
-      foo          = Domkey::View::PageObject.new watir_object
-
-      foo.set switch: true, blurb: 'I am a blurb'
-      foo.set switch: false
-      foo.set switch: true
+      pageobject.set switch: true, blurb: 'I am a blurb text after you turn on switch'
+      pageobject.set switch: false # => turn switch off, clear textarea entry
+      pageobject.set switch: true
 
       # decorator add specific behavior to set and value methods
-      tbcf = DomkeySpecHelper::CheckboxTextField.new foo
+      tbcf = DomkeySpecHelper::CheckboxTextField.new(pageobject)
 
       tbcf.set true
       tbcf.set false
@@ -168,7 +176,7 @@ describe 'PageObject Decorators' do
         # array of Domain Specific PageObjects
         features.first.set 'bla'
         features.map { |e| e.value }.should eql ["bla", false]
-        features.map { |e| e.pageobject.element(:label).text }.should eql ["Nude Beach", "Golf Course"]
+        features.map { |e| e.pageobject.element(:label).text }.should eql ["Enable Checkbox for TextArea", "Golf Course"]
         features.find { |e| e.label == 'Golf Course' }.value.should be_false
       end
 

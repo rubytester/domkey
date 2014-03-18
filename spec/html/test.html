@@ -15,17 +15,23 @@
     <input type='text' id="city2" class="city" value="class city but div id container"/>
 </div>
 <br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 <div id='feature_1' class='pageobject'>
-    <label for='feature_checkbox1'>Nude Beach</label>
+    <label for='feature_checkbox1'>Enable Checkbox for TextArea</label>
     <input id="feature_checkbox1" type="checkbox" class="check" onclick="featureEnabler('feature_checkbox1','feature_textarea1');"/><br/>
-    <textarea id='feature_textarea1' readonly disabled>CheckboxTextField 1</textarea>
+    <textarea id='feature_textarea1' cols="30" readonly disabled style="background-color:#eee">CheckboxTextField 1</textarea>
 </div>
 
 <div id='feature_2' class='pageobject'>
     <label for='feature_checkbox2'>Golf Course</label>
     <input id='feature_checkbox2' type='checkbox' class="check" onclick="featureEnabler('feature_checkbox2','feature_textarea2');"/><br/>
-    <textarea id='feature_textarea2' readonly disabled>CheckboxTextField 2</textarea>
+    <textarea id='feature_textarea2' cols="30" readonly disabled style="background-color:#eee">CheckboxTextField 2</textarea>
 </div>
 
 <script type="text/javascript">
@@ -33,14 +39,24 @@
         var cb = document.getElementById(cbe);
         var txt = document.getElementById(txte);
         if (cb.checked == true) {
-            txt.readOnly = "";
-            txt.disabled = "";
+            txt.readOnly = '';
+            txt.disabled = '';
+            txt.style = 'background-color: #fff';
         } else {
             txt.readOnly = 'readonly';
             txt.disabled = 'disabled';
+            txt.value = '';
+            txt.style = 'background-color: #eee';
         }
     }
 </script>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 <div>
     <p>DateSelector</p>
