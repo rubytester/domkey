@@ -1,5 +1,7 @@
 require 'domkey/view/page_object'
 require 'domkey/view/page_object_collection'
+require 'domkey/view/radio_group'
+require 'domkey/view/checkbox_group'
 module Domkey
 
   module View
