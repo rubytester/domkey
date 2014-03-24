@@ -1,5 +1,6 @@
 require 'spec_helper'
-module DomkeyExample
+
+describe Domkey::View do
 
   class SingleDom
     include Domkey::View
@@ -15,16 +16,12 @@ module DomkeyExample
     dom(:street) { text_field(class: 'street1') }
   end
 
-end
-
-describe Domkey::View do
-
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
   it 'dom single element' do
-    view = DomkeyExample::SingleDom.new
+    view = SingleDom.new
     view.should respond_to(:street)
     view.street.should be_kind_of(Domkey::View::PageObject)
     view.street.value.should == ''
