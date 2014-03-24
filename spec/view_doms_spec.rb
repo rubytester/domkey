@@ -1,19 +1,19 @@
 require 'spec_helper'
-module DomkeyExample
-  class Doms
+
+describe Domkey::View do
+
+  class DomsExample
     include Domkey::View
     doms(:streets) { text_fields(class: 'street1') }
   end
-end
 
-describe Domkey::View do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
   it 'doms collection' do
-    view = DomkeyExample::Doms.new
+    view = DomsExample.new
     view.should respond_to(:streets)
     view.streets.should be_kind_of(Domkey::View::PageObjectCollection)
     view.streets.each { |e| e.should be_kind_of(Domkey::View::PageObject) }

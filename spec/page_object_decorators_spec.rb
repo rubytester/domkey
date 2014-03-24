@@ -1,32 +1,29 @@
 require 'spec_helper'
 
-# domain specific page objects composed from regular page object
-# PageObject is a type of object that responds to set and value.
-# it is the Role it plays
-# DateSelector is a type of decoration for domain specific pageobject
-module Domkey
 
-  module View
+describe 'PageObject Decorators' do
 
-    #example of specialized domain specific pageobject.
-    # behavior of set and value
-    class DateSelectorPageObject < PageObject
+  # domain specific page objects composed from regular page object
+  # PageObject is a type of object that responds to set and value.
+  # it is the Role it plays
+  # DateSelector is a type of decoration for domain specific pageobject
 
-      def set value
-        package.each_pair { |k, po| po.set(value.send(k)) }
-      end
 
-      def value
-        h = {}
-        package.each_pair { |k, po| h[k] = po.value }
-        Date.parse "%s/%s/%s" % [h[:year], h[:month], h[:day]]
-      end
+  #example of specialized domain specific pageobject.
+  # behavior of set and value
+  class DateSelectorPageObject < Domkey::View::PageObject
+
+    def set value
+      package.each_pair { |k, po| po.set(value.send(k)) }
+    end
+
+    def value
+      h = {}
+      package.each_pair { |k, po| h[k] = po.value }
+      Date.parse "%s/%s/%s" % [h[:year], h[:month], h[:day]]
     end
   end
-end
 
-
-module DomkeySpecHelper
 
   class CheckboxTextField
 
@@ -77,12 +74,8 @@ module DomkeySpecHelper
       h = pageobject.value
       Date.parse "%s/%s/%s" % [h[:year], h[:month], h[:day]]
     end
-
   end
 
-end
-
-describe 'PageObject Decorators' do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
@@ -97,7 +90,7 @@ describe 'PageObject Decorators' do
                       year:  lambda { text_field(id: 'year_field') }}
 
       foo = Domkey::View::PageObject.new watir_object
-      dmy = DomkeySpecHelper::DateSelector.new foo
+      dmy = DateSelector.new foo
 
       dmy.set Date.today
       dmy.value.should eql Date.today
@@ -110,7 +103,7 @@ describe 'PageObject Decorators' do
                       year:  lambda { text_field(id: 'year_field') }}
 
       #foo = Domkey::Page::PageObject.new watir_object, @container
-      dmy          = Domkey::View::DateSelectorPageObject.new watir_object
+      dmy          = DateSelectorPageObject.new watir_object
 
       dmy.set Date.today
       dmy.value.should eql Date.today
@@ -131,7 +124,7 @@ describe 'PageObject Decorators' do
       pageobject.set switch: true # => turn switch on
 
       # wrap with decorator and handle specific behavior to set and value
-      cbtf = DomkeySpecHelper::CheckboxTextField.new(pageobject)
+      cbtf = CheckboxTextField.new(pageobject)
 
       cbtf.set true
       cbtf.set false
@@ -158,7 +151,7 @@ describe 'PageObject Decorators' do
 
           pageobject = Domkey::View::PageObject.new watir_object
           #domain specific pageobject
-          DomkeySpecHelper::CheckboxTextField.new(pageobject)
+          CheckboxTextField.new(pageobject)
         end
 
         # array of Domain Specific PageObjects
@@ -183,7 +176,7 @@ describe 'PageObject Decorators' do
             pageobject = PageObject.new switch: -> { checkbox(id: "feature_checkbox#{i}") },
                                         blurb:  -> { text_field(id: "feature_textarea#{i}") },
                                         label:  -> { label(for: "feature_checkbox#{i}") }
-            DomkeySpecHelper::CheckboxTextField.new(pageobject)
+            CheckboxTextField.new(pageobject)
           end
         end
 

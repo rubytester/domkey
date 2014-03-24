@@ -1,5 +1,7 @@
 require 'spec_helper'
-module DomkeyExample
+
+describe Domkey::View do
+
   class DomIspackage
     include Domkey::View
     #pageobject is package
@@ -37,16 +39,14 @@ module DomkeyExample
     #  dom(:city) { text_field(id: 'city') }
     #end
   end
-end
 
-describe Domkey::View do
 
   before :all do
     Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
   end
 
   it 'dom is package' do
-    view = DomkeyExample::DomIspackage.new
+    view = DomIspackage.new
     view.should respond_to(:street)
     view.street.should be_kind_of(Domkey::View::PageObject)
 
@@ -56,7 +56,7 @@ describe Domkey::View do
   end
 
   it 'dom is hash of dom' do
-    view = DomkeyExample::DomIsHashOfDom.new
+    view = DomIsHashOfDom.new
 
     view.should respond_to(:address)
 
