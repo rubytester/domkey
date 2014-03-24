@@ -36,6 +36,9 @@ describe Domkey::View::CheckboxGroup do
     v.one_cb_group.set ['tomato']
     v.one_cb_group.value.should eql ['tomato']
 
+    v.one_cb_group.set false
+    v.one_cb_group.value.should eql []
+
     v.one_cb_group.set ['other', 'tomato']
     v.one_cb_group.value.should eql ['tomato', 'other']
   end

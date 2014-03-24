@@ -2,31 +2,31 @@ module Domkey
 
   module View
 
-    # RadioGroup is a PageObjectCollection or radios that acts like a PageObject.
-    # It allows you to interact with the collection of radios as a single PageObject
-    # when one radio is selected in the collection the others become unselected.
+    # RadioGroup allows you to interact with PageObjectCollection of radios as a single PageObject
+    # Radios collection is constrained by the same name attribute and behaves like one object.
+    # It behaves like a single Select list.
+    # When one radio is selected in the collection the others become unselected.
     class RadioGroup < PageObjectCollection
 
-      # @param [String] match value attribute and set that radio
-      # TODO @param [Fixnum] index in collection to set
-      # TODO @parma [Symbol] :first, :last, :random ???
-      # TODO maybe set :value => 'value' sets value by value attriube
+      # @param [String] match text in value attribute and set that radio
       def set value
         validate_scope
         element.find { |r| r.value.match(value) }.set
       end
 
-      # @return [String] value attribute of radio.set? == true
+      # @return [String] text in value attribute of currently set
       def value
         validate_scope
         element.find { |r| r.set? }.value
       end
 
+      # @yield [PageObject]
       def each(&blk)
         validate_scope
         super(&blk)
       end
 
+      # @return [Array<PageObject>]
       def to_a
         validate_scope
         super
