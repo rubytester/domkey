@@ -13,15 +13,16 @@ module Domkey
       end
 
       def set value
-        return __send__(@set_method, value) if respond_to?(@set_method)
+        return __send__(@set_method, value) if respond_to?(@set_method, true)
         @object.set value
       end
 
       def value
-        return __send__(@value_method) if respond_to?(@value_method)
+        return __send__(@value_method) if respond_to?(@value_method, true)
         @object.value
       end
 
+      private
 
       # for Watir::Select
       # @param [String] text or label to be selected. Text visible to the user on the page
