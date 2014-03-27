@@ -18,7 +18,7 @@ module Domkey
     # TODO Example:
     class PageObjectCollection
 
-      include PageObject::WidgetryPackage
+      include WidgetryPackage
       include Enumerable
 
       # @return [PageObject, Hash{Symbol => PageObjectCollection}]
