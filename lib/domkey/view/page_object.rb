@@ -1,4 +1,5 @@
 require 'domkey/view/widgetry_package'
+require 'domkey/view/watir_widget'
 
 module Domkey
 
@@ -57,7 +58,7 @@ module Domkey
       # @param [SemanticValue] Delegated to WebdriverElement and we expect it to respond to set
       # @parma [Hash{Symbol => SemanticValue}]
       def set value
-        return instantiator.set(value) unless value.respond_to?(:each_pair)
+        return watir_widget.set value unless value.respond_to?(:each_pair)
         value.each_pair { |k, v| package.fetch(k).set(v) }
       end
 
@@ -67,11 +68,18 @@ module Domkey
       # @return [SemanticValue] delegated to WebdriverElement and we expect it to respond to value message
       # @return [Hash{Symbol => SemanticValue}]
       def value
-        return instantiator.value unless package.respond_to?(:each_pair)
+        return watir_widget.value unless package.respond_to?(:each_pair)
         Hash[package.map { |key, pageobject| [key, pageobject.value] }]
       end
 
       private
+
+      # wrap instantiator with strategy for setting and getting value for watir object
+      # expects that element to respond to set and value
+      # @returns [WatirWidget]
+      def watir_widget
+        WatirWidget.new(instantiator)
+      end
 
       # @api private
       # Recursive. Examines each packages and turns each Proc into PageObject
