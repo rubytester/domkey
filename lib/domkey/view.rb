@@ -2,6 +2,8 @@ require 'domkey/view/page_object'
 require 'domkey/view/page_object_collection'
 require 'domkey/view/radio_group'
 require 'domkey/view/checkbox_group'
+require 'domkey/view/cargo'
+
 module Domkey
 
   module View
@@ -21,6 +23,13 @@ module Domkey
           PageObject.new package, Proc.new { browser }
         end
       end
+
+      # build Cargo with model and view
+      # @return [Domkey::View::Cargo]
+      def cargo model, browser: nil
+        Cargo.new model: model, view: self.new(browser)
+      end
+
     end
 
     def self.included(klass)
