@@ -24,11 +24,29 @@ describe Domkey::View::Cargo do
     include Domkey::View
     dom(:city) { text_field(id: 'city2') }
     dom(:street) { text_field(id: 'street2') }
+
+    def delivery_date
+      DateView.new
+    end
   end
 
+  class DateView
+    include Domkey::View
+    dom(:month) { text_field(id: 'month_field') }
+  end
 
   before :each do
     goto_html("test.html")
+  end
+
+  it 'view within pageobject' do
+    model = {city:   'Austin',
+             street: 'Lamar'}
+
+    cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
+    cargo.set
+    extracted = cargo.value
+    extracted.should eql model
   end
 
   it 'view within view' do
@@ -36,6 +54,21 @@ describe Domkey::View::Cargo do
              street:   'Lamar',
              shipping: {city:   'Georgetown',
                         street: 'Austin'}
+    }
+
+    cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
+    cargo.set
+    extracted = cargo.value
+    extracted.should eql model
+  end
+
+  it 'view view view' do
+    model = {city:     'Austin',
+             street:   'Lamar',
+             shipping: {city:          'Georgetown',
+                        street:        'Austin',
+                        # this is view within a view within original view
+                        delivery_date: {month: 'delivery thing'}}
     }
 
     cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
