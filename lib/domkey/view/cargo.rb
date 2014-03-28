@@ -55,8 +55,8 @@ module Domkey
       # @returns [Model]
       def value
         extracted = {}
-        @model.each_key do |key|
-          extracted[key] = value_for_pageobject(key)
+        @model.each_pair do |key, value|
+          extracted[key] = value_for_pageobject(key, value)
         end
         extracted
       end
@@ -67,8 +67,15 @@ module Domkey
         @view.send(key).set value
       end
 
-      def value_for_pageobject key
-        @view.send(key).value
+      def value_for_pageobject key, value
+        object = @view.send(key)
+        # object is pageobject
+        if object.method(:value).parameters.empty?
+          object.value
+        else
+          # object is another view that has collection of pageobject
+          object.value value
+        end
       end
 
       ## submits view

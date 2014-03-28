@@ -1,36 +1,67 @@
 require 'spec_helper'
 
-describe Domkey::View do
+describe Domkey::View::Cargo do
 
-  class MyView
+  class AddressView
     include Domkey::View
+    dom(:city) { text_field(id: 'city1') }
+    dom(:street) { text_field(id: 'street1') }
 
-    dom(:city) { text_field(id: 'city2') }
+    # semantic descriptor that returns another view
+    # the other view has PageObjects that participate in this view
+    def shipping
+      ShippingAddressView.new
+    end
 
+    # semantic descriptor that returns PageObject
     def fruit
       CheckboxGroup.new -> { checkboxes(name: 'fruit') }
     end
+
   end
 
+  class ShippingAddressView
+    include Domkey::View
+    dom(:city) { text_field(id: 'city2') }
+    dom(:street) { text_field(id: 'street2') }
+  end
+
+
   before :each do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
+  end
+
+  it 'view within view' do
+    model = {city:     'Austin',
+             street:   'Lamar',
+             shipping: {city:   'Georgetown',
+                        street: 'Austin'}
+    }
+
+    cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
+    cargo.set
+    extracted = cargo.value
+    extracted.should eql model
   end
 
   it 'cargo' do
     model = {city: 'Mordor'}
-    view  = MyView.new
+
+    view  = AddressView.new
     cargo = Domkey::View::Cargo.new view: view, model: model
     cargo.set
     scraped_model = cargo.value
+
     scraped_model.should eql model
   end
 
-  it 'factory' do
+  it 'pageobject' do
+
     model               = {city: 'Austin', fruit: ['tomato', 'other']}
-    cargo               = MyView.cargo model
+    cargo               = AddressView.cargo model
 
     # default values when page loads before setting the values
-    default_page_values = {:city=>"class city but div id container", :fruit=>["other"]}
+    default_page_values = {:city=>"id city class city", :fruit=>["other"]}
     cargo.value.should eql default_page_values
     cargo.set
 

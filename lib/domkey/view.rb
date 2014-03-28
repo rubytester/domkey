@@ -50,5 +50,13 @@ module Domkey
       @browser ||= Domkey.browser
     end
 
+    def set value
+      Cargo.new(model: value, view: self).set
+    end
+
+    def value value
+      Cargo.new(model: value, view: self).value
+    end
+
   end
 end
