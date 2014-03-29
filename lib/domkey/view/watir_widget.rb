@@ -28,6 +28,7 @@ module Domkey
       # @param [String] text or label to be selected. Text visible to the user on the page
       # @param [Array<String>] collection for multiselect to select
       def set_Select value
+        @object.clear if @object.multiple?
         case value
         when String
           @object.select value
@@ -45,7 +46,6 @@ module Domkey
       def value_Select
         texts = @object.selected_options.map { |o| o.text }
         return texts.first if texts.count == 1 # only one selected
-        return false if texts.empty? # multiselect list nothing selected
         return texts #multiselect list more than one selected
       end
 
