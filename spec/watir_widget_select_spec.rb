@@ -72,6 +72,11 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql 'Tomato'
       end
 
+      it 'set index position' do
+        @widget.set index: 1
+        @widget.value.should eql 'Cucumber'
+      end
+
     end
 
   end

@@ -32,13 +32,16 @@ module Domkey
         case value
         when String
           @object.select value
+        when Hash
+          value.each_pair { |k, v| set_Select_by(k, v) }
         when Array
-          value.each do |v|
-            @object.select v
-          end
+          value.each { |v| set_Select v }
         end
       end
 
+      def set_Select_by how, what
+        @object.options[what].select if how == :index
+      end
 
       # @return [String] text or label from Select, not actual 'value' attribute?
       # @return [Array<String>] collection for multiselect list
