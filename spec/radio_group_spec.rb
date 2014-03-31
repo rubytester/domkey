@@ -40,36 +40,36 @@ describe Domkey::View::RadioGroup do
     end
 
     it 'initial value on test page' do
-      @v.group.value.should eql 'other'
+      @v.group.value.should eql ['other']
     end
 
     it 'set value attribute by default. value returns that value attribute' do
       @v.group.set 'tomato'
-      @v.group.value.should eql 'tomato'
+      @v.group.value.should eql ['tomato']
     end
 
     it 'set array of value attribute. last value wins' do
       @v.group.set ['tomato']
-      @v.group.value.should eql 'tomato'
+      @v.group.value.should eql ['tomato']
 
       @v.group.set ['other', 'tomato', 'cucumber']
-      @v.group.value.should eql 'cucumber'
+      @v.group.value.should eql ['cucumber']
     end
 
     it 'set false has no effect. value is initial value on the page' do
       @v.group.set false
-      @v.group.value.should eql 'other'
+      @v.group.value.should eql ['other']
     end
 
     it 'set empty array clears all. value is empty array' do
       @v.group.set []
-      @v.group.value.should eql 'other'
+      @v.group.value.should eql ['other']
     end
 
     it 'one group example' do
-      @v.group.value.should eql 'other'
+      @v.group.value.should eql ['other']
       @v.group.set 'tomato'
-      @v.group.value.should eql 'tomato'
+      @v.group.value.should eql ['tomato']
     end
 
   end

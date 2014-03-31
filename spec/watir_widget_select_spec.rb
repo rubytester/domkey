@@ -37,12 +37,12 @@ describe Domkey::View::WatirWidget do
 
       it 'set string clears all. sets one text item. value is one item' do
         @widget.set 'Polish'
-        @widget.value.should eql "Polish" # or should we return ['Polish'] in this case?
+        @widget.value.should eql ["Polish"]
       end
 
       it 'set by text' do
         @widget.set text: 'Polish'
-        @widget.value.should eql "Polish"
+        @widget.value.should eql ["Polish"]
       end
 
       it 'set by array of texts' do
@@ -55,7 +55,7 @@ describe Domkey::View::WatirWidget do
 
       it 'set index by option position' do
         @widget.set index: 1
-        @widget.value.should eql 'English'
+        @widget.value.should eql ['English']
       end
 
       it 'set index array of option positions' do
@@ -65,7 +65,7 @@ describe Domkey::View::WatirWidget do
 
       it 'set value attribute string' do
         @widget.set value: '2'
-        @widget.value.should eql 'English'
+        @widget.value.should eql ['English']
       end
 
       it 'set value attribute array of strings' do
@@ -94,64 +94,64 @@ describe Domkey::View::WatirWidget do
       end
 
       it 'initial value on the test page visible text to the user' do
-        @widget.value.should eql 'Default'
+        @widget.value.should eql ['Default']
       end
 
       it 'set string selects visible text. value is visible text to the user' do
         # option text
         @widget.set 'Tomato'
-        @widget.value.should eql 'Tomato' # not value attribute, visible text [text, label]
+        @widget.value.should eql ['Tomato'] # not value attribute, visible text [text, label]
 
         # option label attribute text
         @widget.set 'Other'
-        @widget.value.should eql 'Other'
+        @widget.value.should eql ['Other']
       end
 
       it 'set array of text or label' do
         @widget.set ['Other', 'Tomato'] #cycle on single select list
-        @widget.value.should eql 'Tomato' # the last one set
+        @widget.value.should eql ['Tomato'] # the last one set
       end
 
       it 'set by array of text' do
         @widget.set text: ['Other', 'Tomato']
-        @widget.value.should eql 'Tomato'
+        @widget.value.should eql ['Tomato']
       end
 
       it 'set false has no effect. value is selected item text' do
         @widget.set false
-        @widget.value.should eql 'Default'
+        @widget.value.should eql ['Default']
       end
 
       it 'set empty array has no effect. value is selected item text' do
         @widget.set []
-        @widget.value.should eql 'Default'
+        @widget.value.should eql ['Default']
       end
 
       it 'set index position' do
         @widget.set index: 1
-        @widget.value.should eql 'Cucumber'
+        @widget.value.should eql ['Cucumber']
       end
 
       it 'set index array' do
         @widget.set index: [0, 2]
-        @widget.value.should eql 'Other' # the last one wins
+        @widget.value.should eql ['Other'] # the last one wins
       end
 
       it 'set value attribute string' do
         @widget.set value: 'tomato'
-        @widget.value.should eql 'Tomato'
+        @widget.value.should eql ['Tomato']
       end
 
       it 'set value attribute array of strings' do
         @widget.set value: ['tomato', 'gurken']
-        @widget.value.should eql 'Cucumber'
+        @widget.value.should eql ['Cucumber']
       end
 
       it 'set by many qualifiers at once' do
         @widget.set value: ['gurken'],
                     text:  'Tomato',
                     index: 2
-        @widget.value.should eql 'Other'
+        @widget.value.should eql ['Other']
       end
 
     end

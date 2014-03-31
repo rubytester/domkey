@@ -83,9 +83,7 @@ module Domkey
       # @return [Array<String>] collection for multiselect list
       # @return [False] when nothing selected in multiselect list
       def value_Select
-        texts = @object.selected_options.map { |o| o.text }
-        return texts.first if texts.count == 1 # only one selected
-        return texts #multiselect list more than one selected
+        @object.selected_options.map { |o| o.text }
       end
 
 

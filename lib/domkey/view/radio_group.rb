@@ -22,7 +22,7 @@ module Domkey
       # @return [String] text in value attribute of currently set
       def value
         validate_scope
-        element.find { |r| r.set? }.value
+        element.find_all { |r| r.set? }.map {|e| e.value }
       end
 
       # @yield [PageObject]
