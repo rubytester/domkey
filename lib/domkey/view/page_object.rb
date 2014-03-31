@@ -72,6 +72,10 @@ module Domkey
         Hash[package.map { |key, pageobject| [key, pageobject.value] }]
       end
 
+      def options
+        watir_widget.options
+      end
+
       private
 
       # wrap instantiator with strategy for setting and getting value for watir object

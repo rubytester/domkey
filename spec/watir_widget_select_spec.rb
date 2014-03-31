@@ -80,6 +80,14 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql ['Danish', 'English', 'Polish', 'Swedish']
       end
 
+      it 'options' do
+        @widget.options.should eql [{:text=>"Danish", :value=>"1"},
+                                    {:text=>"English", :value=>"2"},
+                                    {:text=>"Norwegian", :value=>"3"},
+                                    {:text=>"Polish", :value=>""},
+                                    {:text=>"Swedish", :value=>"Swedish"}]
+      end
+
     end
 
     context "Single" do
@@ -152,6 +160,13 @@ describe Domkey::View::WatirWidget do
                     text:  'Tomato',
                     index: 2
         @widget.value.should eql ['Other']
+      end
+
+      it 'options' do
+        @widget.options.should eql [{:text=>"Tomato", :value=>"tomato"},
+                                    {:text=>"Cucumber", :value=>"gurken"},
+                                    {:text=>"Other", :value=>""},
+                                    {:text=>"Default", :value=>"Default"}]
       end
 
     end

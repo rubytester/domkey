@@ -10,6 +10,7 @@ module Domkey
         object_class_name = @object.class.name.split('::').last
         @set_method       = "set_%s" % object_class_name
         @value_method     = "value_%s" % object_class_name
+        @options_method   = "options_%s" % object_class_name
       end
 
       def set value
@@ -22,7 +23,19 @@ module Domkey
         @object.value
       end
 
+      def options
+        return __send__(@options_method) if respond_to?(@options_method, true)
+        @object.options
+      end
+
       private
+
+      def options_Select
+        @object.options.map do |o|
+          {text:  o.text,
+           value: o.value}
+        end
+      end
 
       # for Watir::Select
       # @param [String] text or label to be selected. Text visible to the user on the page

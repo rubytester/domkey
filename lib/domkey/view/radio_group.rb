@@ -13,7 +13,7 @@ module Domkey
         validate_scope
         case value
         when Array
-          value.each {|v| set v}
+          value.each { |v| set v }
         when String
           element.find { |r| r.value.match(value) }.set
         end
@@ -22,7 +22,12 @@ module Domkey
       # @return [String] text in value attribute of currently set
       def value
         validate_scope
-        element.find_all { |r| r.set? }.map {|e| e.value }
+        element.find_all { |r| r.set? }.map { |e| e.value }
+      end
+
+      def options
+        validate_scope
+        element.map { |e| e.value }
       end
 
       # @yield [PageObject]

@@ -63,5 +63,9 @@ describe Domkey::View::CheckboxGroup do
       @v.group.set []
       @v.group.value.should eql []
     end
+
+    it 'options' do
+      @v.group.options.should eql ["cucumber", "tomato", "other"]
+    end
   end
 end

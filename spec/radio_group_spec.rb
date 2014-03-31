@@ -72,6 +72,10 @@ describe Domkey::View::RadioGroup do
       @v.group.value.should eql ['tomato']
     end
 
+    it 'options' do
+      @v.group.options.should eql ["cucumber", "tomato", "other"]
+    end
+
   end
 
 end

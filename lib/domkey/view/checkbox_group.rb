@@ -27,6 +27,11 @@ module Domkey
         element.find_all { |e| e.set? }.map { |e| e.value }
       end
 
+      def options
+        validate_scope
+        element.map { |e| e.value }
+      end
+
       # @yield [PageObject]
       def each(&blk)
         validate_scope
