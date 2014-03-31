@@ -54,7 +54,22 @@ module Domkey
       Cargo.new(model: value, view: self).set
     end
 
+    # @param [Hash{Symbol => Object}] view data where Symbol is semantic descriptor for a pageobject in the view
+    # @param [Symbol] for one pageobject
+    # @param [Array<Symbol>] for array of pageobjects
+    #
+    # @return [Hash{Symbol => Object}] data from the view
     def value value
+      # transform value into hash
+      value = case value
+              when Symbol
+                {value => nil}
+              when Array
+                #array of symbols
+                Hash[value.map { |v| [v, nil] }]
+              when Hash
+                value
+              end
       Cargo.new(model: value, view: self).value
     end
 
