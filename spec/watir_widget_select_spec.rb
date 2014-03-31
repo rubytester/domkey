@@ -35,6 +35,19 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql "Polish" # or should we return ['Polish'] in this case?
       end
 
+      it 'set by text' do
+        @widget.set text: 'Polish'
+        @widget.value.should eql "Polish"
+      end
+
+      it 'set by array of texts' do
+        # client would not usually do this.
+        # Client would simply call set ['Polish', 'Norwegian']
+        # becuase text: qualifer is a default way of setting select list by visible text
+        @widget.set text: ['Polish', 'Norwegian']
+        @widget.value.should eql ["Norwegian", "Polish"]
+      end
+
       it 'set index by option position' do
         @widget.set index: 1
         @widget.value.should eql 'English'
@@ -53,6 +66,13 @@ describe Domkey::View::WatirWidget do
       it 'set value attribute array of strings' do
         @widget.set value: ['2', '1']
         @widget.value.should eql ["Danish", "English"]
+      end
+
+      it 'set by many qualifiers at once' do
+        @widget.set value: ['2', '1'],
+                    text:  'Swedish',
+                    index: 3
+        @widget.value.should eql ['Danish', 'English', 'Polish', 'Swedish']
       end
 
     end
@@ -87,6 +107,11 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql 'Tomato' # the last one set
       end
 
+      it 'set by array of text' do
+        @widget.set text: ['Other', 'Tomato']
+        @widget.value.should eql 'Tomato'
+      end
+
       it 'set false has no effect on single select list' do
         @widget.set false
         @widget.value.should eql 'Default'
@@ -110,6 +135,13 @@ describe Domkey::View::WatirWidget do
       it 'set value attribute array of strings' do
         @widget.set value: ['tomato', 'gurken']
         @widget.value.should eql 'Cucumber'
+      end
+
+      it 'set by many qualifiers at once' do
+        @widget.set value: ['gurken'],
+                    text: 'Tomato',
+                    index: 2
+        @widget.value.should eql 'Other'
       end
 
     end

@@ -63,6 +63,15 @@ module Domkey
               end
             end
 
+            #-- select by text visible to the user. This is the same as default set 'Text' behavior
+            if how == :text
+              case what
+              when String
+                set_Select_strategy what
+              when Array
+                what.each { |v| set_Select_strategy v }
+              end
+            end
 
           end
 
