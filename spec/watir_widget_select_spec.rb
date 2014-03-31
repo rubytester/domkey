@@ -35,6 +35,26 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql "Polish" # or should we return ['Polish'] in this case?
       end
 
+      it 'set index by option position' do
+        @widget.set index: 1
+        @widget.value.should eql 'English'
+      end
+
+      it 'set index array of option positions' do
+        @widget.set index: [0, 2]
+        @widget.value.should eql ["Danish", "Norwegian"]
+      end
+
+      it 'set value attribute string' do
+        @widget.set value: '2'
+        @widget.value.should eql 'English'
+      end
+
+      it 'set value attribute array of strings' do
+        @widget.set value: ['2', '1']
+        @widget.value.should eql ["Danish", "English"]
+      end
+
     end
 
     context "Single" do
@@ -49,7 +69,7 @@ describe Domkey::View::WatirWidget do
       end
 
       it 'initial value on the test page visible text to the user' do
-        @widget.value.should eql 'Tomato'
+        @widget.value.should eql 'Default'
       end
 
       it 'set string selects visible text. value is visible text to the user' do
@@ -69,11 +89,26 @@ describe Domkey::View::WatirWidget do
 
       it 'set false has no effect on single select list' do
         @widget.set false
-        @widget.value.should eql 'Tomato'
+        @widget.value.should eql 'Default'
       end
 
       it 'set index position' do
         @widget.set index: 1
+        @widget.value.should eql 'Cucumber'
+      end
+
+      it 'set index array' do
+        @widget.set index: [0, 2]
+        @widget.value.should eql 'Other' # the last one wins
+      end
+
+      it 'set value attribute string' do
+        @widget.set value: 'tomato'
+        @widget.value.should eql 'Tomato'
+      end
+
+      it 'set value attribute array of strings' do
+        @widget.set value: ['tomato', 'gurken']
         @widget.value.should eql 'Cucumber'
       end
 

@@ -29,18 +29,45 @@ module Domkey
       # @param [Array<String>] collection for multiselect to select
       def set_Select value
         @object.clear if @object.multiple?
+        set_Select_strategy value
+      end
+
+      def set_Select_strategy value
         case value
         when String
           @object.select value
-        when Hash
-          value.each_pair { |k, v| set_Select_by(k, v) }
         when Array
-          value.each { |v| set_Select v }
-        end
-      end
+          value.each { |v| set_Select_strategy v }
+        when Hash
+          value.each_pair do |how, what|
 
-      def set_Select_by how, what
-        @object.options[what].select if how == :index
+            #-- select by option position: can be one or many index: 0, index: [0,1,2,3]
+            if how == :index
+              case what
+              when Fixnum
+                @object.options[what].select
+              when Array
+                what.each do |i|
+                  @object.options[i].select
+                end
+              end
+            end
+
+            #-- select by option value: attribute (invisible to the user)
+            if how == :value
+              case what
+              when String
+                @object.select_value what
+              when Array
+                what.each { |v| @object.select_value v }
+              end
+            end
+
+
+          end
+
+        end
+
       end
 
       # @return [String] text or label from Select, not actual 'value' attribute?

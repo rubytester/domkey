@@ -90,18 +90,19 @@
 <div>
     <select id="fruit_list">
         <option value="tomato">Tomato</option>
-        <option>Cucumber</option>
+        <option value="gurken">Cucumber</option>
         <option label="Other"/>
+        <option selected>Default</option>
     </select>
 </div>
 
 <div>
-    <select name="multiselect" id="multiselect" multiple="multiple">
+    <select multiple size="5" name="multiselect" id="multiselect">
         <option value="1">Danish</option>
         <option selected="selected" value="2">English</option>
-        <option selected="selected" value="3">Norwegian</option>
+        <option selected value="3">Norwegian</option>
+        <option label='Polish'/>
         <option>Swedish</option>
-        <option label="Polish"></option>
     </select>
 </div>
 </body>
