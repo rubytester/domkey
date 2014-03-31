@@ -30,6 +30,11 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql []
       end
 
+      it 'set empty array clears all. value is empty array' do
+        @widget.set []
+        @widget.value.should eql []
+      end
+
       it 'set string clears all. sets one text item. value is one item' do
         @widget.set 'Polish'
         @widget.value.should eql "Polish" # or should we return ['Polish'] in this case?
@@ -112,8 +117,13 @@ describe Domkey::View::WatirWidget do
         @widget.value.should eql 'Tomato'
       end
 
-      it 'set false has no effect on single select list' do
+      it 'set false has no effect. value is selected item text' do
         @widget.set false
+        @widget.value.should eql 'Default'
+      end
+
+      it 'set empty array has no effect. value is selected item text' do
+        @widget.set []
         @widget.value.should eql 'Default'
       end
 
@@ -139,7 +149,7 @@ describe Domkey::View::WatirWidget do
 
       it 'set by many qualifiers at once' do
         @widget.set value: ['gurken'],
-                    text: 'Tomato',
+                    text:  'Tomato',
                     index: 2
         @widget.value.should eql 'Other'
       end
