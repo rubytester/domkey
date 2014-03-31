@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Domkey::View::PageObjectCollection do
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   it 'init error' do

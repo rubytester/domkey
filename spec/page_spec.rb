@@ -42,7 +42,7 @@ describe Domkey::View do
 
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   it 'dom is package' do

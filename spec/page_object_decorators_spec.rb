@@ -78,7 +78,7 @@ describe 'PageObject Decorators' do
 
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   context 'DateSelector' do

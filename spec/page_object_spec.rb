@@ -6,7 +6,7 @@ require 'spec_helper'
 describe Domkey::View::PageObject do
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   context 'exceptions' do

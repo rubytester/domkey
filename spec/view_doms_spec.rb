@@ -9,7 +9,7 @@ describe Domkey::View do
 
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   it 'doms collection' do
@@ -32,7 +32,7 @@ end
 #Benchmark.bm do |bm|
 #  howmany = 50
 #  # setup browser
-#  Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+#  goto_html("test.html")
 #  view = DomkeyExample::Doms.new Domkey.browser
 #  bm.report('domkey') do
 #    howmany.times do

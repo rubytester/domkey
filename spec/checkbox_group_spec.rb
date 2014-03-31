@@ -15,7 +15,7 @@ describe Domkey::View::CheckboxGroup do
   end
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   it 'two groups example' do

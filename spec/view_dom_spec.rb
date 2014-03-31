@@ -17,7 +17,7 @@ describe Domkey::View do
   end
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+    goto_html("test.html")
   end
 
   it 'dom single element' do
@@ -37,7 +37,7 @@ end
 #Benchmark.bm do |bm|
 #  howmany = 50
 #  # setup browser
-#  Domkey.browser.goto("file://" + __dir__ + "/html/test.html")
+#  goto_html("test.html")
 #  view = DomkeyExample::SingleDom.new Domkey.browser
 #  bm.report('domkey') do
 #    howmany.times do
