@@ -11,7 +11,12 @@ module Domkey
       # @param [String] match text in value attribute and set that radio
       def set value
         validate_scope
-        element.find { |r| r.value.match(value) }.set
+        case value
+        when Array
+          value.each {|v| set v}
+        when String
+          element.find { |r| r.value.match(value) }.set
+        end
       end
 
       # @return [String] text in value attribute of currently set

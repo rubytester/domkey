@@ -2,17 +2,17 @@ require 'spec_helper'
 
 describe Domkey::View::RadioGroup do
 
-  class CollectionAsPageObjectGroupView
+  class CollectionAsPageObjectRadioGroupView
     include Domkey::View
 
     # one named radio group
-    def tool
+    def group
       RadioGroup.new -> { radios(name: 'tool') }
     end
 
     # no good. collection resolves to more than one coherent group
-    def two_groups
-      RadioGroup.new -> { radios(name: /^tool/) }
+    def groups
+      RadioGroup.new -> { radios(name: /^group/) }
     end
   end
 
@@ -21,18 +21,57 @@ describe Domkey::View::RadioGroup do
   end
 
   it 'two groups example' do
-    v = CollectionAsPageObjectGroupView.new
-    expect { v.two_groups.to_a.size }.to raise_error
-    expect { v.two_groups.map { |e| e } }.to raise_error
-    expect { v.two_groups.count }.to raise_error
+    v = CollectionAsPageObjectRadioGroupView.new
+    expect { v.groups.to_a.size }.to raise_error
+    expect { v.groups.map { |e| e } }.to raise_error
+    expect { v.groups.count }.to raise_error
   end
 
-  it 'one group example' do
-    v = CollectionAsPageObjectGroupView.new
-    v.tool.count.should == 3
-    v.tool.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
-    v.tool.value.should eql 'other'
-    v.tool.set 'tomato'
-    v.tool.value.should eql 'tomato'
+  context "OptionSelectable object single" do
+    # OptionSelectable object is an object that responds to options and is selectable by its optioins;
+    # RadioGroup, Select, CheckboxGroup. CheckboxGroup acts like Multi Select, RadioGroup acts like Single Select
+
+    before :each do
+      goto_html("test.html")
+
+      @v = CollectionAsPageObjectRadioGroupView.new
+      @v.group.count.should == 3
+      @v.group.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+    end
+
+    it 'initial value on test page' do
+      @v.group.value.should eql 'other'
+    end
+
+    it 'set value attribute by default. value returns that value attribute' do
+      @v.group.set 'tomato'
+      @v.group.value.should eql 'tomato'
+    end
+
+    it 'set array of value attribute. last value wins' do
+      @v.group.set ['tomato']
+      @v.group.value.should eql 'tomato'
+
+      @v.group.set ['other', 'tomato', 'cucumber']
+      @v.group.value.should eql 'cucumber'
+    end
+
+    it 'set false has no effect. value is initial value on the page' do
+      @v.group.set false
+      @v.group.value.should eql 'other'
+    end
+
+    it 'set empty array clears all. value is empty array' do
+      @v.group.set []
+      @v.group.value.should eql 'other'
+    end
+
+    it 'one group example' do
+      @v.group.value.should eql 'other'
+      @v.group.set 'tomato'
+      @v.group.value.should eql 'tomato'
+    end
+
   end
+
 end
