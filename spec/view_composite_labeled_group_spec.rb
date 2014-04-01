@@ -34,29 +34,63 @@ describe Domkey::View::Composite::LabeledGroup do
 
   context 'radio group' do
 
-    it 'set string' do
-      view.tool.set 'Tomato'
-      view.tool.value.should eql ['Tomato']
+    context 'wrapped directly' do
+
+      it 'set string' do
+        view.tool.set 'Tomato'
+        view.tool.value.should eql ['Tomato']
+      end
+
+      it 'set array' do
+        view.tool.set ['Tomato', 'Cucumber']
+        view.tool.value.should eql ['Cucumber']
+      end
     end
 
-    it 'set array' do
-      view.tool.set ['Tomato', 'Cucumber']
-      view.tool.value.should eql ['Cucumber']
+    context 'to_labeled' do
+
+      it 'set string' do
+        view.tool.to_labeled.set 'Tomato'
+        view.tool.to_labeled.value.should eql ['Tomato']
+      end
+
+      it 'set array' do
+        view.tool.to_labeled.set ['Tomato', 'Cucumber']
+        view.tool.to_labeled.value.should eql ['Cucumber']
+      end
+
     end
   end
 
   context 'checkbox group' do
 
-    it 'set single' do
-      view.fruit.set 'Tomatorama'
-      view.fruit.value.should eql ['Tomatorama']
+    context 'wrapped directly' do
+
+      it 'set single' do
+        view.fruit.set 'Tomatorama'
+        view.fruit.value.should eql ['Tomatorama']
+      end
+
+      it 'set array' do
+        view.fruit.set ['Tomatorama', 'Cucumberama']
+        view.fruit.value.should eql ['Cucumberama', 'Tomatorama']
+      end
     end
 
-    it 'set array' do
-      view.fruit.set ['Tomatorama', 'Cucumberama']
-      view.fruit.value.should eql ['Cucumberama', 'Tomatorama']
+    context 'to_labeled' do
+
+      it 'set single' do
+        view.fruit.to_labeled.set 'Tomatorama'
+        view.fruit.to_labeled.value.should eql ['Tomatorama']
+      end
+
+      it 'set array' do
+        view.fruit.to_labeled.set ['Tomatorama', 'Cucumberama']
+        view.fruit.to_labeled.value.should eql ['Cucumberama', 'Tomatorama']
+      end
+
     end
+
   end
-
 
 end

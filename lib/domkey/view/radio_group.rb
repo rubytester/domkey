@@ -30,6 +30,11 @@ module Domkey
         element.map { |e| e.value }
       end
 
+      # convert to LabeledGroup settable by corresponding label text
+      def to_labeled
+        Composite::LabeledGroup.new(self)
+      end
+
       # @yield [PageObject]
       def each(&blk)
         validate_scope
