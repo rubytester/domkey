@@ -83,7 +83,7 @@ describe 'PageObject Decorators' do
 
   context 'DateSelector' do
 
-    it 'as pageobject component wrapped by decorator' do
+    it 'as pageobject component wrapped by composite' do
 
       watir_object = {day:   lambda { text_field(id: 'day_field') },
                       month: lambda { text_field(id: 'month_field') },
@@ -113,7 +113,7 @@ describe 'PageObject Decorators' do
 
   context 'CheckboxTextField' do
 
-    it 'as pageobject component wrapped by decorator' do
+    it 'as pageobject component wrapped by composite' do
 
       pageobject = Domkey::View::PageObject.new switch: -> { checkbox(id: 'feature_checkbox1') },
                                                 blurb:  -> { textarea(id: 'feature_textarea1') }
@@ -123,7 +123,7 @@ describe 'PageObject Decorators' do
       pageobject.set switch: false # => turn switch off, clear textarea blurb entry
       pageobject.set switch: true # => turn switch on
 
-      # wrap with decorator and handle specific behavior to set and value
+      # wrap with composite and handle specific behavior to set and value
       cbtf = CheckboxTextField.new(pageobject)
 
       cbtf.set true
