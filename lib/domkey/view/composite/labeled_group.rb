@@ -1,28 +1,30 @@
+require 'delegate'
+
 module Domkey
   module View
     module Composite
-      class LabeledGroup
+      class LabeledGroup < SimpleDelegator
 
         attr_accessor :group
 
         def initialize group
-          @group = group
+          __setobj__(group)
         end
 
         # @param value [String] a label text to set
         # @param value [Array<String>] label texts to set
         def set value
-          @group.set false
-          labels  = Labels.for(@group).map { |e| e.element.text }
+          __getobj__.set false
+          labels  = Labels.for(__getobj__).map { |e| e.element.text }
           indices = [*value].map { |text| labels.index(text) }
           indices.each do |i|
-            @group[i].element.set
+            __getobj__[i].element.set
           end
         end
 
         # @return Array of selected texts
         def value
-          selected_ones = @group.find_all { |e| e.element.set? }
+          selected_ones = __getobj__.find_all { |e| e.element.set? }
           Labels.for(selected_ones).map { |e| e.element.text }
         end
       end
