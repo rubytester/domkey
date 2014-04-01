@@ -43,6 +43,11 @@ describe Domkey::View::LabeledGroup do
         view.tool.set ['Tomato', 'Cucumber']
         view.tool.value.should eql ['Cucumber']
       end
+
+      it 'options' do
+        view.tool.options.should eql ["Cucumber", "Tomato", "Other"]
+      end
+
     end
 
     context 'to_labeled' do
@@ -72,6 +77,10 @@ describe Domkey::View::LabeledGroup do
       it 'set array' do
         view.fruit.set ['Tomatorama', 'Cucumberama']
         view.fruit.value.should eql ['Cucumberama', 'Tomatorama']
+      end
+
+      it 'options' do
+        view.fruit.options.should eql ["Cucumberama", "Tomatorama", "Other"]
       end
     end
 
