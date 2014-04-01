@@ -1,3 +1,4 @@
+require 'domkey/view/labeled_group'
 module Domkey
 
   module View
@@ -32,7 +33,7 @@ module Domkey
 
       # convert to LabeledGroup settable by corresponding label text
       def to_labeled
-        Composite::LabeledGroup.new(self)
+        LabeledGroup.new(self)
       end
 
       # @yield [PageObject]

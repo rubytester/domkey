@@ -1,7 +1,6 @@
 require 'spec_helper'
-require 'domkey/view/composite/labeled_group'
 
-describe Domkey::View::Composite::LabeledGroup do
+describe Domkey::View::LabeledGroup do
 
   class LabeledGroupExampleView
     include Domkey::View
@@ -12,7 +11,7 @@ describe Domkey::View::Composite::LabeledGroup do
 
     #labelled radio_group with tool: as semantic descriptor
     def tool
-      Domkey::View::Composite::LabeledGroup.new(radio_group)
+      LabeledGroup.new(radio_group)
     end
 
     def checkbox_group
@@ -21,9 +20,8 @@ describe Domkey::View::Composite::LabeledGroup do
 
     #labelled checkbox_group with fruit: as semantic descriptor
     def fruit
-      Domkey::View::Composite::LabeledGroup.new(checkbox_group)
+      LabeledGroup.new(checkbox_group)
     end
-
   end
 
   let(:view) { LabeledGroupExampleView.new }
@@ -88,9 +86,6 @@ describe Domkey::View::Composite::LabeledGroup do
         view.fruit.to_labeled.set ['Tomatorama', 'Cucumberama']
         view.fruit.to_labeled.value.should eql ['Cucumberama', 'Tomatorama']
       end
-
     end
-
   end
-
 end
