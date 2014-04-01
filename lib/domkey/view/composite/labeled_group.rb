@@ -22,9 +22,8 @@ module Domkey
 
         # @return Array of selected texts
         def value
-          element = @group.element.find_all { |e| e.set? }
-          labels  = element.map { |e| @group.container.call.label(for: e.id) }
-          labels.map { |l| l.text }
+          selected_ones = @group.find_all { |e| e.element.set? }
+          Labels.for(selected_ones).map { |e| e.element.text }
         end
 
         def build_labels
@@ -34,8 +33,9 @@ module Domkey
 
       class Labels
         def self.for collection
-          ids = collection.map { |e| e.element.id }
-          ids.map { |id| Domkey::View::PageObject.new -> { label(for: id) }, collection.container }
+          collection.map do |e|
+            Domkey::View::PageObject.new -> { label(for: e.element.id) }, e.container
+          end
         end
       end
 
