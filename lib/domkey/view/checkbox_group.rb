@@ -1,3 +1,4 @@
+require 'domkey/view/labeled_group'
 module Domkey
 
   module View
@@ -30,6 +31,11 @@ module Domkey
       def options
         validate_scope
         element.map { |e| e.value }
+      end
+
+      # convert to LabeledGroup settable by corresponding label text
+      def to_labeled
+        LabeledGroup.new(self)
       end
 
       # @yield [PageObject]
