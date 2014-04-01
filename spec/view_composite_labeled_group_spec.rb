@@ -3,23 +3,30 @@ require 'domkey/view/composite/labeled_group'
 
 describe Domkey::View::Composite::LabeledGroup do
 
-  class PageObjectView
+  class LabeledGroupExampleView
     include Domkey::View
 
-    # one named radio group
-    def tool
-      rg = RadioGroup.new -> { radios(name: 'tool') }
-      Domkey::View::Composite::LabeledGroup.new rg
+    def radio_group
+      RadioGroup.new -> { radios(name: 'tool') }
     end
 
+    #labelled radio_group with tool: as semantic descriptor
+    def tool
+      Domkey::View::Composite::LabeledGroup.new(radio_group)
+    end
+
+    def checkbox_group
+      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
+    end
+
+    #labelled checkbox_group with fruit: as semantic descriptor
     def fruit
-      cg = CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-      Domkey::View::Composite::LabeledGroup.new cg
+      Domkey::View::Composite::LabeledGroup.new(checkbox_group)
     end
 
   end
 
-  let(:view) { PageObjectView.new }
+  let(:view) { LabeledGroupExampleView.new }
 
   before :all do
     goto_html("test.html")
