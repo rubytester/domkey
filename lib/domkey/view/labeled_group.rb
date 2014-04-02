@@ -21,7 +21,15 @@ module Domkey
       def set value
         __getobj__.set false
         labels  = self.options
-        indices = [*value].map { |text| labels.index(text) }
+        indices = [*value].map do |what|
+          i = case what
+              when String
+                labels.index(what)
+              when Regexp
+                labels.index(labels.find { |e| e.match(what) })
+              end
+          i ? i : fail(Exception::Error, "Label text to set not found for value: #{what.inspect}")
+        end
         indices.each do |i|
           __getobj__[i].element.set
         end

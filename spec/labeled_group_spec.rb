@@ -9,7 +9,7 @@ describe Domkey::View::LabeledGroup do
       RadioGroup.new -> { radios(name: 'tool') }
     end
 
-    #labelled radio_group with tool: as semantic descriptor
+    #labeled radio_group with tool: as semantic descriptor
     def tool
       LabeledGroup.new(radio_group)
     end
@@ -18,7 +18,7 @@ describe Domkey::View::LabeledGroup do
       CheckboxGroup.new -> { checkboxes(name: 'fruit') }
     end
 
-    #labelled checkbox_group with fruit: as semantic descriptor
+    #labeled checkbox_group with fruit: as semantic descriptor
     def fruit
       LabeledGroup.new(checkbox_group)
     end
@@ -39,9 +39,27 @@ describe Domkey::View::LabeledGroup do
         view.tool.value.should eql ['Tomato']
       end
 
+      it 'set regex' do
+        view.tool.set /umber$/
+        view.tool.value.should eql ['Cucumber']
+      end
+
       it 'set array' do
         view.tool.set ['Tomato', 'Cucumber']
         view.tool.value.should eql ['Cucumber']
+      end
+
+      it 'set array string and regex' do
+        view.tool.set ['Tomato', /cumber$/]
+        view.tool.value.should eql ['Cucumber']
+      end
+
+      it 'set value text not found should error' do
+        expect { view.tool.set 'yepyep' }.to raise_error
+      end
+
+      it 'set value regexp not found should error' do
+        expect { view.tool.set /fofofo/ }.to raise_error
       end
 
       it 'options' do
