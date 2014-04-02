@@ -44,13 +44,15 @@ describe Domkey::View::CheckboxGroup do
     it 'set value attribute by default. value returns array of value attribute' do
       @v.group.set 'tomato'
       @v.group.value.should eql ['tomato']
+      @v.group.set /^othe/
+      @v.group.value.should eql ['other']
     end
 
     it 'set array of value attribute. value returns array of value attribute' do
       @v.group.set ['tomato']
       @v.group.value.should eql ['tomato']
 
-      @v.group.set ['other', 'tomato']
+      @v.group.set ['other', /tomat/]
       @v.group.value.should eql ['tomato', 'other']
     end
 
@@ -62,6 +64,14 @@ describe Domkey::View::CheckboxGroup do
     it 'set empty array clears all. value is empty array' do
       @v.group.set []
       @v.group.value.should eql []
+    end
+
+    it 'set value string not found error' do
+      expect { @v.group.set 'toma' }.to raise_error
+    end
+
+    it 'set value regexp not found error' do
+      expect { @v.group.set /balaba/ }.to raise_error
     end
 
     it 'options' do

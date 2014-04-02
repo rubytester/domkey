@@ -3,22 +3,29 @@ module Domkey
 
   module View
 
+    # Acts like OptionSelectable object
     # CheckboxGroup allows you to interact with PageObjectCollection of checkboxes as a single PageObject.
     # Checkboxes collection is constrained by the same name attribute and acts like on object.
     # It behaves like a Multi Select list.
-    # It can none, one or more items selected
+    # It can none, one or more options selected
     class CheckboxGroup < PageObjectCollection
 
-      # sets by value. unchecks others
-      # @param [String] match String value attribute and set that checkbox
-      # @param [Array<String>] match String to value attributes and set checkboxes
+      # clears all options and sets only the desired value(s)
+      # @param [String, Regexp] find value attribute or match value and set that checkbox
+      # @param [Array<String, Regexp>] find each value attribute and set each checkbox
       # @param [False] uncheck any checked checkboxes
       def set value
         validate_scope
-        element.each { |e| e.clear if e.set? }
+        element.each { |e| e.clear }
         return unless value
         [*value].each do |v|
-          element.find { |e| e.value.match(v) }.set
+          e = case v
+              when String
+                element.find { |e| e.value == v }
+              when Regexp
+                element.find { |e| e.value.match(v) }
+              end
+          e ? e.set : fail(Exception::Error, "Checkbox to be set not found by value: #{v.inspect}")
         end
       end
 

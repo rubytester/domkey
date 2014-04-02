@@ -46,13 +46,15 @@ describe Domkey::View::RadioGroup do
     it 'set value attribute by default. value returns that value attribute' do
       @v.group.set 'tomato'
       @v.group.value.should eql ['tomato']
+      @v.group.set /^oth/
+      @v.group.value.should eql ['other']
     end
 
     it 'set array of value attribute. last value wins' do
       @v.group.set ['tomato']
       @v.group.value.should eql ['tomato']
 
-      @v.group.set ['other', 'tomato', 'cucumber']
+      @v.group.set ['other', 'tomato', /cucu/]
       @v.group.value.should eql ['cucumber']
     end
 
@@ -66,10 +68,12 @@ describe Domkey::View::RadioGroup do
       @v.group.value.should eql ['other']
     end
 
-    it 'one group example' do
-      @v.group.value.should eql ['other']
-      @v.group.set 'tomato'
-      @v.group.value.should eql ['tomato']
+    it 'set value string not found error' do
+      expect { @v.group.set 'foobar' }.to raise_error
+    end
+
+    it 'set value regexp not found error' do
+      expect { @v.group.set /balaba/ }.to raise_error
     end
 
     it 'options' do

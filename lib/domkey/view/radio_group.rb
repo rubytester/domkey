@@ -12,11 +12,15 @@ module Domkey
       # @param [String] match text in value attribute and set that radio
       def set value
         validate_scope
-        case value
-        when Array
-          value.each { |v| set v }
-        when String
-          element.find { |r| r.value.match(value) }.set
+        return unless value
+        [*value].each do |v|
+          e = case v
+              when String
+                element.find { |e| e.value == v }
+              when Regexp
+                element.find { |e| e.value.match(v) }
+              end
+          e ? e.set : fail(Exception::Error, "RadioGroup value not found: #{v.inspect}")
         end
       end
 
