@@ -25,7 +25,8 @@ module Domkey
 
       def options
         return __send__(@options_method) if respond_to?(@options_method, true)
-        @object.options
+        opts = @object.options
+        opts.count == 0 ? [] : opts
       end
 
       private

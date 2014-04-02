@@ -73,7 +73,8 @@ module Domkey
       end
 
       def options
-        watir_widget.options
+        return watir_widget.options unless package.respond_to?(:each_pair)
+        Hash[package.map { |key, pageobject| [key, pageobject.options] }]
       end
 
       private

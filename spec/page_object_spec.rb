@@ -32,6 +32,7 @@ describe Domkey::View::PageObject do
       # talk to browser
       street.set 'Lamar'
       street.value.should eql 'Lamar'
+      street.options.should be_empty # by default options are empty
     end
 
     it 'package is pageobject' do
@@ -49,6 +50,7 @@ describe Domkey::View::PageObject do
       # talk to browser
       street.set 'zooom' #sending string here so no hash like in composed object
       street.value.should eql 'zooom'
+      street.options.should be_empty
     end
 
     it 'package is proc hash where values are packages' do
@@ -67,6 +69,7 @@ describe Domkey::View::PageObject do
         v.should be_kind_of(Watir::TextField) #resolve suitecase
       end
 
+      address.options.should eql({:street1=>[], :city=>[]})
     end
 
     it 'package is hash where values are packages' do
@@ -120,6 +123,8 @@ describe Domkey::View::PageObject do
       e    = lambda { text_field(class: 'city') }
       city = Domkey::View::PageObject.new e, container
       city.set 'Hellocontainer'
+      city.value.should eql 'Hellocontainer'
+      city.options.should be_empty
 
       #verify
       Domkey.browser.div(:id, 'container').text_field(:class, 'city').value.should == 'Hellocontainer'
