@@ -36,6 +36,16 @@ module Domkey
         end
 
       end
+
+      class Radio < Dispatcher
+
+        # because radio.set does not take args
+        def set value
+          original.set
+        end
+      end
+
+
     end
   end
 end
