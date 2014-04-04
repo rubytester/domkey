@@ -30,9 +30,15 @@ module Domkey
       end
 
 
-      def value
+      def value value=:default
         validate_scope
-        find_all { |e| e.element.set? }.map { |e| e.value }
+        result = []
+        each_with_index do |e, i|
+          if e.element.set?
+            result << {value: e.value, label: to_labeled.value.first, index: i}
+          end
+        end
+        result
       end
 
       def options

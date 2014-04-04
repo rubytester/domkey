@@ -38,7 +38,7 @@ describe Domkey::View::CheckboxGroup do
     end
 
     it 'initial value on test page' do
-      @v.group.value.should eql ['other']
+      @v.group.value.should eql [value: 'other', index: 2, label: 'Other']
     end
 
     it 'set string' do
@@ -94,7 +94,7 @@ describe Domkey::View::CheckboxGroup do
 
     it 'set by label regexp' do
       @v.group.set label: /umberama/
-      @v.group.value.should eql ['cucumber']
+      puts @v.group.value [:index, :value, :text, :label] #         .should eql ['cucumber']
     end
 
 

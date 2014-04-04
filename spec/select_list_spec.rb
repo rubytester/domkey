@@ -27,8 +27,12 @@ describe Domkey::View::SelectList do
       goto_html("test.html")
     end
 
-    xit 'initial value on the test page' do
+    it 'initial value on the test page' do
       @widget.value.should eql ["English", "Norwegian"]
+    end
+
+    it 'initial value by keys on the test page' do
+      @widget.value([:index, :text, :value]).should eql [{:index=>1, :text=>"English", :value=>"2"}, {:index=>2, :text=>"Norwegian", :value=>"3"}]
     end
 
     it 'set string' do
@@ -99,11 +103,11 @@ describe Domkey::View::SelectList do
     end
 
     it 'options' do
-      @widget.options.should eql [{:text=>"Danish", :value=>"1"},
-                                  {:text=>"English", :value=>"2"},
-                                  {:text=>"Norwegian", :value=>"3"},
-                                  {:text=>"Polish", :value=>""},
-                                  {:text=>"Swedish", :value=>"Swedish"}]
+      @widget.options.should eql [{:text=>"Danish", :value=>"1", :index=>0},
+                                  {:text=>"English", :value=>"2", :index=>1},
+                                  {:text=>"Norwegian", :value=>"3", :index=>2},
+                                  {:text=>"Polish", :value=>"", :index=>3},
+                                  {:text=>"Swedish", :value=>"Swedish", :index=>4}]
     end
 
     context "Single" do
@@ -117,16 +121,18 @@ describe Domkey::View::SelectList do
         goto_html("test.html")
       end
 
-      it 'initial value on the test page visible text to the user' do
+      it 'initial value is text visible to the user' do
         @widget.value.should eql ['Default']
       end
 
-      it 'set string selects visible text. value is visible text to the user' do
-        # option text
-        @widget.set 'Tomato'
-        @widget.value.should eql ['Tomato'] # not value attribute, visible text [text, label]
+      it 'value keys' do
+        @widget.value([:index, :value, :text]).should eql [{index: 3, value: 'Default', text: 'Default'}]
+      end
 
-        # option label attribute text
+      it 'set string selects visible text. value is visible text to the user' do
+        @widget.set 'Tomato'
+        @widget.value.should eql ['Tomato']
+
         @widget.set 'Other'
         @widget.value.should eql ['Other']
       end
@@ -179,10 +185,14 @@ describe Domkey::View::SelectList do
       end
 
       it 'options' do
-        @widget.options.should eql [{:text=>"Tomato", :value=>"tomato"},
-                                    {:text=>"Cucumber", :value=>"gurken"},
-                                    {:text=>"Other", :value=>""},
-                                    {:text=>"Default", :value=>"Default"}]
+
+        expected = [{:text=>"Tomato", :value=>"tomato", :index=>0},
+                    {:text=>"Cucumber", :value=>"gurken", :index=>1},
+                    {:text=>"Other", :value=>"", :index=>2},
+                    {:text=>"Default", :value=>"Default", :index=>3}]
+
+        @widget.options.should eql(expected)
+
       end
 
     end
