@@ -1,5 +1,6 @@
-require 'domkey/view/widgetry_package'
-require 'domkey/view/watir_widget'
+require 'domkey/view/widgetry/package'
+require 'domkey/view/widgetry/dispatcher'
+require 'domkey/view/widgetry/select'
 
 module Domkey
 
@@ -52,13 +53,13 @@ module Domkey
     class PageObject
 
       # @api private
-      include WidgetryPackage
+      include Widgetry::Package
 
       # Each Semantic PageObject defines what value means for itself
       # @param [SemanticValue] Delegated to WebdriverElement and we expect it to respond to set
       # @parma [Hash{Symbol => SemanticValue}]
       def set value
-        return watir_widget.set value unless value.respond_to?(:each_pair)
+        return widgetry_dispatcher.set value unless value.respond_to?(:each_pair)
         value.each_pair { |k, v| package.fetch(k).set(v) }
       end
 
@@ -68,22 +69,22 @@ module Domkey
       # @return [SemanticValue] delegated to WebdriverElement and we expect it to respond to value message
       # @return [Hash{Symbol => SemanticValue}]
       def value
-        return watir_widget.value unless package.respond_to?(:each_pair)
+        return widgetry_dispatcher.value unless package.respond_to?(:each_pair)
         Hash[package.map { |key, pageobject| [key, pageobject.value] }]
       end
 
       def options
-        return watir_widget.options unless package.respond_to?(:each_pair)
+        return widgetry_dispatcher.options unless package.respond_to?(:each_pair)
         Hash[package.map { |key, pageobject| [key, pageobject.options] }]
       end
 
       private
 
-      # wrap instantiator with strategy for setting and getting value for watir object
+      # wrap instantiator with strategy for setting and getting value for underlying object
       # expects that element to respond to set and value
-      # @returns [WatirWidget]
-      def watir_widget
-        WatirWidget.new(instantiator)
+      # @returns [Widgetry::Dispatcher] that responds to set, value, options
+      def widgetry_dispatcher
+        Widgetry.dispatcher(instantiator)
       end
 
       # @api private

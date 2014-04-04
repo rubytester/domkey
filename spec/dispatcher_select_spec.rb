@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe Domkey::View::WatirWidget do
+describe Domkey::View::Widgetry::Dispatcher do
 
-  context Watir::Select do
+  context Domkey::View::Widgetry::Select do
 
     context "Multi" do
 
       before :all do
         @object = Domkey.browser.select(id: 'multiselect')
-        @widget = Domkey::View::WatirWidget.new(@object)
+        @widget = Domkey::View::Widgetry.dispatcher(@object)
       end
 
       before :each do
@@ -94,7 +94,7 @@ describe Domkey::View::WatirWidget do
 
       before :all do
         object  = Domkey.browser.select(id: 'fruit_list')
-        @widget = Domkey::View::WatirWidget.new(object)
+        @widget = Domkey::View::Widgetry.dispatcher(object)
       end
 
       before :each do
