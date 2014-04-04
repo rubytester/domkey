@@ -16,28 +16,28 @@ module Domkey
       # @param [False] uncheck any checked checkboxes
       def set value
         validate_scope
-        element.each { |e| e.clear }
+        each { |o| o.set false }
         return unless value
         [*value].each do |v|
-          e = case v
+          o = case v
               when String
-                element.find { |e| e.value == v }
+                find { |o| o.value == v }
               when Regexp
-                element.find { |e| e.value.match(v) }
+                find { |o| o.value.match(v) }
               end
-          e ? e.set : fail(Exception::Error, "Checkbox to be set not found by value: #{v.inspect}")
+          o ? o.element.set : fail(Exception::Error, "Checkbox to be set not found by value: #{v.inspect}")
         end
       end
 
       # @return [Array<String>] value attributes of each checked checkbox
       def value
         validate_scope
-        element.find_all { |e| e.set? }.map { |e| e.value }
+        find_all { |e| e.element.set? }.map { |e| e.value }
       end
 
       def options
         validate_scope
-        element.map { |e| e.value }
+        map { |e| e.value }
       end
 
       # convert to LabeledGroup settable by corresponding label text

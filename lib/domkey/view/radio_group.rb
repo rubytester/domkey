@@ -14,25 +14,25 @@ module Domkey
         validate_scope
         return unless value
         [*value].each do |v|
-          e = case v
+          o = case v
               when String
-                element.find { |e| e.value == v }
+                find { |e| e.value == v }
               when Regexp
-                element.find { |e| e.value.match(v) }
+                find { |e| e.value.match(v) }
               end
-          e ? e.set : fail(Exception::Error, "RadioGroup value not found: #{v.inspect}")
+          o ? o.element.set : fail(Exception::Error, "RadioGroup value not found: #{v.inspect}")
         end
       end
 
       # @return [String] text in value attribute of currently set
       def value
         validate_scope
-        element.find_all { |r| r.set? }.map { |e| e.value }
+        find_all { |o| o.element.set? }.map { |e| e.value }
       end
 
       def options
         validate_scope
-        element.map { |e| e.value }
+        map { |e| e.value }
       end
 
       # convert to LabeledGroup settable by corresponding label text
