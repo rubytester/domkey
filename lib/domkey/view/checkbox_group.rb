@@ -1,4 +1,6 @@
 require 'domkey/view/labeled_group'
+require 'domkey/view/option_selectable'
+
 module Domkey
 
   module View
@@ -10,26 +12,34 @@ module Domkey
     # It can none, one or more options selected
     class CheckboxGroup < PageObjectCollection
 
-      # clears all options and sets only the desired value(s)
-      # @param [String, Regexp] find value attribute or match value and set that checkbox
-      # @param [Array<String, Regexp>] find each value attribute and set each checkbox
-      # @param [False] uncheck any checked checkboxes
-      def set value
+      include OptionSelectable
+
+      def before_set
         validate_scope
         each { |o| o.set false }
-        return unless value
-        [*value].each do |v|
-          o = case v
-              when String
-                find { |o| o.value == v }
-              when Regexp
-                find { |o| o.value.match(v) }
-              end
-          o ? o.element.set : fail(Exception::Error, "Checkbox to be set not found by value: #{v.inspect}")
+      end
+
+      def set_by_index value
+        [*value].each do |i|
+          self[i.to_i].set(true)
         end
       end
 
-      # @return [Array<String>] value attributes of each checked checkbox
+      def set_by_label value
+        to_labeled.__send__(:set_strategy, value)
+      end
+
+      def set_by_regexp value
+        o = find { |o| o.value.match(value) }
+        o ? o.element.set : fail(Exception::Error, "Checkbox to be set not found by value: #{v.inspect}")
+      end
+
+      def set_by_string value
+        o = find { |o| o.value == value }
+        o ? o.element.set : fail(Exception::Error, "Checkbox to be set not found by value: #{v.inspect}")
+      end
+
+
       def value
         validate_scope
         find_all { |e| e.element.set? }.map { |e| e.value }

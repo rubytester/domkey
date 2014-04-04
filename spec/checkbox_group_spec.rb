@@ -74,6 +74,32 @@ describe Domkey::View::CheckboxGroup do
       expect { @v.group.set /balaba/ }.to raise_error
     end
 
+    it 'set by index single' do
+      @v.group.set index: 1
+      @v.group.value.should eql ['tomato']
+    end
+
+    it 'set by index array' do
+      @v.group.set index: [0, 2, 1]
+      @v.group.value.should eql ['cucumber', 'tomato', 'other']
+    end
+
+    it 'set by label string' do
+      @v.group.set label: 'Tomatorama'
+      @v.group.value.should eql ['tomato']
+    end
+
+    it 'set by label regexp' do
+      @v.group.set label: /umberama/
+      @v.group.value.should eql ['cucumber']
+    end
+
+
+    it 'set by index array string, regex' do
+      @v.group.set label: ['Cucumberama', /atorama/]
+      @v.group.value.should eql ['cucumber', 'tomato']
+    end
+
     it 'options' do
       @v.group.options.should eql ["cucumber", "tomato", "other"]
     end
