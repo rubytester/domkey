@@ -2,6 +2,13 @@ module Domkey
   module View
     module Widgetry
 
+      class Radio < Dispatcher
+
+        def set value
+          original.set
+        end
+      end
+
       # Dispatcher for Watir::Select object
       class Select < Dispatcher
 

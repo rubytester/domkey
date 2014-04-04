@@ -43,9 +43,12 @@ describe Domkey::View::RadioGroup do
       @v.group.value.should eql ['other']
     end
 
-    it 'set value attribute by default. value returns that value attribute' do
+    it 'set string' do
       @v.group.set 'tomato'
       @v.group.value.should eql ['tomato']
+    end
+
+    it 'set regexp' do
       @v.group.set /^oth/
       @v.group.value.should eql ['other']
     end
@@ -58,12 +61,12 @@ describe Domkey::View::RadioGroup do
       @v.group.value.should eql ['cucumber']
     end
 
-    it 'set false has no effect. value is initial value on the page' do
+    it 'set false has no effect' do
       @v.group.set false
       @v.group.value.should eql ['other']
     end
 
-    it 'set empty array clears all. value is empty array' do
+    it 'set empty array has no effect' do
       @v.group.set []
       @v.group.value.should eql ['other']
     end
@@ -74,6 +77,33 @@ describe Domkey::View::RadioGroup do
 
     it 'set value regexp not found error' do
       expect { @v.group.set /balaba/ }.to raise_error
+    end
+
+
+    it 'set by index single' do
+      @v.group.set index: 1
+      @v.group.value.should eql ['tomato']
+    end
+
+    it 'set by index array' do
+      @v.group.set index: [0, 2, 1]
+      @v.group.value.should eql ['tomato']
+    end
+
+    it 'set by label string' do
+      @v.group.set label: 'Tomato'
+      @v.group.value.should eql ['tomato']
+    end
+
+    it 'set by label regexp' do
+      @v.group.set label: /umber/
+      @v.group.value.should eql ['cucumber']
+    end
+
+
+    it 'set by index array string, regex' do
+      @v.group.set label: ['Cucumber', /mato/]
+      @v.group.value.should eql ['tomato']
     end
 
     it 'options' do
