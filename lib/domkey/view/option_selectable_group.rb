@@ -30,12 +30,28 @@ module Domkey
       end
 
 
-      def value value=:default
+      def value_by_default
+        validate_scope
+        find_all { |e| e.element.set? }.map { |e| e.value }
+      end
+
+      def value_by_options opts
         validate_scope
         result = []
         each_with_index do |e, i|
           if e.element.set?
-            result << {value: e.value, label: to_labeled.value.first, index: i}
+
+            v = opts.map do |o|
+              case o
+              when :index
+                [o, i]
+              when :label, :text
+                [o, to_labeled.value.first]
+              else
+                [o, e.send(o)]
+              end
+            end
+            result << Hash[v]
           end
         end
         result

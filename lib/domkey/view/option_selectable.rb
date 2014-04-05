@@ -13,7 +13,21 @@ module Domkey
         set_strategy value
       end
 
+      def value *opts
+        opts = opts.flatten
+        return value_by_default if (opts.empty? || opts.find { |e| e.kind_of?(String) })
+        value_by_options opts
+      end
+
       private
+
+      def value_by_default
+        fail Exception::NotImplementedError, "Subclass responsible for implementing"
+      end
+
+      def value_by_options options
+        fail Exception::NotImplementedError, "Subclass responsible for implementing"
+      end
 
       def before_set
         # hook. client can provide actions to be taken before setting this PageObject

@@ -32,7 +32,16 @@ describe Domkey::View::SelectList do
     end
 
     it 'initial value by keys on the test page' do
+      # array
       @widget.value([:index, :text, :value]).should eql [{:index=>1, :text=>"English", :value=>"2"}, {:index=>2, :text=>"Norwegian", :value=>"3"}]
+      # splat list
+      @widget.value(:index, :text).should eql [{:index=>1, :text=>"English"}, {:index=>2, :text=>"Norwegian"}]
+
+      # one element array
+      @widget.value([:index]).should eql [{:index=>1}, {:index=>2}]
+      # one elmenet splat list
+      @widget.value(:value).should eql [{:value=>"2"}, {:value=>"3"}]
+
     end
 
     it 'set string' do
@@ -78,6 +87,7 @@ describe Domkey::View::SelectList do
     it 'set index by option position' do
       @widget.set index: 1
       @widget.value.should eql ['English']
+      @widget.value(:index, :value).should eql [{index: 1, value: '2'}]
     end
 
     it 'set index array of option positions' do

@@ -41,11 +41,13 @@ describe Domkey::View::RadioGroup do
 
     it 'initial value on test page' do
       @v.group.value.should eql ['other']
+      @v.group.value(:index, :value, :label, :text).should eql [{:index=>2, :value=>"other", :label=>"Other", :text=>"Other"}]
     end
 
     it 'set string' do
       @v.group.set 'tomato'
       @v.group.value.should eql ['tomato']
+      @v.group.value(:value).should eql [{value: 'tomato'}]
     end
 
     it 'set regexp' do
@@ -59,6 +61,7 @@ describe Domkey::View::RadioGroup do
 
       @v.group.set ['other', 'tomato', /cucu/]
       @v.group.value.should eql ['cucumber']
+      @v.group.value([:index, :label]).should eql [{:index=>0, :label=>"Cucumber"}]
     end
 
     it 'set false has no effect' do
@@ -93,6 +96,7 @@ describe Domkey::View::RadioGroup do
     it 'set by label string' do
       @v.group.set label: 'Tomato'
       @v.group.value.should eql ['tomato']
+      @v.group.value(:text).should eql [{text: 'Tomato'}]
     end
 
     it 'set by label regexp' do

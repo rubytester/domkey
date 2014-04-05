@@ -35,14 +35,9 @@ module Domkey
         end
       end
 
-      # iffy
-      def value option=:default
-        return value_by_default if option == :default
+      def value_by_options opts
         element.selected_options.map do |o|
-          v = [*option].map do |opt|
-            [opt, o.send(opt)]
-          end
-          Hash[v]
+          Hash[opts.map { |opt| [opt, o.send(opt)] }]
         end
       end
 
