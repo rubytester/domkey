@@ -42,6 +42,9 @@ describe Domkey::View::RadioGroup do
     it 'initial value on test page' do
       @v.group.value.should eql ['other']
       @v.group.value(:index, :value, :label, :text).should eql [{:index=>2, :value=>"other", :label=>"Other", :text=>"Other"}]
+      @v.group.value([:index, :value, :label, :text]).should eql [{:index=>2, :value=>"other", :label=>"Other", :text=>"Other"}]
+      @v.group.value([:index]).should eql [{:index=>2}]
+      @v.group.value([:value]).should eql [{:value=>'other'}]
     end
 
     it 'set string' do
@@ -110,9 +113,30 @@ describe Domkey::View::RadioGroup do
       @v.group.value.should eql ['tomato']
     end
 
-    it 'options' do
+    it 'options by default' do
       @v.group.options.should eql ["cucumber", "tomato", "other"]
     end
+
+    it 'options by opts single' do
+      @v.group.options(:value).should eql [{:value=>"cucumber"}, {:value=>"tomato"}, {:value=>"other"}]
+      @v.group.options([:value]).should eql [{:value=>"cucumber"}, {:value=>"tomato"}, {:value=>"other"}]
+    end
+
+    it 'options by label' do
+      expected = [{:label=>"Cucumber"}, {:label=>"Tomato"}, {:label=>"Other"}]
+      @v.group.options(:label).should eql expected
+      @v.group.options([:label]).should eql expected
+    end
+
+    it 'options by opts many' do
+      expected = [{:value=>"cucumber", :index=>0, :label=>"Cucumber", :text=>"Cucumber"},
+                  {:value=>"tomato", :index=>1, :label=>"Tomato", :text=>"Tomato"},
+                  {:value=>"other", :index=>2, :label=>"Other", :text=>"Other"}]
+
+      @v.group.options(:value, :index, :label, :text).should eql expected
+      @v.group.options([:value, :index, :label, :text]).should eql expected
+    end
+
 
   end
 

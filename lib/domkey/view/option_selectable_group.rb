@@ -46,7 +46,7 @@ module Domkey
               when :index
                 [o, i]
               when :label, :text
-                [o, to_labeled.value.first]
+                [o, LabelMapper.find(e).element.text]
               else
                 [o, e.send(o)]
               end
@@ -57,11 +57,31 @@ module Domkey
         result
       end
 
-      def options
+      def options_by_default
         validate_scope
         map { |e| e.value }
       end
 
+      def options_by opts
+        validate_scope
+        result = []
+        each_with_index do |e, i|
+
+          v = opts.map do |o|
+            case o
+            when :index
+              [o, i]
+            when :label, :text
+              [o, LabelMapper.find(e).element.text]
+            else
+              [o, e.send(o)]
+            end
+          end
+          result << Hash[v]
+        end
+
+        result
+      end
 
       # convert to LabeledGroup settable by corresponding label text
       def to_labeled

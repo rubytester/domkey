@@ -13,13 +13,28 @@ module Domkey
         set_strategy value
       end
 
+      # @param [] opts. Represents a qualifier of what types of options to return. defaults to empty
+      # @return [Array<String>] when opts param emtpy returns array of default strings implemented by client
+      # @param [Symbol,Array<Symbol>] symbols represents what option selector to return
+      # @return [Array<Hash{what => value}] where what is a symbol for option selector, :index, :value, :text, :label
       def value *opts
         opts = opts.flatten
         return value_by_default if (opts.empty? || opts.find { |e| e.kind_of?(String) })
         value_by_options opts
       end
 
+      # similar strategy to value but returns all options and not only selected ones
+      def options *opts
+        opts = opts.flatten
+        return options_by_default if opts.empty?
+        options_by opts
+      end
+
       private
+
+      def options_by opts
+        fail Exception::NotImplementedError, "Subclass responsible for implementing"
+      end
 
       def value_by_default
         fail Exception::NotImplementedError, "Subclass responsible for implementing"
