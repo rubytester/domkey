@@ -32,6 +32,10 @@ module Domkey
 
       private
 
+      def options_by_default
+        fail Exception::NotImplementedError, "Subclass responsible for implementing"
+      end
+
       def options_by opts
         fail Exception::NotImplementedError, "Subclass responsible for implementing"
       end
