@@ -16,10 +16,31 @@ module Domkey
         __setobj__(group)
       end
 
+      def before_set
+        __getobj__.set false
+      end
+
       # @param value [String] a label text to set a corresponding element referenced
       # @param value [Array<String>] one or more labels
       def set value
-        __getobj__.set false
+        before_set
+        set_strategy(value)
+      end
+
+      # @return [Array<String>] label texts for selected elements
+      def value
+        selected_ones = __getobj__.find_all { |e| e.element.set? }
+        LabelMapper.for(selected_ones).map { |e| e.element.text }
+      end
+
+      # @return [Array<String>] label texts for all elements in a group
+      def options
+        LabelMapper.for(__getobj__).map { |e| e.element.text }
+      end
+
+      private
+
+      def set_strategy value
         labels  = self.options
         indices = [*value].map do |what|
           i = case what
@@ -35,16 +56,6 @@ module Domkey
         end
       end
 
-      # @return [Array<String>] label texts for selected elements
-      def value
-        selected_ones = __getobj__.find_all { |e| e.element.set? }
-        LabelMapper.for(selected_ones).map { |e| e.element.text }
-      end
-
-      # @return [Array<String>] label texts for all elements in a group
-      def options
-        LabelMapper.for(__getobj__).map { |e| e.element.text }
-      end
     end
   end
 end

@@ -2,6 +2,7 @@ require 'domkey/view/page_object'
 require 'domkey/view/page_object_collection'
 require 'domkey/view/radio_group'
 require 'domkey/view/checkbox_group'
+require 'domkey/view/select_list'
 require 'domkey/view/cargo'
 
 module Domkey

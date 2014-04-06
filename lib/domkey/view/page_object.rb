@@ -1,6 +1,5 @@
 require 'domkey/view/widgetry/package'
 require 'domkey/view/widgetry/dispatcher'
-require 'domkey/view/widgetry/select'
 
 module Domkey
 
@@ -97,7 +96,7 @@ module Domkey
             begin
               # peek inside suitcase that is proc. XXX ouch, ugly
               peeked_inside = package.call
-            rescue NoMethodError
+            rescue StandardError
               return package #suitecase exploded, proc returned
             end
             if peeked_inside.respond_to?(:each_pair) # hash
