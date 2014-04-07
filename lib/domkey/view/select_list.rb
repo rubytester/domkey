@@ -7,32 +7,19 @@ module Domkey
 
       include OptionSelectable
 
-      def set_by_string value
-        element.select value
-      end
-
-      def set_by_regexp value
-        element.select value
-      end
-
+      # by position in options array
       def set_by_index value
-        case value
-        when Fixnum
-          element.options[value].select
-        when Array
-          value.each do |i|
-            element.options[i].select
-          end
-        end
+        [*value].each { |i| element.options[i].select }
       end
 
+      # by value attribute of the option
       def set_by_value value
-        case value
-        when String
-          element.select_value value
-        when Array
-          value.each { |v| element.select_value v }
-        end
+        [*value].each { |v| element.select_value(v) }
+      end
+
+      # by visible text for the option (visible to the user)
+      def set_by_label value
+        [*value].each { |v| element.select(v) }
       end
 
       def value_by_options opts
@@ -42,20 +29,19 @@ module Domkey
       end
 
       def value_by_default
-        element.selected_options.map { |e| e.text }
+        element.selected_options.map { |e| e.value }
       end
 
-      # iffy
-      def options
+      def options_by_default
+        element.options.map { |e| e.value }
+      end
+
+      def options_by opts
         element.options.map do |o|
-          {text:  o.text,
-           value: o.value,
-           index: o.index}
+          Hash[opts.map { |opt| [opt, o.send(opt)] }]
         end
       end
 
-
-      private
 
       def before_set
         element.clear if element.multiple?

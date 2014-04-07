@@ -10,25 +10,24 @@ module Domkey
       include OptionSelectable
 
       def set_by_index value
-        [*value].each do |i|
-          self[i.to_i].set(true)
-        end
+        [*value].each { |i| self[i.to_i].set(true) }
       end
 
       def set_by_label value
         to_labeled.__send__(:set_strategy, value)
       end
 
-      def set_by_regexp value
-        o = find { |o| o.value.match(value) }
+      def set_by_value value
+        o = case value
+            when String
+              find { |o| o.value == value }
+            when Regexp
+              find { |o| o.value.match(value) }
+            else
+              false
+            end
         o ? o.element.set : fail(Exception::NotFoundError, "Element not found with value: #{v.inspect}")
       end
-
-      def set_by_string value
-        o = find { |o| o.value == value }
-        o ? o.element.set : fail(Exception::NotFoundError, "Element not found with value: #{v.inspect}")
-      end
-
 
       def value_by_default
         validate_scope
