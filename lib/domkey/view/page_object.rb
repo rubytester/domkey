@@ -77,6 +77,23 @@ module Domkey
         Hash[package.map { |key, pageobject| [key, pageobject.options] }]
       end
 
+
+      # @api private
+      # delegate to element when element responds to message
+      def method_missing(message, *args, &block)
+        if respond_to_missing?(message, false)
+          element.__send__(message, *args, &block)
+        else
+          super
+        end
+      end
+
+      # @api private
+      # ruturn true when element.respond_to? message so we can delegate with confidence
+      def respond_to_missing?(message, include_private = false)
+        element.respond_to?(message) ? true : false
+      end
+
       private
 
       # wrap instantiator with strategy for setting and getting value for underlying object
