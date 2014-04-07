@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Domkey::View::Cargo do
+describe Domkey::View::Binder do
 
   class AddressView
     include Domkey::View
@@ -43,9 +43,9 @@ describe Domkey::View::Cargo do
     model = {city:   'Austin',
              street: 'Lamar'}
 
-    cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
-    cargo.set
-    extracted = cargo.value
+    binder = Domkey::View::Binder.new model: model, view: AddressView.new
+    binder.set
+    extracted = binder.value
     extracted.should eql model
   end
 
@@ -56,9 +56,9 @@ describe Domkey::View::Cargo do
                         street: 'Austin'}
     }
 
-    cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
-    cargo.set
-    extracted = cargo.value
+    binder = Domkey::View::Binder.new model: model, view: AddressView.new
+    binder.set
+    extracted = binder.value
     extracted.should eql model
   end
 
@@ -71,19 +71,19 @@ describe Domkey::View::Cargo do
                         delivery_date: {month: 'delivery thing'}}
     }
 
-    cargo = Domkey::View::Cargo.new model: model, view: AddressView.new
-    cargo.set
-    extracted = cargo.value
+    binder = Domkey::View::Binder.new model: model, view: AddressView.new
+    binder.set
+    extracted = binder.value
     extracted.should eql model
   end
 
-  it 'cargo' do
+  it 'binder' do
     model = {city: 'Mordor'}
 
     view  = AddressView.new
-    cargo = Domkey::View::Cargo.new view: view, model: model
-    cargo.set
-    scraped_model = cargo.value
+    binder = Domkey::View::Binder.new view: view, model: model
+    binder.set
+    scraped_model = binder.value
 
     scraped_model.should eql model
   end
@@ -91,14 +91,14 @@ describe Domkey::View::Cargo do
   it 'pageobject' do
 
     model               = {city: 'Austin', fruit: ['tomato', 'other']}
-    cargo               = AddressView.cargo model
+    binder               = AddressView.binder model
 
     # default values when page loads before setting the values
     default_page_values = {:city=>"id city class city", :fruit=>["other"]}
-    cargo.value.should eql default_page_values
-    cargo.set
+    binder.value.should eql default_page_values
+    binder.set
 
-    extracted_model = cargo.value
+    extracted_model = binder.value
     extracted_model.should eql model
 
   end

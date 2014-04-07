@@ -3,7 +3,7 @@ require 'domkey/view/page_object_collection'
 require 'domkey/view/radio_group'
 require 'domkey/view/checkbox_group'
 require 'domkey/view/select_list'
-require 'domkey/view/cargo'
+require 'domkey/view/binder'
 
 module Domkey
 
@@ -25,10 +25,10 @@ module Domkey
         end
       end
 
-      # build Cargo with model and view
-      # @return [Domkey::View::Cargo]
-      def cargo model, browser: nil
-        Cargo.new model: model, view: self.new(browser)
+      # build Binder with model and view
+      # @return [Domkey::View::Binder]
+      def binder model, browser: nil
+        Binder.new model: model, view: self.new(browser)
       end
 
     end
@@ -52,7 +52,7 @@ module Domkey
     end
 
     def set value
-      Cargo.new(model: value, view: self).set
+      Binder.new(model: value, view: self).set
     end
 
     # @param [Hash{Symbol => Object}] view data where Symbol is semantic descriptor for a pageobject in the view
@@ -71,7 +71,7 @@ module Domkey
               when Hash
                 value
               end
-      Cargo.new(model: value, view: self).value
+      Binder.new(model: value, view: self).value
     end
 
   end

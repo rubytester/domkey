@@ -2,11 +2,11 @@ module Domkey
 
   module View
 
-    # Data shipping between Model and View
+    # Data transfer facilitator for the view
     # Sends data to view. Grabs data from view
-    #
-    # For specialized transfer object a client would sublcass this Cargo,
-    # by default View.cargo factory method is provided for regular data transfer object
+    # Data is a model of the view
+    # For specialized transfer object a client would sublcass this Binder,
+    # by default View.binder factory method is provided for regular data transfer object
     #
     # @usage
     #
@@ -20,21 +20,21 @@ module Domkey
     #        end
     #      end
     #
-    #      model      = {city: 'Austin', fruit: 'tomato'}
-    #      cargo = MyView.cargo model
-    #      cargo.set #=> sets view.city with model[:city] and view.fruit with model[:fruit]
-    #      cargo.value #=> returns {city: 'Austing', fruit: 'tomato'}
+    #      model  = {city: 'Austin', fruit: 'tomato'}
+    #      binder = MyView.binder model
+    #      binder.set #=> sets view.city with model[:city] and view.fruit with view_model[:fruit]
+    #      binder.value #=> returns {city: 'Austing', fruit: 'tomato'}
     #
-    #      class MyCargo < Domkey::View::Cargo
+    #      class MyBinder < Domkey::View::Binder
     #
     #      end
     #
     #      model = {city: 'Mordor'}
     #      view  = MyView.new
-    #      cargo = MyCargo.new view: view, model: model
-    #      cargo.set
+    #      binder = MyBinder.new view: view, model: model
+    #      binder.set
     #
-    class Cargo
+    class Binder
 
       attr_accessor :view, :model
 
