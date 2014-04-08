@@ -116,16 +116,16 @@ module Domkey
             rescue StandardError
               return package #suitecase exploded, proc returned
             end
-            if peeked_inside.respond_to?(:each_pair) # hash
+            if peeked_inside.kind_of?(Hash)
               return initialize_this peeked_inside
-            elsif peeked_inside.respond_to?(:wd) # watir element
+            elsif peeked_inside.kind_of?(Watir::Container)
               return lambda { peeked_inside }
-            elsif peeked_inside.respond_to?(:package) #pageobject
+            elsif peeked_inside.kind_of?(PageObject)
               return peeked_inside.package
             else
               fail Exception::Error, "package must be kind of hash, watirelement or pageobject but I got this: #{package}"
             end
-          elsif package.respond_to?(:package) #pageobject
+          elsif package.respond_to?(:package, true) #pageobject
             return package.package
           else
             fail Exception::Error, "package must be kind of hash, watirelement or pageobject but I got this: #{package}"
