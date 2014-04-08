@@ -81,7 +81,7 @@ module Domkey
       # @api private
       # delegate to element when element responds to message
       def method_missing(message, *args, &block)
-        if respond_to_missing?(message, false)
+        if element.respond_to?(message)
           element.__send__(message, *args, &block)
         else
           super
@@ -91,7 +91,7 @@ module Domkey
       # @api private
       # ruturn true when element.respond_to? message so we can delegate with confidence
       def respond_to_missing?(message, include_private = false)
-        element.respond_to?(message) ? true : false
+        element.respond_to?(message) || super
       end
 
       private
