@@ -67,10 +67,20 @@ describe Domkey::View::RadioGroup do
       @v.group.value([:index, :label]).should eql [{:index=>0, :label=>"Cucumber"}]
     end
 
-    it 'set false has no effect' do
+    it 'set false noop' do
       @v.group.set false
       @v.group.value.should eql ['other']
     end
+
+    it 'set true noop' do
+      @v.group.set false
+      @v.group.value.should eql ['other']
+    end
+
+    it 'set by not implemented symbol errors' do
+      expect { @v.group.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
+    end
+
 
     it 'set empty array has no effect' do
       @v.group.set []

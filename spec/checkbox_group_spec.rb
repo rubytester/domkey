@@ -35,11 +35,8 @@ describe Domkey::View::CheckboxGroup do
       @v = CollectionAsPageObjectCheckboxGroupView.new
       @v.group.count.should == 3
       @v.group.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
-    end
-
-    it 'initial value on test page' do
-      @v.group.value.should eql ['other']
-      @v.group.value(:value, :index, :label).should eql [value: 'other', index: 2, label: 'Other']
+      # clear all selections first
+      @v.group.set false
     end
 
     it 'set string' do
@@ -50,6 +47,19 @@ describe Domkey::View::CheckboxGroup do
     it 'set regexp' do
       @v.group.set /^othe/
       @v.group.value.should eql ['other']
+    end
+
+    it 'set by not implemented symbol' do
+      expect { @v.group.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
+    end
+
+    it 'set appends by defulat' do
+      @v.group.set 'tomato'
+      @v.group.value.should eql ['tomato']
+      @v.group.set 'other'
+      @v.group.value.should eql ['tomato', 'other']
+      @v.group.set false
+      @v.group.value.should eql []
     end
 
     it 'set array of strings or regexp' do

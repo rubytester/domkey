@@ -13,9 +13,15 @@ module Domkey
 
       private
 
-      def before_set
-        validate_scope
+      def set_by_symbol value
+        case value
+        when FalseClass, TrueClass
+          return #noop
+        else
+          fail(Exception::NotImplementedError, "Unknown way of setting by value: #{value.inspect}")
+        end
       end
+
     end
   end
 end

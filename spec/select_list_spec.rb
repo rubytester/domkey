@@ -25,13 +25,12 @@ describe Domkey::View::SelectList do
 
     before :each do
       goto_html("test.html")
+      @widget.set false
     end
 
-    it 'initial value on the test page' do
+    it 'initial example' do
+      @widget.set ["2", "3"]
       @widget.value.should eql ["2", "3"]
-    end
-
-    it 'initial value by keys on the test page' do
       # array
       @widget.value([:index, :text, :value]).should eql [{:index=>1, :text=>"English", :value=>"2"}, {:index=>2, :text=>"Norwegian", :value=>"3"}]
       # splat list
@@ -105,6 +104,10 @@ describe Domkey::View::SelectList do
                   text:  'Swedish',
                   index: 3
       @widget.value.should eql ["1", "2", "", "Swedish"]
+    end
+
+    it 'set by symbol' do
+      expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'options by default' do

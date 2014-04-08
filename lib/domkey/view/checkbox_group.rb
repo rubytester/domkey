@@ -13,11 +13,15 @@ module Domkey
 
       private
 
-      # @api private
-      # unselects all checkboxes before setting it with desired value
-      def before_set
-        validate_scope
-        each { |o| o.set false }
+      def set_by_symbol value
+        case value
+        when FalseClass
+          each { |o| o.set false }
+        when TrueClass
+          return #noop
+        else
+          fail(Exception::NotImplementedError, "Unknown way of setting by value: #{value.inspect}")
+        end
       end
     end
   end

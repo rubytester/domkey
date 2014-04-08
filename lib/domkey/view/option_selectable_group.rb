@@ -9,6 +9,10 @@ module Domkey
 
       include OptionSelectable
 
+      def before_set
+        validate_scope
+      end
+
       def set_by_index value
         [*value].each { |i| self[i.to_i].set(true) }
       end
@@ -23,10 +27,8 @@ module Domkey
               find { |o| o.value == value }
             when Regexp
               find { |o| o.value.match(value) }
-            else
-              false
             end
-        o ? o.element.set : fail(Exception::NotFoundError, "Element not found with value: #{v.inspect}")
+        o ? o.element.set : fail(Exception::NotFoundError, "Element not found with value: #{value.inspect}")
       end
 
       def value_by_default

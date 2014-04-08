@@ -17,6 +17,15 @@ describe Domkey::View::OptionSelectable do
       @widget.set('fake')
     end
 
+    it 'set by symbol' do
+      expect(@widget).to receive(:set_by_symbol)
+      @widget.set :hello_world
+    end
+
+    it 'set by not implemented strategy' do
+      expect { @widget.set Object.new }.to raise_error(Domkey::Exception::NotImplementedError)
+    end
+
     it 'set regex' do
       expect(@widget).to receive(:set_by_value)
       @widget.set(/fake/)
@@ -64,6 +73,10 @@ describe Domkey::View::OptionSelectable do
 
     it ':value' do
       expect { @widget.set(:value => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
+    end
+
+    it ':symbol' do
+      expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
   end

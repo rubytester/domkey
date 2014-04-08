@@ -55,6 +55,8 @@ module Domkey
       # strategy for selecting OptionSelectable object
       def set_strategy value
         case value
+        when TrueClass, FalseClass, Symbol
+          set_by_symbol(value)
         when String, Regexp
           set_by_value(value)
         when Array
@@ -70,7 +72,14 @@ module Domkey
               set_by_value(value)
             end
           end
+        else
+          fail(Exception::NotImplementedError, "Unable to be set by this value: #{value.inspect}")
         end
+      end
+
+      # true, false, or some symbol identifier
+      def set_by_symbol value
+        fail Exception::NotImplementedError, "Subclass responsible for implementing"
       end
 
       # default strategy. set by value attribute

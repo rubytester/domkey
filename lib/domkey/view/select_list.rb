@@ -7,6 +7,8 @@ module Domkey
 
       include OptionSelectable
 
+      private
+
       # by position in options array
       def set_by_index value
         [*value].each { |i| element.options[i].select }
@@ -42,12 +44,16 @@ module Domkey
         end
       end
 
-
-      def before_set
-        element.clear if element.multiple?
+      def set_by_symbol value
+        case value
+        when FalseClass
+          element.clear if element.multiple?
+        when TrueClass
+          return #noop
+        else
+          fail(Exception::NotImplementedError, "Unknown way of setting by value: #{value.inspect}")
+        end
       end
-
-
     end
   end
 end
