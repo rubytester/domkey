@@ -45,6 +45,14 @@ module Domkey
         end
       end
 
+      class Select < Dispatcher
+
+        def set value
+          original.select value
+        end
+
+      end
+
 
     end
   end
