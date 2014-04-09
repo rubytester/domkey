@@ -27,8 +27,8 @@ module Domkey
 
       # build Binder with model and view
       # @return [Domkey::View::Binder]
-      def binder model, browser: nil
-        Binder.new model: model, view: self.new(browser)
+      def binder payload, browser: nil
+        Binder.new payload: payload, view: self.new(browser)
       end
 
     end
@@ -51,27 +51,27 @@ module Domkey
       @browser ||= Domkey.browser
     end
 
-    def set value
-      Binder.new(model: value, view: self).set
+    def set payload
+      Binder.new(payload: payload, view: self).set
     end
 
-    # @param [Hash{Symbol => Object}] view data where Symbol is semantic descriptor for a pageobject in the view
-    # @param [Symbol] for one pageobject
-    # @param [Array<Symbol>] for array of pageobjects
+    # @param [Hash{Symbol => Object}] view payload where Symbol is semantic descriptor for a pageobject in the view
+    # @param [Symbol] a semantic descriptor identifying a pageobject
+    # @param [Array<Symbol>] for array of semantic descriptors
     #
-    # @return [Hash{Symbol => Object}] data from the view
-    def value value
+    # @return [Hash{Symbol => Object}] payload from the view
+    def value payload
       # transform value into hash
-      value = case value
+      payload = case payload
               when Symbol
-                {value => nil}
+                {payload => nil}
               when Array
                 #array of symbols
-                Hash[value.map { |v| [v, nil] }]
+                Hash[payload.map { |v| [v, nil] }]
               when Hash
-                value
+                payload
               end
-      Binder.new(model: value, view: self).value
+      Binder.new(payload: payload, view: self).value
     end
 
   end

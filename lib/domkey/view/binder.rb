@@ -4,7 +4,7 @@ module Domkey
 
     # Data transfer facilitator for the view
     # Sends data to view. Grabs data from view
-    # Data is a model of the view
+    # Data is a payload of the view
     # For specialized transfer object a client would sublcass this Binder,
     # by default View.binder factory method is provided for regular data transfer object
     #
@@ -20,42 +20,42 @@ module Domkey
     #        end
     #      end
     #
-    #      model  = {city: 'Austin', fruit: 'tomato'}
-    #      binder = MyView.binder model
-    #      binder.set #=> sets view.city with model[:city] and view.fruit with view_model[:fruit]
-    #      binder.value #=> returns {city: 'Austing', fruit: 'tomato'}
+    #      payload = {city: 'Austin', fruit: 'tomato'}
+    #      binder  = MyView.binder payload
+    #      binder.set    #=> sets view.city with payload[:city] and view.fruit with payload[:fruit]
+    #      binder.value  #=> returns {city: 'Austing', fruit: 'tomato'}
     #
     #      class MyBinder < Domkey::View::Binder
     #
     #      end
     #
-    #      model = {city: 'Mordor'}
-    #      view  = MyView.new
-    #      binder = MyBinder.new view: view, model: model
+    #      payload = {city: 'Mordor'}
+    #      view    = MyView.new
+    #      binder  = MyBinder.new view: view, payload: payload
     #      binder.set
     #
     class Binder
 
-      attr_accessor :view, :model
+      attr_accessor :view, :payload
 
-      def initialize model: nil, view: nil
-        @model = model
-        @view  = view
+      def initialize payload: nil, view: nil
+        @payload = payload
+        @view    = view
       end
 
-      # set each pageobject in the view with the value from the model
+      # set each pageobject in the view with the value from the payload
       def set
-        @model.each_pair do |key, value|
+        @payload.each_pair do |key, value|
           set_pageobject key, value
         end
         self
       end
 
-      # extracts value for each pageobject identified by the model
-      # @returns [Model]
+      # extracts value for each pageobject identified by the payload
+      # @returns [Hash] payload
       def value
         extracted = {}
-        @model.each_pair do |key, value|
+        @payload.each_pair do |key, value|
           extracted[key] = value_for_pageobject(key, value)
         end
         extracted

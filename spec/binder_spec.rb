@@ -40,66 +40,66 @@ describe Domkey::View::Binder do
   end
 
   it 'view within pageobject' do
-    model = {city:   'Austin',
-             street: 'Lamar'}
+    payload = {city:   'Austin',
+               street: 'Lamar'}
 
-    binder = Domkey::View::Binder.new model: model, view: AddressView.new
+    binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
     binder.set
     extracted = binder.value
-    extracted.should eql model
+    extracted.should eql payload
   end
 
   it 'view within view' do
-    model = {city:     'Austin',
-             street:   'Lamar',
-             shipping: {city:   'Georgetown',
-                        street: 'Austin'}
+    payload = {city:     'Austin',
+               street:   'Lamar',
+               shipping: {city:   'Georgetown',
+                          street: 'Austin'}
     }
 
-    binder = Domkey::View::Binder.new model: model, view: AddressView.new
+    binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
     binder.set
     extracted = binder.value
-    extracted.should eql model
+    extracted.should eql payload
   end
 
   it 'view view view' do
-    model = {city:     'Austin',
-             street:   'Lamar',
-             shipping: {city:          'Georgetown',
-                        street:        'Austin',
-                        # this is view within a view within original view
-                        delivery_date: {month: 'delivery thing'}}
+    payload = {city:     'Austin',
+               street:   'Lamar',
+               shipping: {city:          'Georgetown',
+                          street:        'Austin',
+                          # this is view within a view within original view
+                          delivery_date: {month: 'delivery thing'}}
     }
 
-    binder = Domkey::View::Binder.new model: model, view: AddressView.new
+    binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
     binder.set
     extracted = binder.value
-    extracted.should eql model
+    extracted.should eql payload
   end
 
   it 'binder' do
-    model = {city: 'Mordor'}
+    payload = {city: 'Mordor'}
 
-    view  = AddressView.new
-    binder = Domkey::View::Binder.new view: view, model: model
+    view   = AddressView.new
+    binder = Domkey::View::Binder.new view: view, payload: payload
     binder.set
-    scraped_model = binder.value
+    scraped_payload = binder.value
 
-    scraped_model.should eql model
+    scraped_payload.should eql payload
   end
 
   it 'pageobject' do
 
-    model               = {city: 'Austin', fruit: ['tomato', 'other']}
-    binder               = AddressView.binder model
+    payload             = {city: 'Austin', fruit: ['tomato', 'other']}
+    binder              = AddressView.binder payload
 
     # default values when page loads before setting the values
     default_page_values = {:city=>"id city class city", :fruit=>["other"]}
     binder.value.should eql default_page_values
     binder.set
 
-    extracted_model = binder.value
-    extracted_model.should eql model
+    extracted_payload = binder.value
+    extracted_payload.should eql payload
 
   end
 

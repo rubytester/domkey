@@ -55,7 +55,7 @@ module Domkey
       include Widgetry::Package
 
       # Each Semantic PageObject defines what value means for itself
-      # @param [SemanticValue] Delegated to WebdriverElement and we expect it to respond to set
+      # @param [SemanticValue] Delegated to Watir::Element and we expect it to respond to set
       # @parma [Hash{Symbol => SemanticValue}]
       def set value
         return widgetry_dispatcher.set value unless value.respond_to?(:each_pair)
