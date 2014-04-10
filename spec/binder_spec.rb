@@ -14,6 +14,10 @@ describe Domkey::View::Binder do
       CheckboxGroup.new -> { checkboxes(name: 'fruit') }
     end
 
+    def shipping
+      ShippingWithHooksView.new
+    end
+
 
     class Binder < Domkey::View::Binder
 
@@ -26,6 +30,25 @@ describe Domkey::View::Binder do
       end
 
     end
+  end
+
+  class ShippingWithHooksView
+    include Domkey::View
+    dom(:city) { text_field(id: 'city2') }
+    dom(:street) { text_field(id: 'street2') }
+
+    class Binder < Domkey::View::Binder
+
+      def before_city
+
+      end
+
+      def before_street
+
+      end
+
+    end
+
   end
 
 
@@ -148,6 +171,25 @@ describe Domkey::View::Binder do
       gb.should be_kind_of(Domkey::View::Binder)
       gb.should_not respond_to(:before_city)
     end
+
+    it 'binder set calls before and after hooks' do
+      payload = {city: 'Austin', fruit: []}
+
+      binder = WithHooksView.binder payload
+      binder.should_receive(:before_city).with(no_args).once
+      binder.should_receive(:after_city).with(no_args).once
+      binder.set
+    end
+
+    it 'binder descriptor is a view' do
+      payload = {shipping: {street: 'foo'}}
+      view    = WithHooksView.new
+
+      ShippingWithHooksView::Binder.any_instance.should_receive(:before_street)
+      ShippingWithHooksView::Binder.any_instance.should_not_receive(:before_city)
+      view.set payload
+    end
+
 
   end
 end
