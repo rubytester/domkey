@@ -2,6 +2,33 @@ require 'spec_helper'
 
 describe Domkey::View::Binder do
 
+  class WithHooksView
+
+    include Domkey::View
+
+    dom(:city) { text_field(id: 'city1') }
+
+
+    # target of before and after
+    def fruit
+      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
+    end
+
+
+    class Binder < Domkey::View::Binder
+
+      def before_city
+
+      end
+
+      def after_city
+
+      end
+
+    end
+  end
+
+
   class AddressView
     include Domkey::View
     dom(:city) { text_field(id: 'city1') }
@@ -103,4 +130,24 @@ describe Domkey::View::Binder do
 
   end
 
+  context 'Specialized Binder for a View' do
+
+    it 'if view has Binder class then binder factory uses it' do
+      payload = {city: 'Austin'}
+
+      sb = WithHooksView.binder payload
+      sb.should be_kind_of(WithHooksView::Binder)
+      sb.should respond_to(:before_city)
+      sb.should respond_to(:after_city)
+    end
+
+    it 'view uses generic binder' do
+      payload = {city: 'Austin'}
+
+      gb = AddressView.binder payload
+      gb.should be_kind_of(Domkey::View::Binder)
+      gb.should_not respond_to(:before_city)
+    end
+
+  end
 end
