@@ -46,10 +46,10 @@ module Domkey
       # set each pageobject in the view with the value from the payload
       def set
         @payload.each_pair do |key, value|
-          before, after = "before_#{key}", "after_#{key}"
-          __send__(before.to_sym) if respond_to?(before)
-          set_pageobject key, value
-          __send__(after.to_sym) if respond_to?(after)
+          b, s, a = "before_#{key}".to_sym, "set_#{key}".to_sym, "after_#{key}".to_sym
+          __send__(b) if respond_to?(b)
+          respond_to?(s) ? __send__(s) : set_pageobject(key, value)
+          __send__(a) if respond_to?(a)
         end
         self
       end
