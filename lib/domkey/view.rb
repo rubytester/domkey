@@ -27,8 +27,10 @@ module Domkey
 
       # build Binder with model and view
       # @return [Domkey::View::Binder]
+      # @return [Self::Binder] if Binder defined for the View Class
       def binder payload, browser: nil
-        Binder.new payload: payload, view: self.new(browser)
+        binder_class = self.const_defined?(:Binder, false) ? self.const_get("Binder") : Binder
+        binder_class.new payload: payload, view: self.new(browser)
       end
 
     end
@@ -52,7 +54,7 @@ module Domkey
     end
 
     def set payload
-      Binder.new(payload: payload, view: self).set
+      binder_class_for_this_view.new(payload: payload, view: self).set
     end
 
     # @param [Hash{Symbol => Object}] view payload where Symbol is semantic descriptor for a pageobject in the view
@@ -61,17 +63,31 @@ module Domkey
     #
     # @return [Hash{Symbol => Object}] payload from the view
     def value payload
-      # transform value into hash
-      payload = case payload
-              when Symbol
-                {payload => nil}
-              when Array
-                #array of symbols
-                Hash[payload.map { |v| [v, nil] }]
-              when Hash
-                payload
-              end
-      Binder.new(payload: payload, view: self).value
+      binder_class_for_this_view.new(payload: hashified(payload), view: self).value
+    end
+
+    def options payload
+      binder_class_for_this_view.new(payload: hashified(payload), view: self).options
+    end
+
+    private
+
+    # transform possible list of symbols for payload into full hash
+    # for getting value or options for each pageobject signaled by symbol
+    def hashified(payload)
+      case payload
+        when Symbol
+          {payload => nil}
+        when Array
+          #array of symbols
+          Hash[payload.map { |v| [v, nil] }]
+        when Hash
+          payload
+      end
+    end
+
+    def binder_class_for_this_view
+      binder_class = self.class.const_defined?(:Binder, false) ? self.class.const_get("Binder") : Binder
     end
 
   end

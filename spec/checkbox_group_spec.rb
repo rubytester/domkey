@@ -44,9 +44,19 @@ describe Domkey::View::CheckboxGroup do
       @v.group.value.should eql ['tomato']
     end
 
+    it 'view set string' do
+      @v.set group: 'tomato'
+      @v.value(:group).should eql group: ['tomato']
+    end
+
     it 'set regexp' do
       @v.group.set /^othe/
       @v.group.value.should eql ['other']
+    end
+
+    it 'view set regexp' do
+      @v.set group: /^othe/
+      @v.value(:group).should eql(group: ['other'])
     end
 
     it 'set by not implemented symbol' do
@@ -68,6 +78,14 @@ describe Domkey::View::CheckboxGroup do
 
       @v.group.set ['other', /tomat/]
       @v.group.value.should eql ['tomato', 'other']
+    end
+
+    it 'view set array of strings or regexp' do
+      @v.set group: ['tomato']
+      @v.value(:group).should eql(group: ['tomato'])
+
+      @v.set group: ['other', /tomat/]
+      @v.value(:group).should eql(group: ['tomato', 'other'])
     end
 
     it 'set false clears all' do
@@ -98,6 +116,11 @@ describe Domkey::View::CheckboxGroup do
       @v.group.value.should eql ['cucumber', 'tomato', 'other']
     end
 
+    it 'view set by index array' do
+      @v.set group: {index: [0, 2, 1]}
+      @v.value(:group).should eql(group: ['cucumber', 'tomato', 'other'])
+    end
+
     it 'set by label string' do
       @v.group.set label: 'Tomatorama'
       @v.group.value.should eql ['tomato']
@@ -105,15 +128,20 @@ describe Domkey::View::CheckboxGroup do
 
     it 'set by label regexp' do
       @v.group.set label: /umberama/
-      @v.group.value([:index, :value, :text, :label]).should eql [{:index=>0, :value=>"cucumber", :text=>"Cucumberama", :label=>"Cucumberama"}]
+      @v.group.value([:index, :value, :text, :label]).should eql([{:index => 0, :value => "cucumber", :text => "Cucumberama", :label => "Cucumberama"}])
     end
 
 
     it 'set by index array string, regex' do
-      @v.group.set label: ['Cucumberama', /atorama/]
-      @v.group.value.should eql ['cucumber', 'tomato']
+      @v.group.set label: ['Cucumberama', /atorama/], index: 2
+      @v.group.value.should eql ['cucumber', 'tomato', 'other']
     end
 
+    it 'view set by index array string, regex' do
+      @v.set group: {label: ['Cucumberama', /atorama/], index: 2}
+      @v.value(:group).should eql(group: ['cucumber', 'tomato', 'other'])
+      @v.value(group: [:label, :index]).should eql(group: [{label: "Cucumberama", index: 0}, {label: "Tomatorama", index: 1}, {label: "Other", index: 2}])
+    end
 
     it 'value options single selected' do
       @v.group.set [/tomat/]
