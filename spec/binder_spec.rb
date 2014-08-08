@@ -69,38 +69,51 @@ describe Domkey::View::Binder do
     dom(:month) { text_field(id: 'month_field') }
   end
 
-  class BinderSetAndValueHooks < Domkey::View::Binder
+  # example of all possible hooks for keys taken from payload
+  class BinderKeyHooks < Domkey::View::Binder
 
     def before_city
-      # before set and value for the @key
+      # before binder message to :set, :value, :options for key == city
     end
 
     def before_set_city
-      # before set @key with @value
+      # before binder.set for key == city
     end
 
     def before_value_city
-      # before binder.value where @key == city
+      # before binder.value for key == city
+    end
+
+    def before_options_city
+      # before binder.options for key == city
     end
 
     def set_city
-      #hijack and custom set @key with @value
+      #hijack and custom set value for key == city
     end
 
     def value_city
-      #hijack and get value for @key == city
+      #hijack and custom get value for key == city
+    end
+
+    def options_city
+      #hijack and custom get options for key == city
     end
 
     def after_set_city
-      #after set @key with @value
+      #after binder.set for key == city
     end
 
     def after_value_city
-      #after value for @key with @value
+      #after binder.value for key == city
+    end
+
+    def after_options_city
+      #after binder.options for key == city
     end
 
     def after_city
-      # after set and value for the @key
+      # after message to binder :set, :value, :options for key == city
     end
   end
 
@@ -153,7 +166,7 @@ describe Domkey::View::Binder do
     context 'hooks' do
 
       it 'set' do
-        binder = BinderSetAndValueHooks.new payload: {city: 'Austin'}, view: AddressView.new
+        binder = BinderKeyHooks.new payload: {city: 'Austin'}, view: AddressView.new
         binder.should_receive(:before_city).with(no_args).once
         binder.should_receive(:before_set_city).with(no_args).once
         binder.should_receive(:set_city).with(no_args).once
@@ -163,7 +176,7 @@ describe Domkey::View::Binder do
       end
 
       it 'value' do
-        binder = BinderSetAndValueHooks.new payload: {city: 'Austin'}, view: AddressView.new
+        binder = BinderKeyHooks.new payload: {city: 'Austin'}, view: AddressView.new
         binder.should_receive(:before_city).with(no_args).once
         binder.should_receive(:before_value_city).with(no_args).once
         binder.should_receive(:value_city).with(no_args).once
@@ -172,8 +185,50 @@ describe Domkey::View::Binder do
         binder.value
       end
 
+      it 'options' do
+        binder = BinderKeyHooks.new payload: {city: 'Austin'}, view: AddressView.new
+        binder.should_receive(:before_city).with(no_args).once
+        binder.should_receive(:before_options_city).with(no_args).once
+        binder.should_receive(:options_city).with(no_args).once
+        binder.should_receive(:after_options_city).with(no_args).once
+        binder.should_receive(:after_city).with(no_args).once
+        binder.options
+      end
     end
 
+    context 'Binder options' do
+
+      it 'when pageobject does not have selectable options' do
+        payload = {city: '', street: ''}
+        binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
+        binder.options.should eql({:city => [], :street => []})
+        binder.options
+      end
+
+      context 'when pageobject has selectable options' do
+
+        it 'default options' do
+          payload = {fruit: 'tomato'}
+          binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
+          binder.options.should eql(:fruit => ["cucumber", "tomato", "other"])
+        end
+
+        it 'options with specific qualifier' do
+          # qualifed means asking for :text, :value, :label, :index (other than default)
+          payload = {fruit: :text}
+          binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
+          binder.options.should eql(:fruit => [{:text => "Cucumberama"}, {:text => "Tomatorama"}, {:text => "Other"}])
+        end
+
+        it 'options with 2 specific qualifiers' do
+          # qualifed means asking for :text, :value, :label, :index (other than default)
+          payload = {fruit: [:text, :value]}
+          binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
+          binder.options.should eql(:fruit => [{:text => "Cucumberama", :value => "cucumber"}, {:text => "Tomatorama", :value => "tomato"}, {:text => "Other", :value => "other"}])
+        end
+
+      end
+    end
   end
 
 

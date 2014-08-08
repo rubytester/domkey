@@ -63,20 +63,28 @@ module Domkey
     #
     # @return [Hash{Symbol => Object}] payload from the view
     def value payload
-      # transform value into hash
-      payload = case payload
-              when Symbol
-                {payload => nil}
-              when Array
-                #array of symbols
-                Hash[payload.map { |v| [v, nil] }]
-              when Hash
-                payload
-                end
-      binder_class_for_this_view.new(payload: payload, view: self).value
+      binder_class_for_this_view.new(payload: hashified(payload), view: self).value
+    end
+
+    def options payload
+      binder_class_for_this_view.new(payload: hashified(payload), view: self).options
     end
 
     private
+
+    # transform possible list of symbols for payload into full hash
+    # for getting value or options for each pageobject signaled by symbol
+    def hashified(payload)
+      case payload
+        when Symbol
+          {payload => nil}
+        when Array
+          #array of symbols
+          Hash[payload.map { |v| [v, nil] }]
+        when Hash
+          payload
+      end
+    end
 
     def binder_class_for_this_view
       binder_class = self.class.const_defined?(:Binder, false) ? self.class.const_get("Binder") : Binder

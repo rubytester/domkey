@@ -19,18 +19,23 @@ module Domkey
       # @return [Array<Hash{what => value}] Whe opts is a list of symbols :index, :value, :text, :label corresponding to 'what' key
       def value *opts
         opts = opts.flatten
-        return value_by_default if (opts.empty? || opts.include?(nil) || opts.find { |e| e.kind_of?(String) })
+        return value_by_default if non_qualfiers?(opts)
         value_by_options opts
       end
 
       # @see +value+ returns all options and not only selected ones
       def options *opts
         opts = opts.flatten
-        return options_by_default if opts.empty?
+        return options_by_default if non_qualfiers?(opts)
         options_by opts
       end
 
       private
+
+      # qualifier requires symbols else it's default
+      def non_qualfiers?(opts)
+        opts.empty? || opts.include?(nil) || opts.find { |e| e.kind_of?(String) }
+      end
 
       def options_by_default
         fail Exception::NotImplementedError, "Subclass responsible for implementing"
