@@ -69,18 +69,38 @@ describe Domkey::View::Binder do
     dom(:month) { text_field(id: 'month_field') }
   end
 
-  class BinderWithHooks < Domkey::View::Binder
+  class BinderSetAndValueHooks < Domkey::View::Binder
 
     def before_city
-      #
+      # before set and value for the @key
+    end
+
+    def before_set_city
+      # before set @key with @value
+    end
+
+    def before_value_city
+      # before binder.value where @key == city
     end
 
     def set_city
-      #
+      #hijack and custom set @key with @value
+    end
+
+    def value_city
+      #hijack and get value for @key == city
+    end
+
+    def after_set_city
+      #after set @key with @value
+    end
+
+    def after_value_city
+      #after value for @key with @value
     end
 
     def after_city
-      #
+      # after set and value for the @key
     end
   end
 
@@ -132,14 +152,26 @@ describe Domkey::View::Binder do
 
     context 'hooks' do
 
-      it 'before set after' do
-        binder = BinderWithHooks.new payload: {city: 'Austin'},
-                                     view:    AddressView.new
+      it 'set' do
+        binder = BinderSetAndValueHooks.new payload: {city: 'Austin'}, view: AddressView.new
         binder.should_receive(:before_city).with(no_args).once
+        binder.should_receive(:before_set_city).with(no_args).once
         binder.should_receive(:set_city).with(no_args).once
+        binder.should_receive(:after_set_city).with(no_args).once
         binder.should_receive(:after_city).with(no_args).once
         binder.set
       end
+
+      it 'value' do
+        binder = BinderSetAndValueHooks.new payload: {city: 'Austin'}, view: AddressView.new
+        binder.should_receive(:before_city).with(no_args).once
+        binder.should_receive(:before_value_city).with(no_args).once
+        binder.should_receive(:value_city).with(no_args).once
+        binder.should_receive(:after_value_city).with(no_args).once
+        binder.should_receive(:after_city).with(no_args).once
+        binder.value
+      end
+
     end
 
   end
