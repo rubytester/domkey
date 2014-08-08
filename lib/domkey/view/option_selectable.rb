@@ -19,7 +19,7 @@ module Domkey
       # @return [Array<Hash{what => value}] Whe opts is a list of symbols :index, :value, :text, :label corresponding to 'what' key
       def value *opts
         opts = opts.flatten
-        return value_by_default if (opts.empty? || opts.find { |e| e.kind_of?(String) })
+        return value_by_default if (opts.empty? || opts.include?(nil) || opts.find { |e| e.kind_of?(String) })
         value_by_options opts
       end
 
