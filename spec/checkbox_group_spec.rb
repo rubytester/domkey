@@ -63,7 +63,7 @@ describe Domkey::View::CheckboxGroup do
       expect { @v.group.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
-    it 'set appends by defulat' do
+    it 'set appends by default' do
       @v.group.set 'tomato'
       @v.group.value.should eql ['tomato']
       @v.group.set 'other'

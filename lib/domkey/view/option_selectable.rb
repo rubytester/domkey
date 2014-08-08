@@ -2,7 +2,7 @@ module Domkey
   module View
     module OptionSelectable
 
-      # clears all options and sets only the desired value(s)
+      # sets only the desired option(s), appends by default to already selected in multiselect pageobject
       # @param [String, Regexp] sets default designated option by String or Regexp
       # @param [Array<String, Regexp>] set more than one option by default strategy
       # @param [False] unselects all options

@@ -106,6 +106,14 @@ describe Domkey::View::SelectList do
       @widget.value.should eql ["1", "2", "", "Swedish"]
     end
 
+    it 'set appends in multiselect' do
+      @widget.set value: ['2', '1'], index: 3
+      @widget.value.should eql ["1", "2", ""]
+      @widget.set text:  'Swedish'
+      @widget.value.should eql ["1", "2", "", "Swedish"]
+    end
+
+
     it 'set by symbol' do
       expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
     end
