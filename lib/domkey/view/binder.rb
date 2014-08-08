@@ -89,12 +89,12 @@ module Domkey
 
       private
 
-      def options_for_pageobject(key, value)
+      def options_for_pageobject key, value
         object = @view.send(key)
         if object.method(:options).parameters.empty?
           object.options
         else
-          object.options value #specific options qualifiers
+          object.options value
         end
       end
 
@@ -104,24 +104,12 @@ module Domkey
 
       def value_for_pageobject key, value
         object = @view.send(key)
-        # object is pageobject
         if object.method(:value).parameters.empty?
           object.value
         else
-          # object is another view that has collection of pageobject
           object.value value
         end
       end
-
-      ## submits view
-      #def submit
-      #
-      #end
-      #
-      ## is view ready?
-      #def ready?
-      #
-      #end
     end
   end
 end
