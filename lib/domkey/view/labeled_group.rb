@@ -4,7 +4,7 @@ module Domkey
 
   module View
 
-    # Interfact to CheckboxGroup and RadioGroup elements through corresponding label elements;
+    # Interface to CheckboxGroup and RadioGroup elements through corresponding label elements;
     # radio and checkbox controls form a group by name attribute
     # however they don't have visible text indicators to the user who is looking at the page.
     # The common strategy is to provide a lable element such that

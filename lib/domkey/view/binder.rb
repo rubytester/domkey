@@ -56,8 +56,9 @@ module Domkey
         end
       end
 
-      # extracts value for each pageobject identified by the payload
-      # @returns [Hash] payload
+      # extracts value for each pageobject identified by the payload key => value pair
+      # where value may be a specific qualifier to extract for option selectable pageobjects
+      # @return [Hash] payload
       def value
         extracted = {}
         @payload.each_pair do |key, value|
@@ -73,6 +74,9 @@ module Domkey
       end
 
 
+      # extracts options for each pageobject identified by the payload key => value pair
+      # where value may be a specific option qualifier to extract for option selectable pageobjects
+      # @return [Hash] payload
       def options
         extracted = {}
         @payload.each_pair do |key, value|
