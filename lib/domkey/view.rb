@@ -54,8 +54,7 @@ module Domkey
     end
 
     def set payload
-      binder_class = self.class.const_defined?(:Binder, false) ? self.class.const_get("Binder") : Binder
-      binder_class.new(payload: payload, view: self).set
+      binder_class_for_this_view.new(payload: payload, view: self).set
     end
 
     # @param [Hash{Symbol => Object}] view payload where Symbol is semantic descriptor for a pageobject in the view
@@ -73,8 +72,14 @@ module Domkey
                 Hash[payload.map { |v| [v, nil] }]
               when Hash
                 payload
-              end
-      Binder.new(payload: payload, view: self).value
+                end
+      binder_class_for_this_view.new(payload: payload, view: self).value
+    end
+
+    private
+
+    def binder_class_for_this_view
+      binder_class = self.class.const_defined?(:Binder, false) ? self.class.const_get("Binder") : Binder
     end
 
   end
