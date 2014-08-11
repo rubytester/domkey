@@ -50,10 +50,16 @@ module Domkey
         def set value
           original.select value
         end
-
       end
 
 
+      class Span < Dispatcher
+
+        # for read only data presented in span element
+        def value
+          original.text
+        end
+      end
     end
   end
 end
