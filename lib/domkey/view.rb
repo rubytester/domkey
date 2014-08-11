@@ -25,14 +25,6 @@ module Domkey
         end
       end
 
-      # build Binder with model and view
-      # @return [Domkey::View::Binder]
-      # @return [Self::Binder] if Binder defined for the View Class
-      def binder payload, browser: nil
-        binder_class = self.const_defined?(:Binder, false) ? self.const_get("Binder") : Binder
-        binder_class.new payload: payload, view: self.new(browser)
-      end
-
     end
 
     def self.included(klass)

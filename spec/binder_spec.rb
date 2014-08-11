@@ -231,18 +231,4 @@ describe Domkey::View::Binder do
     end
   end
 
-
-  context 'View.binder convenience factory' do
-
-    it 'by default uses Binder class' do
-      payload = {city: 'Austin', fruit: ['tomato', 'other']}
-      binder  = AddressView.binder payload
-      binder.should be_kind_of(Domkey::View::Binder)
-    end
-
-    it 'when View class has special inner Binder class that binder is used' do
-      sb = WithHooksView.binder({city: 'Austin'})
-      sb.should be_kind_of(WithHooksView::Binder)
-    end
-  end
 end
