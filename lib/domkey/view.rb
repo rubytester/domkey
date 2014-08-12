@@ -25,6 +25,13 @@ module Domkey
         end
       end
 
+      # custome inner Binder class for the current view
+      # used to create custom binder hooks for :set, :value, :options actions
+      def binder &blk
+        klass = self.const_set("Binder", Class.new(::Domkey::View::Binder))
+        klass.module_eval &blk
+      end
+
     end
 
     def self.included(klass)

@@ -18,21 +18,27 @@ describe Domkey::View::Binder do
       ShippingWithHooksView.new
     end
 
+  end
 
-    class Binder < Domkey::View::Binder
-      #
+  class WithBinderClassMethodView
+    include Domkey::View
+
+    dom(:city) { text_field(id: 'city1') }
+
+    # setup custom binder mechanism for default interaction with the view
+    # class Binder < Domkey::View::Binder
+    binder do
+      def before_city
+        # hook in custom binder for key == :city
+      end
     end
+
   end
 
   class ShippingWithHooksView
     include Domkey::View
     dom(:city) { text_field(id: 'city2') }
     dom(:street) { text_field(id: 'street2') }
-
-    class Binder < Domkey::View::Binder
-
-    end
-
   end
 
 
@@ -122,6 +128,24 @@ describe Domkey::View::Binder do
   end
 
   context 'Binder payload set and value' do
+
+
+    context "custom inner binder class" do
+
+      it 'binder class in view' do
+        payload    = {city: 'Austin'}
+        view       = WithBinderClassMethodView.new
+        metabinder = WithBinderClassMethodView::Binder.new
+        metabinder.should respond_to(:before_city)
+      end
+
+      it 'view invokes it for actions' do
+        payload = {city: 'Bla'}
+        view    = WithBinderClassMethodView.new
+        WithBinderClassMethodView::Binder.any_instance.should_receive(:before_city)
+        view.set payload
+      end
+    end
 
     it 'for single view' do
       payload = {city: 'Austin', street: 'Lamar'}
