@@ -8,6 +8,8 @@ describe Domkey::View::Binder do
 
     dom(:city) { text_field(id: 'city1') }
 
+    # this does not exist
+    dom(:state) { text_field(id: 'state1') }
 
     # target of before and after
     def fruit
@@ -129,6 +131,18 @@ describe Domkey::View::Binder do
 
   context 'Binder payload set and value' do
 
+
+    context "waitable element" do
+
+      it 'expects element to be there but it is not there' do
+        payload               = {state: 'not there'}
+        view                  = WithHooksView.new
+        Watir.default_timeout = 0.1
+        expect { view.set(payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        Watir.default_timeout = nil
+      end
+
+    end
 
     context "custom inner binder class" do
 

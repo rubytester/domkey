@@ -100,23 +100,33 @@ module Domkey
       def options_for_pageobject key, value
         object = @view.send(key)
         if object.method(:options).parameters.empty?
-          object.options
+          expected_to_be_present(object, key).options
         else
-          object.options value
+          expected_to_be_present(object, key).options value
         end
       end
 
       def set_pageobject key, value
-        @view.send(key).set value
+        expected_to_be_present(@view.send(key), key).set value
       end
 
       def value_for_pageobject key, value
         object = @view.send(key)
         if object.method(:value).parameters.empty?
-          object.value
+          expected_to_be_present(object, key).value
         else
-          object.value value
+          expected_to_be_present(object, key).value value
         end
+      end
+
+      # we expect pageobject to be present for interaction
+      # if not present we raise NotFoundError.
+      # Use Watir.default_timeout value to wait until element present
+      def expected_to_be_present(object, key)
+        object.wait_until_present if object.respond_to?(:wait_until_present)
+        object
+      rescue Watir::Wait::TimeoutError
+        raise Exception::NotFoundError, "Binder expected pageobject: '#{@view.class}##{key}' to be present"
       end
     end
   end
