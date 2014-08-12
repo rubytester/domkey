@@ -2,26 +2,6 @@ require 'spec_helper'
 
 describe Domkey::View::Binder do
 
-  class WithHooksView
-
-    include Domkey::View
-
-    dom(:city) { text_field(id: 'city1') }
-
-    # this does not exist
-    dom(:state) { text_field(id: 'state1') }
-
-    # target of before and after
-    def fruit
-      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-    end
-
-    def shipping
-      ShippingWithHooksView.new
-    end
-
-  end
-
   class WithBinderClassMethodView
     include Domkey::View
 
@@ -37,17 +17,13 @@ describe Domkey::View::Binder do
 
   end
 
-  class ShippingWithHooksView
-    include Domkey::View
-    dom(:city) { text_field(id: 'city2') }
-    dom(:street) { text_field(id: 'street2') }
-  end
-
-
   class AddressView
     include Domkey::View
     dom(:city) { text_field(id: 'city1') }
     dom(:street) { text_field(id: 'street1') }
+
+    # this does not exist
+    dom(:state) { text_field(id: 'state1') }
 
     # semantic descriptor that returns another view
     # the other view has PageObjects that participate in this view
@@ -132,14 +108,28 @@ describe Domkey::View::Binder do
   context 'Binder payload set and value' do
 
 
-    context "waitable element" do
+    context 'when pageobject expected to be present but object not there' do
 
-      it 'expects element to be there but it is not there' do
-        payload               = {state: 'not there'}
-        view                  = WithHooksView.new
+      before :all do
         Watir.default_timeout = 0.1
-        expect { view.set(payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        @payload = {state: 'not there'}
+        @view    = AddressView.new
+      end
+
+      after :all do
         Watir.default_timeout = nil
+      end
+
+      it 'set value' do
+        expect { @view.set(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+      end
+
+      it 'get value' do
+        expect { @view.value(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+      end
+
+      it 'options' do
+        expect { @view.options(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
       end
 
     end
