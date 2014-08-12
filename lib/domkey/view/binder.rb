@@ -5,8 +5,7 @@ module Domkey
     # Data transfer facilitator for the view
     # Sends data to view. Grabs data from view
     # Data is a payload of the view
-    # For specialized transfer object a client would sublcass this Binder,
-    # by default View.binder factory method is provided for regular data transfer object
+    # For specialized transfer object a client would sublcass this Binder
     #
     # @usage
     #
@@ -21,12 +20,17 @@ module Domkey
     #      end
     #
     #      payload = {city: 'Austin', fruit: 'tomato'}
-    #      binder  = MyView.binder payload
-    #      binder.set    #=> sets view.city with payload[:city] and view.fruit with payload[:fruit]
-    #      binder.value  #=> returns {city: 'Austing', fruit: 'tomato'}
+    #      view  = MyView.new
+    #      view.set payload  #=> sets view.city with payload[:city] and view.fruit with payload[:fruit]
+    #      view.value payload  #=> returns {city: 'Austing', fruit: 'tomato'}
+    #
+    #   For specialized Binder other than default you can customize with hooks
     #
     #      class MyBinder < Domkey::View::Binder
     #
+    #        def before_city
+    #          # code that runs before city page object is interacted
+    #        end
     #      end
     #
     #      payload = {city: 'Mordor'}
