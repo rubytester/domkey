@@ -100,8 +100,16 @@ module Domkey
 
       private
 
+      def when_view_responds_to_key
+        if @view.respond_to?(@key)
+          @view.send(@key)
+        else
+          raise Exception::NotImplementedError, "View doesn't respond to #{@key}, expected '#{@view.class}##{@key}' to be defined"
+        end
+      end
+
       def options_for_pageobject
-        object = @view.send(@key)
+        object = when_view_responds_to_key
         if object.method(:options).parameters.empty?
           expected_to_be_present(object).options
         else
@@ -110,11 +118,11 @@ module Domkey
       end
 
       def set_pageobject
-        expected_to_be_present(@view.send(@key)).set @value
+        expected_to_be_present(when_view_responds_to_key).set @value
       end
 
       def value_for_pageobject
-        object = @view.send(@key)
+        object = when_view_responds_to_key
         if object.method(:value).parameters.empty?
           expected_to_be_present(object).value
         else

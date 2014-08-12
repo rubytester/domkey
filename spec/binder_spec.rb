@@ -137,7 +137,6 @@ describe Domkey::View::Binder do
     context "custom inner binder class" do
 
       it 'binder class in view' do
-        payload    = {city: 'Austin'}
         view       = WithBinderClassMethodView.new
         metabinder = WithBinderClassMethodView::Binder.new
         metabinder.should respond_to(:before_city)
@@ -159,6 +158,13 @@ describe Domkey::View::Binder do
 
       extracted = binder.value
       extracted.should eql payload
+    end
+
+    it 'when view has undefined key' do
+      payload = {cityyyy: 'Austin'}
+
+      binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
+      expect { binder.set }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'for view within a view' do
