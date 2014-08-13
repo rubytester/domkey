@@ -2,24 +2,6 @@ require 'spec_helper'
 
 describe Domkey::View::Binder do
 
-  class WithHooksView
-
-    include Domkey::View
-
-    dom(:city) { text_field(id: 'city1') }
-
-
-    # target of before and after
-    def fruit
-      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-    end
-
-    def shipping
-      ShippingWithHooksView.new
-    end
-
-  end
-
   class WithBinderClassMethodView
     include Domkey::View
 
@@ -35,17 +17,18 @@ describe Domkey::View::Binder do
 
   end
 
-  class ShippingWithHooksView
-    include Domkey::View
-    dom(:city) { text_field(id: 'city2') }
-    dom(:street) { text_field(id: 'street2') }
-  end
-
-
   class AddressView
     include Domkey::View
     dom(:city) { text_field(id: 'city1') }
     dom(:street) { text_field(id: 'street1') }
+
+    # example of not found element
+    dom(:state) { text_field(id: 'state1') }
+
+    # example of not found element
+    dom(:keyed_state) do
+      {state: -> { text_field(id: 'state1') }}
+    end
 
     # semantic descriptor that returns another view
     # the other view has PageObjects that participate in this view
@@ -129,11 +112,57 @@ describe Domkey::View::Binder do
 
   context 'Binder payload set and value' do
 
+    context 'when pageobject expected to be present but object not there' do
+
+      shared_examples "waitable pageobject" do
+
+        before :all do
+          Watir.default_timeout = 0.1
+          @view                 = AddressView.new
+        end
+
+        after :all do
+          Watir.default_timeout = nil
+        end
+
+        it 'set value' do
+          expect { @view.set(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        end
+
+        it 'get value' do
+          expect { @view.value(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        end
+
+        it 'options' do
+          expect { @view.options(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        end
+      end
+
+      context "pageobject wrapping watir element" do
+
+        before :all do
+          @payload = {keyed_state: {state: 'not there'}}
+        end
+
+        include_examples "waitable pageobject"
+
+      end
+
+      context "pageobject with keyed hash" do
+
+        before :all do
+          @payload = {keyed_state: {state: 'not there'}}
+        end
+
+        include_examples "waitable pageobject"
+
+      end
+
+    end
 
     context "custom inner binder class" do
 
       it 'binder class in view' do
-        payload    = {city: 'Austin'}
         view       = WithBinderClassMethodView.new
         metabinder = WithBinderClassMethodView::Binder.new
         metabinder.should respond_to(:before_city)
@@ -155,6 +184,13 @@ describe Domkey::View::Binder do
 
       extracted = binder.value
       extracted.should eql payload
+    end
+
+    it 'when view has undefined key' do
+      payload = {cityyyy: 'Austin'}
+
+      binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
+      expect { binder.set }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'for view within a view' do
