@@ -24,20 +24,21 @@ module Domkey
     #      view.set payload  #=> sets view.city with payload[:city] and view.fruit with payload[:fruit]
     #      view.value payload  #=> returns {city: 'Austing', fruit: 'tomato'}
     #
-    #   For specialized Binder other than default you can customize with hooks
+    #   View uses its own binder to setup hooks when interacting with pageobjects identified by keys in payload
     #
-    #      class MyBinder < Domkey::View::Binder
+    #     class MyView
+    #       include Domkey::View
     #
-    #        def before_city
-    #          # code that runs before city page object is interacted
-    #        end
-    #      end
+    #       dom(:city) { text_field(id: 'city2') }
     #
-    #      payload = {city: 'Mordor'}
-    #      view    = MyView.new
-    #      binder  = MyBinder.new view: view, payload: payload
-    #      binder.set
-    #
+    #       binder do
+    #         def before_city
+    #           # code that runs before city page object is interacted
+    #         end
+    #       end
+    #       payload = {city: 'Mordor'}
+    #       view    = MyView.new
+    #       view.set payload # => and before_city hook will be called when setting key :city
     class Binder
 
       attr_accessor :view, :payload
