@@ -1,5 +1,6 @@
 require 'domkey/view/widgetry/package'
 require 'domkey/view/widgetry/dispatcher'
+require 'domkey/view/widgetry/waitable'
 
 module Domkey
 
@@ -53,6 +54,7 @@ module Domkey
 
       # @api private
       include Widgetry::Package
+      include Widgetry::Waitable
 
       # Each Semantic PageObject defines what value means for itself
       # @param [SemanticValue] Delegated to Watir::Element and we expect it to respond to set

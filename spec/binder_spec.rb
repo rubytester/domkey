@@ -22,8 +22,13 @@ describe Domkey::View::Binder do
     dom(:city) { text_field(id: 'city1') }
     dom(:street) { text_field(id: 'street1') }
 
-    # this does not exist
+    # example of not found element
     dom(:state) { text_field(id: 'state1') }
+
+    # example of not found element
+    dom(:keyed_state) do
+      {state: -> { text_field(id: 'state1') }}
+    end
 
     # semantic descriptor that returns another view
     # the other view has PageObjects that participate in this view
@@ -107,29 +112,50 @@ describe Domkey::View::Binder do
 
   context 'Binder payload set and value' do
 
-
     context 'when pageobject expected to be present but object not there' do
 
-      before :all do
-        Watir.default_timeout = 0.1
-        @payload = {state: 'not there'}
-        @view    = AddressView.new
+      shared_examples "waitable pageobject" do
+
+        before :all do
+          Watir.default_timeout = 0.1
+          @view                 = AddressView.new
+        end
+
+        after :all do
+          Watir.default_timeout = nil
+        end
+
+        it 'set value' do
+          expect { @view.set(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        end
+
+        it 'get value' do
+          expect { @view.value(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        end
+
+        it 'options' do
+          expect { @view.options(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        end
       end
 
-      after :all do
-        Watir.default_timeout = nil
+      context "pageobject wrapping watir element" do
+
+        before :all do
+          @payload = {keyed_state: {state: 'not there'}}
+        end
+
+        include_examples "waitable pageobject"
+
       end
 
-      it 'set value' do
-        expect { @view.set(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
-      end
+      context "pageobject with keyed hash" do
 
-      it 'get value' do
-        expect { @view.value(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
-      end
+        before :all do
+          @payload = {keyed_state: {state: 'not there'}}
+        end
 
-      it 'options' do
-        expect { @view.options(@payload) }.to raise_error(Domkey::Exception::NotFoundError)
+        include_examples "waitable pageobject"
+
       end
 
     end
