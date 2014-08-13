@@ -137,8 +137,8 @@ module Domkey
       def expected_to_be_present(object)
         object.wait_until_present if object.respond_to?(:wait_until_present)
         object
-      rescue Watir::Wait::TimeoutError
-        raise Exception::NotFoundError, "Binder expected pageobject: '#{@view.class}##{@key}' to be present"
+      rescue Watir::Wait::TimeoutError => e
+        raise Exception::NotFoundError, "Binder expected pageobject: '#{@view.class}##{@key}' to be present: #{e.message}"
       end
     end
   end
