@@ -1,6 +1,6 @@
 require 'domkey/view/widgetry/package'
 require 'domkey/view/widgetry/dispatcher'
-require 'domkey/view/widgetry/waitable'
+require 'domkey/view/widgetry/element_delegator'
 
 module Domkey
 
@@ -54,7 +54,7 @@ module Domkey
 
       # @api private
       include Widgetry::Package
-      include Widgetry::Waitable
+      include Widgetry::ElementDelegator
 
       # Each Semantic PageObject defines what value means for itself
       # @param [SemanticValue] Delegated to Watir::Element and we expect it to respond to set
@@ -77,23 +77,6 @@ module Domkey
       def options
         return widgetry_dispatcher.options unless package.respond_to?(:each_pair)
         Hash[package.map { |key, pageobject| [key, pageobject.options] }]
-      end
-
-
-      # @api private
-      # delegate to element when element responds to message
-      def method_missing(message, *args, &block)
-        if element.respond_to?(message)
-          element.__send__(message, *args, &block)
-        else
-          super
-        end
-      end
-
-      # @api private
-      # ruturn true when element.respond_to? message so we can delegate with confidence
-      def respond_to_missing?(message, include_private = false)
-        element.respond_to?(message) || super
       end
 
       private
