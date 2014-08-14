@@ -5,22 +5,20 @@ module Domkey
       # PageObject delegate to Watir::Element
       module ElementDelegator
 
-        # @api private
-        # opinionated strategy
+        # warning: ActiveResource provides Object#present?
+        def present?
+          _element.present?
+        end
+
         def wait_until_present(timeout = nil)
-          e = element
-          # default strategy for pageobject with keys. select first to be waitable.
-          # when first element of page object is present we can interact with other elements.
-          # chances are the other elements may not be present yet
-          e = e.first.last if e.kind_of?(Hash)
-          e.wait_until_present
+          _element.wait_until_present
         end
 
         # @api private
         # delegate to element when element responds to message
         def method_missing(message, *args, &block)
-          if element.respond_to?(message)
-            element.__send__(message, *args, &block)
+          if _element.respond_to?(message)
+            _element.__send__(message, *args, &block)
           else
             super
           end
@@ -29,7 +27,18 @@ module Domkey
         # @api private
         # ruturn true when element.respond_to? message so we can delegate with confidence
         def respond_to_missing?(message, include_private = false)
-          element.respond_to?(message) || super
+          _element.respond_to?(message) || super
+        end
+
+        private
+
+        # extract first element strategy for pageobject with keys or just element
+        def _element
+          if element.kind_of?(Hash)
+            element.first.last
+          else
+            element
+          end
         end
 
       end
