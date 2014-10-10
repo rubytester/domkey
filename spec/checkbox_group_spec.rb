@@ -15,7 +15,7 @@ describe Domkey::View::CheckboxGroup do
   end
 
   before :all do
-    goto_html("test.html")
+    goto_html('test.html')
   end
 
   it 'two groups example' do
@@ -25,12 +25,12 @@ describe Domkey::View::CheckboxGroup do
     expect { v.groups.count }.to raise_error
   end
 
-  context "OptionSelectable object multi" do
+  context 'OptionSelectable object multi' do
     # OptionSelectable object is an object that responds to options and is selectable by its optioins;
     # RadioGroup, Select, CheckboxGroup. CheckboxGroup acts like Multi Select, RadioGroup acts like Single Select
 
     before :each do
-      goto_html("test.html")
+      goto_html('test.html')
 
       @v = CollectionAsPageObjectCheckboxGroupView.new
       @v.group.count.should == 3
@@ -93,6 +93,11 @@ describe Domkey::View::CheckboxGroup do
       @v.group.value.should eql []
     end
 
+    it 'set true enables all' do
+      expect(@v.group.set(true)).to_not be_empty
+      expect(@v.group.value).to eq ['cucumber', 'tomato', 'other']
+    end
+
     it 'set empty array clears all' do
       @v.group.set []
       @v.group.value.should eql []
@@ -128,7 +133,7 @@ describe Domkey::View::CheckboxGroup do
 
     it 'set by label regexp' do
       @v.group.set label: /umberama/
-      @v.group.value([:index, :value, :text, :label]).should eql([{:index => 0, :value => "cucumber", :text => "Cucumberama", :label => "Cucumberama"}])
+      @v.group.value([:index, :value, :text, :label]).should eql([{:index => 0, :value => 'cucumber', :text => 'Cucumberama', :label => 'Cucumberama' }])
     end
 
 
@@ -140,26 +145,26 @@ describe Domkey::View::CheckboxGroup do
     it 'view set by index array string, regex' do
       @v.set group: {label: ['Cucumberama', /atorama/], index: 2}
       @v.value(:group).should eql(group: ['cucumber', 'tomato', 'other'])
-      @v.value(group: [:label, :index]).should eql(group: [{label: "Cucumberama", index: 0}, {label: "Tomatorama", index: 1}, {label: "Other", index: 2}])
+      @v.value(group: [:label, :index]).should eql(group: [{label: 'Cucumberama', index: 0}, {label: 'Tomatorama', index: 1}, {label: 'Other', index: 2}])
     end
 
     it 'value options single selected' do
       @v.group.set [/tomat/]
       @v.group.value.should eql ['tomato']
 
-      @v.group.value(:label).should eql [{:label=>"Tomatorama"}]
-      @v.group.value([:label]).should eql [{:label=>"Tomatorama"}]
-      @v.group.value(:label, :value, :index).should eql [{:label=>"Tomatorama", :value=>"tomato", :index=>1}]
+      @v.group.value(:label).should eql [{:label=> 'Tomatorama' }]
+      @v.group.value([:label]).should eql [{:label=> 'Tomatorama' }]
+      @v.group.value(:label, :value, :index).should eql [{:label=> 'Tomatorama', :value=> 'tomato', :index=>1}]
     end
 
     it 'value options many selected' do
       @v.group.set ['other', /tomat/, /cucum/]
       @v.group.value.should eql ['cucumber', 'tomato', 'other']
 
-      @v.group.value(:label).should eql [{:label=>"Cucumberama"}, {:label=>"Tomatorama"}, {:label=>"Other"}]
-      @v.group.value(:label, :index, :value).should eql [{:label=>"Cucumberama", :index=>0, :value=>"cucumber"},
-                                                         {:label=>"Tomatorama", :index=>1, :value=>"tomato"},
-                                                         {:label=>"Other", :index=>2, :value=>"other"}]
+      @v.group.value(:label).should eql [{:label=> 'Cucumberama' }, {:label=> 'Tomatorama' }, {:label=> 'Other' }]
+      @v.group.value(:label, :index, :value).should eql [{:label=> 'Cucumberama', :index=>0, :value=> 'cucumber' },
+                                                         {:label=> 'Tomatorama', :index=>1, :value=> 'tomato' },
+                                                         {:label=> 'Other', :index=>2, :value=> 'other' }]
     end
 
     it 'value options none selected' do
@@ -170,23 +175,23 @@ describe Domkey::View::CheckboxGroup do
     end
 
     it 'options by default' do
-      @v.group.options.should eql ["cucumber", "tomato", "other"]
+      @v.group.options.should eql ['cucumber', 'tomato', 'other']
     end
 
     it 'options by opts single' do
-      @v.group.options(:value).should eql [{:value=>"cucumber"}, {:value=>"tomato"}, {:value=>"other"}]
-      @v.group.options([:value]).should eql [{:value=>"cucumber"}, {:value=>"tomato"}, {:value=>"other"}]
+      @v.group.options(:value).should eql [{:value=> 'cucumber' }, {:value=> 'tomato' }, {:value=> 'other' }]
+      @v.group.options([:value]).should eql [{:value=> 'cucumber' }, {:value=> 'tomato' }, {:value=> 'other' }]
     end
 
     it 'options by label' do
-      @v.group.options(:label).should eql [{:label=>"Cucumberama"}, {:label=>"Tomatorama"}, {:label=>"Other"}]
-      @v.group.options([:label]).should eql [{:label=>"Cucumberama"}, {:label=>"Tomatorama"}, {:label=>"Other"}]
+      @v.group.options(:label).should eql [{:label=> 'Cucumberama' }, {:label=> 'Tomatorama' }, {:label=> 'Other' }]
+      @v.group.options([:label]).should eql [{:label=> 'Cucumberama' }, {:label=> 'Tomatorama' }, {:label=> 'Other' }]
     end
 
     it 'options by opts many' do
-      expected = [{:value=>"cucumber", :index=>0, :label=>"Cucumberama", :text=>"Cucumberama"},
-                  {:value=>"tomato", :index=>1, :label=>"Tomatorama", :text=>"Tomatorama"},
-                  {:value=>"other", :index=>2, :label=>"Other", :text=>"Other"}]
+      expected = [{:value=> 'cucumber', :index=>0, :label=> 'Cucumberama', :text=> 'Cucumberama' },
+                  {:value=> 'tomato', :index=>1, :label=> 'Tomatorama', :text=> 'Tomatorama' },
+                  {:value=> 'other', :index=>2, :label=> 'Other', :text=> 'Other' }]
 
       @v.group.options(:value, :index, :label, :text).should eql expected
       @v.group.options([:value, :index, :label, :text]).should eql expected

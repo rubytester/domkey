@@ -15,10 +15,8 @@ module Domkey
 
       def set_by_symbol value
         case value
-        when FalseClass
-          each { |o| o.set false }
-        when TrueClass
-          return #noop
+        when FalseClass, TrueClass
+          each { |o| o.set value }
         else
           fail(Exception::NotImplementedError, "Unknown way of setting by value: #{value.inspect}")
         end
