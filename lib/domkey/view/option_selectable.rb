@@ -14,23 +14,29 @@ module Domkey
       end
 
       # @param opts [Symbol, Array<Symbol>] defaults to empty []. Represents a qualifier how to present selected options.
+      # @param opts [Array<Hash{what => value}] when receiving payload accept for options
+      #
       # @return [Array<String>] When opts param empty? array of default strings implemented by client as a presentation of options selected
-      # @param opts [Symbol,Array<Symbol>] ask for representation of options by 'what'
       # @return [Array<Hash{what => value}] Whe opts is a list of symbols :index, :value, :text, :label corresponding to 'what' key
       def value *opts
-        opts = opts.flatten
+        opts = extract_option_qualifiers(opts)
         return value_by_default if non_qualfiers?(opts)
         value_by_options opts
       end
 
       # @see +value+ returns all options and not only selected ones
       def options *opts
-        opts = opts.flatten
+        opts = extract_option_qualifiers(opts)
         return options_by_default if non_qualfiers?(opts)
         options_by opts
       end
 
       private
+
+      # we can pass binder payload. Extract the keys from payload as qualifiers for option selectable pageobject
+      def extract_option_qualifiers(opts)
+        opts.map { |e| e.is_a?(Hash) ? e.keys : e }.flatten.uniq
+      end
 
       # qualifier requires symbols else it's default
       def non_qualfiers?(opts)
@@ -60,25 +66,25 @@ module Domkey
       # strategy for selecting OptionSelectable object
       def set_strategy value
         case value
-        when TrueClass, FalseClass, Symbol
-          set_by_symbol(value)
-        when String, Regexp
-          set_by_value(value)
-        when Array
-          value.each { |v| set_strategy(v) }
-        when Hash
-          value.each_pair do |how, value|
-            case how
-            when :label, :text
-              set_by_label(value)
-            when :index
-              set_by_index(value)
-            when :value
-              set_by_value(value)
+          when TrueClass, FalseClass, Symbol
+            set_by_symbol(value)
+          when String, Regexp
+            set_by_value(value)
+          when Array
+            value.each { |v| set_strategy(v) }
+          when Hash
+            value.each_pair do |how, value|
+              case how
+                when :label, :text
+                  set_by_label(value)
+                when :index
+                  set_by_index(value)
+                when :value
+                  set_by_value(value)
+              end
             end
-          end
-        else
-          fail(Exception::NotImplementedError, "Unable to be set by this value: #{value.inspect}")
+          else
+            fail(Exception::NotImplementedError, "Unable to be set by this value: #{value.inspect}")
         end
       end
 

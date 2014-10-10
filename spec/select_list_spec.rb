@@ -32,14 +32,14 @@ describe Domkey::View::SelectList do
       @widget.set ["2", "3"]
       @widget.value.should eql ["2", "3"]
       # array
-      @widget.value([:index, :text, :value]).should eql [{:index=>1, :text=>"English", :value=>"2"}, {:index=>2, :text=>"Norwegian", :value=>"3"}]
+      @widget.value([:index, :text, :value]).should eql [{:index => 1, :text => "English", :value => "2"}, {:index => 2, :text => "Norwegian", :value => "3"}]
       # splat list
-      @widget.value(:index, :label).should eql [{:index=>1, :label=>"English"}, {:index=>2, :label=>"Norwegian"}]
+      @widget.value(:index, :label).should eql [{:index => 1, :label => "English"}, {:index => 2, :label => "Norwegian"}]
 
       # one element array
-      @widget.value([:index]).should eql [{:index=>1}, {:index=>2}]
+      @widget.value([:index]).should eql [{:index => 1}, {:index => 2}]
       # one elmenet splat list
-      @widget.value(:value).should eql [{:value=>"2"}, {:value=>"3"}]
+      @widget.value(:value).should eql [{:value => "2"}, {:value => "3"}]
 
     end
 
@@ -109,7 +109,7 @@ describe Domkey::View::SelectList do
     it 'set appends in multiselect' do
       @widget.set value: ['2', '1'], index: 3
       @widget.value.should eql ["1", "2", ""]
-      @widget.set text:  'Swedish'
+      @widget.set text: 'Swedish'
       @widget.value.should eql ["1", "2", "", "Swedish"]
     end
 
@@ -124,11 +124,11 @@ describe Domkey::View::SelectList do
 
     it 'options by opts' do
 
-      expected = [{:text=>"Danish", :value=>"1", :index=>0},
-                  {:text=>"English", :value=>"2", :index=>1},
-                  {:text=>"Norwegian", :value=>"3", :index=>2},
-                  {:text=>"Polish", :value=>"", :index=>3},
-                  {:text=>"Swedish", :value=>"Swedish", :index=>4}]
+      expected = [{:text => "Danish", :value => "1", :index => 0},
+                  {:text => "English", :value => "2", :index => 1},
+                  {:text => "Norwegian", :value => "3", :index => 2},
+                  {:text => "Polish", :value => "", :index => 3},
+                  {:text => "Swedish", :value => "Swedish", :index => 4}]
 
       @widget.options(:text, :value, :index).should eql expected
 
@@ -221,10 +221,10 @@ describe Domkey::View::SelectList do
     end
 
     it 'options by specifiers' do
-      expected = [{:text=>"Tomato", :value=>"tomato", :index=>0},
-                  {:text=>"Cucumber", :value=>"gurken", :index=>1},
-                  {:text=>"Other", :value=>"", :index=>2},
-                  {:text=>"Default", :value=>"Default", :index=>3}]
+      expected = [{:text => "Tomato", :value => "tomato", :index => 0},
+                  {:text => "Cucumber", :value => "gurken", :index => 1},
+                  {:text => "Other", :value => "", :index => 2},
+                  {:text => "Default", :value => "Default", :index => 3}]
 
       @widget.options(:text, :value, :index).should eql expected
     end
