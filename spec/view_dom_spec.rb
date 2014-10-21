@@ -56,7 +56,7 @@ describe Domkey::View do
         it 'select_list' do
           payload = {:multilist => {:text => 'Polish'}}
           @view.set payload
-          @view.value(payload).should eql({:multilist => [{:text => "English"}, {:text => "Norwegian"}, {:text => "Polish"}]})
+          @view.value(payload).should eql :multilist => {:text => ["English", "Norwegian", "Polish"]}
           @view.options(payload).should eql({:multilist => [{:text => "Danish"}, {:text => "English"}, {:text => "Norwegian"}, {:text => "Polish"}, {:text => "Swedish"}]})
         end
 

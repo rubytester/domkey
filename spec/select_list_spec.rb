@@ -19,8 +19,8 @@ describe Domkey::View::SelectList do
   context "Multi" do
 
     before :all do
-      view    = SelectListExampleView.new
-      @widget = view.multilist
+      @view   = SelectListExampleView.new
+      @widget = @view.multilist
     end
 
     before :each do
@@ -59,25 +59,25 @@ describe Domkey::View::SelectList do
       it 'set by text' do
         @widget.set text: 'Polish'
         expect(@widget.value).to eq [""] #option has no value attribute defined
-        expect(@widget.value :text).to eq [{:text => "Polish"}]
+        expect(@widget.value :text).to eq :text => ["Polish"]
       end
 
       it 'set by array of texts' do
         @widget.set text: ['Polish', /orwegia/]
         expect(@widget.value).to eq ["3", ""]
-        expect(@widget.value :text).to eq [{:text => "Norwegian"}, {:text => "Polish"}]
+        expect(@widget.value :text).to eq :text => ["Norwegian", "Polish"]
       end
 
       it 'set by position index' do
         @widget.set index: 1
         expect(@widget.value).to eq ['2']
-        expect(@widget.value :index, :value).to eq [{index: 1, value: '2'}]
+        expect(@widget.value :index, :value).to eq index: [1], value: ['2']
       end
 
       it 'set index array of option positions' do
         @widget.set index: [0, 2]
         expect(@widget.value).to eq ["1", "3"]
-        expect(@widget.value :index).to eq [{:index => 0}, {:index => 2}]
+        expect(@widget.value :index).to eq :index => [0, 2]
       end
 
       it 'set value attribute string' do
@@ -95,10 +95,7 @@ describe Domkey::View::SelectList do
                     text:  'Swedish',
                     index: 3
         expect(@widget.value).to eq ["1", "2", "", "Swedish"]
-        expect(@widget.value :text, :index).to eq [{:text => "Danish", :index => 0},
-                                                   {:text => "English", :index => 1},
-                                                   {:text => "Polish", :index => 3},
-                                                   {:text => "Swedish", :index => 4}]
+        expect(@widget.value :text, :index).to eq :text => ["Danish", "English", "Polish", "Swedish"], :index => [0, 1, 3, 4]
       end
 
       it 'set appends in multiselect' do
@@ -135,6 +132,23 @@ describe Domkey::View::SelectList do
       expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError, /Unknown way of setting by value/)
     end
 
+    context "using view payload" do
+
+      it 'value attributes as default' do
+        payload = {:multilist => ['1', '3']}
+        @view.set payload
+        expect(@widget.value).to eq ['1', '3']
+        expect(@view.value payload).to eq :multilist => ["1", "3"]
+      end
+
+      it 'text qualifier' do
+        payload = {:multilist => {:text => ["Norwegian", "Swedish"]}}
+        @view.set payload
+        expect(@widget.value :text).to eq payload[:multilist]
+        expect(@view.value payload).to eq payload
+      end
+
+    end
   end
 
   context "Single" do
@@ -190,41 +204,41 @@ describe Domkey::View::SelectList do
       it 'set by array of text' do
         @widget.set text: ['Other', 'Tomato']
         expect(@widget.value).to eq ['tomato']
-        expect(@widget.value :text).to eq [{text: 'Tomato'}]
+        expect(@widget.value :text).to eq text: ['Tomato']
       end
 
       it 'default value qualified' do
-        expect(@widget.value [:index, :value, :text]).to eq [{index: 3, value: 'Default', text: 'Default'}]
+        expect(@widget.value [:index, :value, :text]).to eq :index => [3], :value => ["Default"], :text => ["Default"]
       end
 
       it 'set index position' do
         @widget.set index: 1
         expect(@widget.value).to eq ['gurken']
-        expect(@widget.value :index).to eq [{index: 1}]
+        expect(@widget.value :index).to eq index: [1]
       end
 
       it 'set index array' do
         @widget.set index: [2, 1]
         expect(@widget.value).to eq ['gurken'] # the last one wins
-        expect(@widget.value :index, :value).to eq [{:index => 1, :value => "gurken"}]
+        expect(@widget.value :index, :value).to eq :index => [1], :value => ["gurken"]
       end
 
       it 'set value attribute string' do
         #equivalenet to set 'tomato' becuse :value attribute is default way of selecting
         @widget.set value: 'tomato'
-        expect(@widget.value :value).to eq [{value: 'tomato'}]
+        expect(@widget.value :value).to eq value: ['tomato']
       end
 
       it 'set value attribute array of strings' do
         @widget.set value: ['tomato', 'gurken']
-        expect(@widget.value :value).to eq [{value: 'gurken'}] #last wins
+        expect(@widget.value :value).to eq value: ['gurken'] #last wins
       end
 
       it 'example set by many qualifiers at once' do
         @widget.set value: ['gurken'],
                     text:  'Tomato',
                     index: 1
-        expect(@widget.value :value, :text, :index).to eq [{:value => "gurken", :text => "Cucumber", :index => 1}] #last one wins
+        expect(@widget.value :value, :text, :index).to eq :value => ["gurken"], :text => ["Cucumber"], :index => [1] #last one wins
       end
 
 
