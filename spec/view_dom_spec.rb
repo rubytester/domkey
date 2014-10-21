@@ -6,6 +6,14 @@ describe Domkey::View do
     include Domkey::View
     dom(:street) { text_field(class: 'street1') }
 
+    def multilist
+      SelectList.new -> { select_list(id: 'multiselect') }
+    end
+
+    def cbg
+      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
+    end
+
     def container
       SingleDomContainer.new browser.div(id: 'container')
     end
@@ -34,10 +42,33 @@ describe Domkey::View do
       @view.street.should be_kind_of(Domkey::View::PageObject)
     end
 
-    it 'dom set and value' do
-      @view.street.value.should == ''
-      @view.street.set 'bla'
-      @view.street.value.should == 'bla'
+    context 'payload should driver set value and options' do
+
+      it "text_field" do
+        payload = {:street => 'Aha'}
+        @view.set payload
+        @view.value(payload).should eql(payload)
+        @view.options(payload).should eql(:street => []) #not opiton selectable page object
+      end
+
+      context "option selectable" do
+
+        it 'select_list' do
+          payload = {:multilist => {:text => 'Polish'}}
+          @view.set payload
+          @view.value(payload).should eql({:multilist => [{:text => "English"}, {:text => "Norwegian"}, {:text => "Polish"}]})
+          @view.options(payload).should eql({:multilist => [{:text => "Danish"}, {:text => "English"}, {:text => "Norwegian"}, {:text => "Polish"}, {:text => "Swedish"}]})
+        end
+
+        it 'checkbox group' do
+          # has 2 qualifiers
+          payload = {:cbg => {:label => 'Tomatorama', :index => 1}}
+          @view.set(payload)
+          @view.value(payload).should eql({:cbg => [{:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]})
+          @view.options(payload).should eql({:cbg => [{:label => "Cucumberama", :index => 0}, {:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]})
+        end
+
+      end
     end
   end
 
@@ -62,10 +93,10 @@ describe Domkey::View do
       @view.container.set street: 'Nowy Świat'
 
       v = @view.container.value :street
-      v.should eql({:street=>"Nowy Świat"})
+      v.should eql({:street => "Nowy Świat"})
 
       v = @view.container.value [:street]
-      v.should eql({:street=>"Nowy Świat"})
+      v.should eql({:street => "Nowy Świat"})
     end
   end
 end
