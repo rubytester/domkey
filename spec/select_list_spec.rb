@@ -148,87 +148,95 @@ describe Domkey::View::SelectList do
       goto_html("test.html")
     end
 
-    it 'initial value' do
-      @widget.value.should eql ['Default']
+    it 'default initial value attributes' do
+      expect(@widget.value).to eq ['Default']
     end
 
-    it 'value keys' do
-      @widget.value([:index, :value, :text]).should eql [{index: 3, value: 'Default', text: 'Default'}]
+    it 'default options returns value attributes' do
+      expect(@widget.options).to eq ['tomato', 'gurken', '', 'Default']
     end
 
-    it 'set string selects value' do
+    it 'set string selects value attribute' do
       @widget.set 'tomato'
-      @widget.value.should eql ['tomato']
+      expect(@widget.value).to eq ['tomato']
 
+      # select new unselects previous behaivor of select list single
       @widget.set 'gurken'
-      @widget.value.should eql ['gurken']
+      expect(@widget.value).to eq ['gurken']
     end
 
     it 'set when value not present should error' do
       expect { @widget.set '' }.to raise_error(Watir::Exception::NoValueFoundException)
-      @widget.value.should eql ['Default'] #interesting quirk
+      expect(@widget.value).to eq ['Default'] #interesting quirk
     end
 
-    it 'set array of text' do
+    it 'set array of text selects one by one and last one wins' do
       @widget.set ['gurken', 'tomato'] #cycle on single select list
-      @widget.value.should eql ['tomato'] # the last one set
+      expect(@widget.value).to eq ['tomato'] # the last one set
     end
 
-    it 'set by array of text' do
-      @widget.set text: ['Other', 'Tomato']
-      @widget.value.should eql ['tomato']
-    end
-
-    it 'set false has no effect. value is selected item text' do
+    it 'set false has no effect' do
       @widget.set false
       @widget.value.should eql ['Default']
     end
 
-    it 'set empty array has no effect. value is selected item text' do
+    it 'set empty array has no effect' do
       @widget.set []
       @widget.value.should eql ['Default']
     end
 
-    it 'set index position' do
-      @widget.set index: 1
-      @widget.value.should eql ['gurken']
-    end
+    context "using OptionSelectable qualifiers" do
 
-    it 'set index array' do
-      @widget.set index: [2, 1]
-      @widget.value.should eql ['gurken'] # the last one wins
-    end
+      it 'set by array of text' do
+        @widget.set text: ['Other', 'Tomato']
+        expect(@widget.value).to eq ['tomato']
+        expect(@widget.value :text).to eq [{text: 'Tomato'}]
+      end
 
-    it 'set value attribute string' do
-      @widget.set value: 'tomato'
-      @widget.value.should eql ['tomato']
-    end
+      it 'default value qualified' do
+        expect(@widget.value [:index, :value, :text]).to eq [{index: 3, value: 'Default', text: 'Default'}]
+      end
 
-    it 'set value attribute array of strings' do
-      @widget.set value: ['tomato', 'gurken']
-      @widget.value.should eql ['gurken']
-    end
+      it 'set index position' do
+        @widget.set index: 1
+        expect(@widget.value).to eq ['gurken']
+        expect(@widget.value :index).to eq [{index: 1}]
+      end
 
-    it 'set by many qualifiers at once' do
-      @widget.set value: ['gurken'],
-                  text:  'Tomato',
-                  index: 2
-      @widget.value.should eql ['']
-    end
+      it 'set index array' do
+        @widget.set index: [2, 1]
+        expect(@widget.value).to eq ['gurken'] # the last one wins
+        expect(@widget.value :index, :value).to eq [{:index => 1, :value => "gurken"}]
+      end
 
-    it 'options default' do
+      it 'set value attribute string' do
+        #equivalenet to set 'tomato' becuse :value attribute is default way of selecting
+        @widget.set value: 'tomato'
+        expect(@widget.value :value).to eq [{value: 'tomato'}]
+      end
 
-      @widget.options.should eql ['tomato', 'gurken', '', 'Default']
+      it 'set value attribute array of strings' do
+        @widget.set value: ['tomato', 'gurken']
+        expect(@widget.value :value).to eq [{value: 'gurken'}] #last wins
+      end
 
-    end
+      it 'example set by many qualifiers at once' do
+        @widget.set value: ['gurken'],
+                    text:  'Tomato',
+                    index: 1
+        expect(@widget.value :value, :text, :index).to eq [{:value => "gurken", :text => "Cucumber", :index => 1}] #last one wins
+      end
 
-    it 'options by specifiers' do
-      expected = [{:text => "Tomato", :value => "tomato", :index => 0},
-                  {:text => "Cucumber", :value => "gurken", :index => 1},
-                  {:text => "Other", :value => "", :index => 2},
-                  {:text => "Default", :value => "Default", :index => 3}]
 
-      @widget.options(:text, :value, :index).should eql expected
+      it 'options qualified' do
+        v = [{:text => "Tomato", :value => "tomato", :index => 0},
+             {:text => "Cucumber", :value => "gurken", :index => 1},
+             {:text => "Other", :value => "", :index => 2},
+             {:text => "Default", :value => "Default", :index => 3}]
+        expect(@widget.options :text, :value, :index).to eq v
+      end
+
+
     end
   end
 end
