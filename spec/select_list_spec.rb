@@ -25,114 +25,112 @@ describe Domkey::View::SelectList do
 
     before :each do
       goto_html("test.html")
-      @widget.set false
+      @widget.set false #unselect all first
     end
 
-    it 'initial example' do
-      @widget.set ["2", "3"]
-      @widget.value.should eql ["2", "3"]
-      # array
-      @widget.value([:index, :text, :value]).should eql [{:index => 1, :text => "English", :value => "2"}, {:index => 2, :text => "Norwegian", :value => "3"}]
-      # splat list
-      @widget.value(:index, :label).should eql [{:index => 1, :label => "English"}, {:index => 2, :label => "Norwegian"}]
-
-      # one element array
-      @widget.value([:index]).should eql [{:index => 1}, {:index => 2}]
-      # one elmenet splat list
-      @widget.value(:value).should eql [{:value => "2"}, {:value => "3"}]
-
+    it 'options by default' do
+      expect(@widget.options).to eq ["1", "2", "3", "", "Swedish"]
     end
 
     it 'set value string' do
       @widget.set '1'
-      @widget.value.should eql ['1']
+      expect(@widget.value).to eq ['1']
     end
 
     it 'set value array string' do
       @widget.set ['1', '3']
-      @widget.value.should eql ['1', '3']
+      expect(@widget.value).to eq ['1', '3']
     end
 
     it 'set false clears all. value is empty array' do
+      @widget.set ['1', '3']
       @widget.set false
-      @widget.value.should eql []
+      expect(@widget.value).to eq []
     end
 
-    it 'set empty array clears all. value is empty array' do
-      @widget.set []
-      @widget.value.should eql []
+    it 'set empty array should not modify state' do
+      @widget.set ['1', '3'] #seed
+      @widget.set [] #append none
+      expect(@widget.value).to eq ["1", "3"]
     end
 
-    it 'set string' do
-      @widget.set text: 'Polish'
-      @widget.value.should eql [""] #option has no value attribute defined
+    context "using OptionSelectable qualifiers" do
+
+      it 'set by text' do
+        @widget.set text: 'Polish'
+        expect(@widget.value).to eq [""] #option has no value attribute defined
+        expect(@widget.value :text).to eq [{:text => "Polish"}]
+      end
+
+      it 'set by array of texts' do
+        @widget.set text: ['Polish', /orwegia/]
+        expect(@widget.value).to eq ["3", ""]
+        expect(@widget.value :text).to eq [{:text => "Norwegian"}, {:text => "Polish"}]
+      end
+
+      it 'set by position index' do
+        @widget.set index: 1
+        expect(@widget.value).to eq ['2']
+        expect(@widget.value :index, :value).to eq [{index: 1, value: '2'}]
+      end
+
+      it 'set index array of option positions' do
+        @widget.set index: [0, 2]
+        expect(@widget.value).to eq ["1", "3"]
+        expect(@widget.value :index).to eq [{:index => 0}, {:index => 2}]
+      end
+
+      it 'set value attribute string' do
+        @widget.set value: '2'
+        expect(@widget.value).to eq ['2']
+      end
+
+      it 'set value attribute array of strings' do
+        @widget.set value: ['2', '1']
+        expect(@widget.value).to eq ["1", "2"]
+      end
+
+      it 'set by many qualifiers at once' do
+        @widget.set value: ['2', '1'],
+                    text:  'Swedish',
+                    index: 3
+        expect(@widget.value).to eq ["1", "2", "", "Swedish"]
+        expect(@widget.value :text, :index).to eq [{:text => "Danish", :index => 0},
+                                                   {:text => "English", :index => 1},
+                                                   {:text => "Polish", :index => 3},
+                                                   {:text => "Swedish", :index => 4}]
+      end
+
+      it 'set appends in multiselect' do
+        @widget.set value: ['2', '1'], index: 3
+        expect(@widget.value).to eq ["1", "2", ""]
+        # now append extra one
+        @widget.set text: 'Swedish'
+        expect(@widget.value).to eq ["1", "2", "", "Swedish"]
+      end
+
+      it 'options by qualifiers' do
+        expected = [{:text => "Danish", :value => "1", :index => 0},
+                    {:text => "English", :value => "2", :index => 1},
+                    {:text => "Norwegian", :value => "3", :index => 2},
+                    {:text => "Polish", :value => "", :index => 3},
+                    {:text => "Swedish", :value => "Swedish", :index => 4}]
+
+        @widget.options(:text, :value, :index).should eql expected
+
+      end
+
     end
 
-    it 'set regexp' do
+    it 'set regexp acts on value' do
       @widget.set /2/
-      @widget.value.should eql ["2"]
+      expect(@widget.value).to eq ["2"]
     end
-
-    it 'set by array of texts' do
-      @widget.set text: ['Polish', /orwegia/]
-      @widget.value.should eql ["3", ""]
-    end
-
-    it 'set index by option position' do
-      @widget.set index: 1
-      @widget.value.should eql ['2']
-      @widget.value(:index, :value).should eql [{index: 1, value: '2'}]
-    end
-
-    it 'set index array of option positions' do
-      @widget.set index: [0, 2]
-      @widget.value.should eql ["1", "3"]
-    end
-
-    it 'set value attribute string' do
-      @widget.set value: '2'
-      @widget.value.should eql ['2']
-    end
-
-    it 'set value attribute array of strings' do
-      @widget.set value: ['2', '1']
-      @widget.value.should eql ["1", "2"]
-    end
-
-    it 'set by many qualifiers at once' do
-      @widget.set value: ['2', '1'],
-                  text:  'Swedish',
-                  index: 3
-      @widget.value.should eql ["1", "2", "", "Swedish"]
-    end
-
-    it 'set appends in multiselect' do
-      @widget.set value: ['2', '1'], index: 3
-      @widget.value.should eql ["1", "2", ""]
-      @widget.set text: 'Swedish'
-      @widget.value.should eql ["1", "2", "", "Swedish"]
-    end
-
 
     it 'set by symbol' do
-      expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError, /Unknown way of setting by value/)
     end
 
-    it 'options by default' do
-      @widget.options.should eql ["1", "2", "3", "", "Swedish"]
-    end
-
-    it 'options by opts' do
-
-      expected = [{:text => "Danish", :value => "1", :index => 0},
-                  {:text => "English", :value => "2", :index => 1},
-                  {:text => "Norwegian", :value => "3", :index => 2},
-                  {:text => "Polish", :value => "", :index => 3},
-                  {:text => "Swedish", :value => "Swedish", :index => 4}]
-
-      @widget.options(:text, :value, :index).should eql expected
-
-    end
   end
 
   context "Single" do
