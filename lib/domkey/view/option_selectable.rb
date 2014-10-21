@@ -81,6 +81,8 @@ module Domkey
                   set_by_index(value)
                 when :value
                   set_by_value(value)
+                else
+                  fail(Exception::NotImplementedError, "Unknown option qualifier: #{how.inspect}")
               end
             end
           else
