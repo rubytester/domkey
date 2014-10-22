@@ -153,7 +153,7 @@ describe Domkey::View::CheckboxGroup do
 
     it 'set by label regexp' do
       @v.group.set label: /umberama/
-      expect(@v.group.value [:index, :value, :text, :label]).to eq [{:index => 0, :value => 'cucumber', :text => 'Cucumberama', :label => 'Cucumberama'}]
+      expect(@v.group.value [:index, :value, :text, :label]).to eq :index => [0], :value => ["cucumber"], :text => ["Cucumberama"], :label => ["Cucumberama"]
     end
 
     it 'set by index array string, regex' do
@@ -164,33 +164,31 @@ describe Domkey::View::CheckboxGroup do
     it 'view set by index array string, regex' do
       @v.set group: {label: ['Cucumberama', /atorama/], index: 2}
       expect(@v.value :group).to eq group: ['cucumber', 'tomato', 'other']
-      expect(@v.value group: [:label, :index]).to eq group: [{label: 'Cucumberama', index: 0}, {label: 'Tomatorama', index: 1}, {label: 'Other', index: 2}]
+      expect(@v.value group: [:label, :index]).to eq :group => {:label => ["Cucumberama", "Tomatorama", "Other"], :index => [0, 1, 2]}
     end
 
     it 'value options single selected' do
       @v.group.set [/tomat/]
       expect(@v.group.value).to eq ['tomato']
 
-      expect(@v.group.value :label).to eq [{:label => 'Tomatorama'}]
-      expect(@v.group.value :label, :value, :index).to eq [{:label => 'Tomatorama', :value => 'tomato', :index => 1}]
+      expect(@v.group.value :label).to eq :label => ['Tomatorama']
+      expect(@v.group.value :label, :value, :index).to eq :label => ['Tomatorama'], :value => ['tomato'], :index => [1]
     end
 
     it 'value options many selected' do
       @v.group.set ['other', /tomat/, /cucum/]
       expect(@v.group.value).to eq ['cucumber', 'tomato', 'other']
 
-      expect(@v.group.value :label).to eq [{:label => 'Cucumberama'}, {:label => 'Tomatorama'}, {:label => 'Other'}]
+      expect(@v.group.value :label).to eq :label => ['Cucumberama', 'Tomatorama', 'Other']
 
-      expect(@v.group.value :label, :index, :value).to eq [{:label => 'Cucumberama', :index => 0, :value => 'cucumber'},
-                                                           {:label => 'Tomatorama', :index => 1, :value => 'tomato'},
-                                                           {:label => 'Other', :index => 2, :value => 'other'}]
+      expect(@v.group.value :label, :index, :value).to eq :label => ["Cucumberama", "Tomatorama", "Other"], :index => [0, 1, 2], :value => ["cucumber", "tomato", "other"]
     end
 
     it 'value options none selected' do
       @v.group.set []
       expect(@v.group.value).to eq []
-      expect(@v.group.value :label).to eq []
-      expect(@v.group.value :label, :index, :value).to eq []
+      expect(@v.group.value :label).to eq :label => []
+      expect(@v.group.value :label, :index, :value).to eq :label => [], :index => [], :value => []
     end
 
     it 'options by opts single' do

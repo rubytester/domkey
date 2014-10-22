@@ -64,8 +64,8 @@ describe Domkey::View do
           # has 2 qualifiers
           payload = {:cbg => {:label => 'Tomatorama', :index => 1}}
           @view.set(payload)
-          @view.value(payload).should eql({:cbg => [{:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]})
-          @view.options(payload).should eql({:cbg => [{:label => "Cucumberama", :index => 0}, {:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]})
+          @view.value(payload).should eql :cbg => {:label => ["Tomatorama", "Other"], :index => [1, 2]}
+          @view.options(payload).should eql :cbg => [{:label => "Cucumberama", :index => 0}, {:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]
         end
 
       end

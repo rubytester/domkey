@@ -32,9 +32,9 @@ describe Domkey::View::RadioGroup do
   it 'initial value on test page' do
     expect(@v.group.value).to eq ['other']
     # using option qualifieres
-    expect(@v.group.value :index, :value, :label, :text).to eq [{:index => 2, :value => "other", :label => "Other", :text => "Other"}]
-    expect(@v.group.value [:index]).to eq [{:index => 2}]
-    expect(@v.group.value [:value]).to eql [{:value => 'other'}]
+    expect(@v.group.value :index, :value, :label, :text).to eq :index => [2], :value => ["other"], :label => ["Other"], :text => ["Other"]
+    expect(@v.group.value [:index]).to eq :index => [2]
+    expect(@v.group.value [:value]).to eql :value => ['other']
   end
 
   it 'options by default should return value attribute of each radio' do
@@ -109,7 +109,7 @@ describe Domkey::View::RadioGroup do
     it 'set by label string' do
       @v.group.set label: 'Tomato'
       expect(@v.group.value).to eq ['tomato']
-      expect(@v.group.value :text).to eq [{text: 'Tomato'}]
+      expect(@v.group.value :text).to eq :text => ["Tomato"]
     end
 
     it 'set by label regexp' do
