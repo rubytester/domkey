@@ -13,7 +13,7 @@ describe Domkey::BrowserSession do
       fakebrowser.stub(:exist?).and_return(true)
       Watir::Browser.should_receive(:new).once.and_return(fakebrowser)
       b = Domkey.browser
-      b.should eq fakebrowser
+      expect(b).to eq fakebrowser
       b2 = Domkey.browser
       expect(b).to eq b2
       Domkey::BrowserSession.instance.browser=nil

@@ -64,9 +64,9 @@ describe Domkey::View do
       expect(v).to be_a(Domkey::View::PageObject)
     end
 
-    view.address.element.should respond_to(:each_pair)
+    expect(view.address.element).to respond_to(:each_pair)
     view.address.element.each_pair do |k, v|
-      v.should be_kind_of(Watir::TextField) #resolve suitecase
+      expect(v).to be_a(Watir::TextField) #resolve suitecase
     end
 
     expect(view.address.element.keys).to eq [:street, :city]

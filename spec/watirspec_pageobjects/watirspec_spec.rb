@@ -7,6 +7,6 @@ describe "Watirspec setup for Domkey" do
   end
 
   it 'Domkey.browser is browser from watirspec' do
-    Domkey.browser.title.should == "Forms with input elements"
+    expect(Domkey.browser.title).to eq "Forms with input elements"
   end
 end

@@ -113,7 +113,7 @@ describe Domkey::View::SelectList do
                     {:text => "Polish", :value => "", :index => 3},
                     {:text => "Swedish", :value => "Swedish", :index => 4}]
 
-        @widget.options(:text, :value, :index).should eql expected
+        expect(@widget.options :text, :value, :index).to eq expected
 
       end
 
@@ -191,12 +191,12 @@ describe Domkey::View::SelectList do
 
     it 'set false has no effect' do
       @widget.set false
-      @widget.value.should eql ['Default']
+      expect(@widget.value).to eq ['Default']
     end
 
     it 'set empty array has no effect' do
       @widget.set []
-      @widget.value.should eql ['Default']
+      expect(@widget.value).to eq ['Default']
     end
 
     context "using OptionSelectable qualifiers" do

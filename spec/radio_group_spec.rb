@@ -20,8 +20,8 @@ describe Domkey::View::RadioGroup do
     goto_html("test.html")
 
     @v = RadioGroupExampleView.new
-    @v.group.count.should == 3
-    @v.group.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+    expect(@v.group.count).to be(3)
+    @v.group.to_a.each { |e| expect(e).to be_a(Domkey::View::PageObject) }
   end
 
   it 'should fail when group defintion finds 2 distinct groups' do
