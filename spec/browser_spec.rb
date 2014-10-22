@@ -15,7 +15,7 @@ describe Domkey::BrowserSession do
       b = Domkey.browser
       b.should eq fakebrowser
       b2 = Domkey.browser
-      b.should eql b2
+      expect(b).to eq b2
       Domkey::BrowserSession.instance.browser=nil
     end
 
