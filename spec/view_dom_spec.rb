@@ -30,7 +30,7 @@ describe Domkey::View do
 
   context 'dom for single element' do
 
-    before :all do
+    before :each do
       @view = SingleDom.new
     end
 
