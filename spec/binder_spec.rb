@@ -26,9 +26,8 @@ describe Domkey::View::Binder do
     dom(:state) { text_field(id: 'state1') }
 
     # example of not found element
-    dom(:keyed_state) do
-      {state: -> { text_field(id: 'state1') }}
-    end
+    domkey :keyed_state, state: -> { text_field(id: 'state1') }
+
 
     # semantic descriptor that returns another view
     # the other view has PageObjects that participate in this view
