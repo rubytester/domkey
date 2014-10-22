@@ -38,24 +38,24 @@ module Domkey
 
       def value_by_options opts
         validate_scope
-        result = []
-        each_with_index do |e, i|
-          if e.element.set?
-
-            v = opts.map do |o|
-              case o
-              when :index
-                [o, i]
-              when :label, :text
-                [o, LabelMapper.find(e).element.text]
-              else
-                [o, e.send(o)]
-              end
-            end
-            result << Hash[v]
+        result = opts.map do |qualifier|
+          qvalue = []
+          each_with_index do |e, i|
+            next unless e.element.set?
+            qvalue << case qualifier
+                      when :index
+                        i
+                      when :label, :text
+                        LabelMapper.find(e).element.text
+                      when :value
+                        e.value
+                      else
+                        fail "do not know what u want"
+                      end
           end
+          [qualifier, qvalue]
         end
-        result
+        Hash[result]
       end
 
       def options_by_default

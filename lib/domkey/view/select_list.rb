@@ -25,9 +25,11 @@ module Domkey
       end
 
       def value_by_options opts
-        element.selected_options.map do |o|
-          Hash[opts.map { |opt| [opt, o.send(opt)] }]
+        so        = element.selected_options
+        qs_and_vs = opts.map do |qualifier|
+          [qualifier, so.map { |o| o.send(qualifier) }]
         end
+        Hash[qs_and_vs]
       end
 
       def value_by_default

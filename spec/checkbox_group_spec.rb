@@ -1,195 +1,215 @@
 require 'spec_helper'
 
+# OptionSelectable object is an object that responds to options and is selectable by its options
+# RadioGroup, SelectList, CheckboxGroup.
+# CheckboxGroup acts like Multi Select
+# RadioGroup acts like Single Select
+# SelectList acts like multi or single
 describe Domkey::View::CheckboxGroup do
 
-  class CollectionAsPageObjectCheckboxGroupView
+  class CheckboxGroupExampleView
     include Domkey::View
 
     def group
       CheckboxGroup.new -> { checkboxes(name: 'fruit') }
     end
 
-    def groups
+    def not_valid_group
       CheckboxGroup.new -> { checkboxes(name: /^fruit/) }
     end
   end
 
-  before :all do
-    goto_html("test.html")
+  before :each do
+    goto_html('test.html')
+
+    @v = CheckboxGroupExampleView.new
+
+    # precondition on distinct group
+    @v.group.count.should == 3
+    @v.group.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+    # clear all selections first
+    @v.group.set false
   end
 
-  it 'two groups example' do
-    v = CollectionAsPageObjectCheckboxGroupView.new
-    expect { v.groups.to_a.size }.to raise_error
-    expect { v.groups.map { |e| e } }.to raise_error
-    expect { v.groups.count }.to raise_error
+  it 'should fail when group defintion finds 2 distinct groups' do
+    v = CheckboxGroupExampleView.new
+    expect { v.not_valid_group.to_a }.to raise_error(Domkey::Exception::Error, /definition scope too broad: Found 2 radio groups/)
   end
 
-  context "OptionSelectable object multi" do
-    # OptionSelectable object is an object that responds to options and is selectable by its optioins;
-    # RadioGroup, Select, CheckboxGroup. CheckboxGroup acts like Multi Select, RadioGroup acts like Single Select
+  it 'set string' do
+    @v.group.set 'tomato'
+    expect(@v.group.value).to eq ['tomato']
+  end
 
-    before :each do
-      goto_html("test.html")
+  it 'view set string' do
+    @v.set group: 'tomato'
+    expect(@v.value :group).to eq group: ['tomato']
+  end
 
-      @v = CollectionAsPageObjectCheckboxGroupView.new
-      @v.group.count.should == 3
-      @v.group.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
-      # clear all selections first
-      @v.group.set false
-    end
+  it 'set regexp' do
+    @v.group.set /^othe/
+    expect(@v.group.value).to eq ['other']
+  end
 
-    it 'set string' do
-      @v.group.set 'tomato'
-      @v.group.value.should eql ['tomato']
-    end
+  it 'view set regexp' do
+    @v.set group: /^othe/
+    expect(@v.value :group).to eq group: ['other']
+  end
 
-    it 'view set string' do
-      @v.set group: 'tomato'
-      @v.value(:group).should eql group: ['tomato']
-    end
+  it 'set by not implemented symbol' do
+    expect { @v.group.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
+  end
 
-    it 'set regexp' do
-      @v.group.set /^othe/
-      @v.group.value.should eql ['other']
-    end
+  it 'set appends by default' do
+    @v.group.set 'tomato'
+    expect(@v.group.value).to eq ['tomato']
 
-    it 'view set regexp' do
-      @v.set group: /^othe/
-      @v.value(:group).should eql(group: ['other'])
-    end
+    @v.group.set 'other'
+    expect(@v.group.value).to eq ['tomato', 'other']
 
-    it 'set by not implemented symbol' do
-      expect { @v.group.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
-    end
+    @v.group.set false
+    expect(@v.group.value).to eq []
+  end
 
-    it 'set appends by default' do
-      @v.group.set 'tomato'
-      @v.group.value.should eql ['tomato']
-      @v.group.set 'other'
-      @v.group.value.should eql ['tomato', 'other']
-      @v.group.set false
-      @v.group.value.should eql []
-    end
+  it 'set array of strings or regexp' do
+    @v.group.set ['tomato']
+    expect(@v.group.value).to eq ['tomato']
 
-    it 'set array of strings or regexp' do
-      @v.group.set ['tomato']
-      @v.group.value.should eql ['tomato']
+    @v.group.set ['other', /tomat/]
+    expect(@v.group.value).to eq ['tomato', 'other']
+  end
 
-      @v.group.set ['other', /tomat/]
-      @v.group.value.should eql ['tomato', 'other']
-    end
+  it 'view set array of strings or regexp' do
+    @v.set group: ['tomato']
+    expect(@v.value :group).to eq group: ['tomato']
 
-    it 'view set array of strings or regexp' do
-      @v.set group: ['tomato']
-      @v.value(:group).should eql(group: ['tomato'])
+    @v.set group: ['other', /tomat/]
+    expect(@v.value :group).to eq group: ['tomato', 'other']
+  end
 
-      @v.set group: ['other', /tomat/]
-      @v.value(:group).should eql(group: ['tomato', 'other'])
-    end
+  it 'set false clears all' do
+    @v.group.set ['tomato']
+    @v.group.set false
+    expect(@v.group.value).to eq []
+  end
 
-    it 'set false clears all' do
-      @v.group.set false
-      @v.group.value.should eql []
-    end
+  it 'view set false clears all' do
+    @v.set group: ['tomato']
+    expect(@v.value :group).to eq group: ["tomato"]
+    @v.set group: false
+    expect(@v.value :group).to eq group: []
+  end
 
-    it 'set empty array clears all' do
-      @v.group.set []
-      @v.group.value.should eql []
-    end
+  it 'set true enables all' do
+    expect(@v.group.set(true)).to_not be_empty
+    expect(@v.group.value).to eq ['cucumber', 'tomato', 'other']
+  end
 
-    it 'set value string not found error' do
-      expect { @v.group.set 'toma' }.to raise_error
-    end
+  it 'view set true enables all' do
+    @v.set group: true
+    expect(@v.value :group).to eq group: ["cucumber", "tomato", "other"]
+  end
 
-    it 'set value regexp not found error' do
-      expect { @v.group.set /balaba/ }.to raise_error
-    end
+  it 'set empty array should be noop' do
+    @v.set group: ['tomato']
+    @v.group.set []
+    expect(@v.group.value).to eq ["tomato"]
+  end
 
-    it 'set by index single' do
+  it 'set value string not found error' do
+    expect { @v.group.set 'toma' }.to raise_error(Domkey::Exception::NotFoundError)
+  end
+
+  it 'set value regexp not found error' do
+    expect { @v.group.set /balaba/ }.to raise_error(Domkey::Exception::NotFoundError)
+  end
+
+  it 'options by default' do
+    expect(@v.group.options).to eq ['cucumber', 'tomato', 'other']
+  end
+
+
+  context "using OptionSelectable qualifiers" do
+
+    it 'set by position index single' do
       @v.group.set index: 1
-      @v.group.value.should eql ['tomato']
+      expect(@v.group.value).to eq ['tomato']
     end
 
-    it 'set by index array' do
+    it 'set by position index array' do
       @v.group.set index: [0, 2, 1]
-      @v.group.value.should eql ['cucumber', 'tomato', 'other']
+      expect(@v.group.value).to eq ['cucumber', 'tomato', 'other']
     end
 
-    it 'view set by index array' do
+    it 'view set by position index array' do
       @v.set group: {index: [0, 2, 1]}
-      @v.value(:group).should eql(group: ['cucumber', 'tomato', 'other'])
+      expect(@v.value :group).to eq group: ['cucumber', 'tomato', 'other']
     end
 
     it 'set by label string' do
       @v.group.set label: 'Tomatorama'
-      @v.group.value.should eql ['tomato']
+      expect(@v.group.value).to eq ['tomato']
     end
 
     it 'set by label regexp' do
       @v.group.set label: /umberama/
-      @v.group.value([:index, :value, :text, :label]).should eql([{:index => 0, :value => "cucumber", :text => "Cucumberama", :label => "Cucumberama"}])
+      expect(@v.group.value [:index, :value, :text, :label]).to eq :index => [0], :value => ["cucumber"], :text => ["Cucumberama"], :label => ["Cucumberama"]
     end
-
 
     it 'set by index array string, regex' do
       @v.group.set label: ['Cucumberama', /atorama/], index: 2
-      @v.group.value.should eql ['cucumber', 'tomato', 'other']
+      expect(@v.group.value).to eq ['cucumber', 'tomato', 'other']
     end
 
     it 'view set by index array string, regex' do
       @v.set group: {label: ['Cucumberama', /atorama/], index: 2}
-      @v.value(:group).should eql(group: ['cucumber', 'tomato', 'other'])
-      @v.value(group: [:label, :index]).should eql(group: [{label: "Cucumberama", index: 0}, {label: "Tomatorama", index: 1}, {label: "Other", index: 2}])
+      expect(@v.value :group).to eq group: ['cucumber', 'tomato', 'other']
+      expect(@v.value group: [:label, :index]).to eq :group => {:label => ["Cucumberama", "Tomatorama", "Other"], :index => [0, 1, 2]}
     end
 
     it 'value options single selected' do
       @v.group.set [/tomat/]
-      @v.group.value.should eql ['tomato']
+      expect(@v.group.value).to eq ['tomato']
 
-      @v.group.value(:label).should eql [{:label=>"Tomatorama"}]
-      @v.group.value([:label]).should eql [{:label=>"Tomatorama"}]
-      @v.group.value(:label, :value, :index).should eql [{:label=>"Tomatorama", :value=>"tomato", :index=>1}]
+      expect(@v.group.value :label).to eq :label => ['Tomatorama']
+      expect(@v.group.value :label, :value, :index).to eq :label => ['Tomatorama'], :value => ['tomato'], :index => [1]
     end
 
     it 'value options many selected' do
       @v.group.set ['other', /tomat/, /cucum/]
-      @v.group.value.should eql ['cucumber', 'tomato', 'other']
+      expect(@v.group.value).to eq ['cucumber', 'tomato', 'other']
 
-      @v.group.value(:label).should eql [{:label=>"Cucumberama"}, {:label=>"Tomatorama"}, {:label=>"Other"}]
-      @v.group.value(:label, :index, :value).should eql [{:label=>"Cucumberama", :index=>0, :value=>"cucumber"},
-                                                         {:label=>"Tomatorama", :index=>1, :value=>"tomato"},
-                                                         {:label=>"Other", :index=>2, :value=>"other"}]
+      expect(@v.group.value :label).to eq :label => ['Cucumberama', 'Tomatorama', 'Other']
+
+      expect(@v.group.value :label, :index, :value).to eq :label => ["Cucumberama", "Tomatorama", "Other"], :index => [0, 1, 2], :value => ["cucumber", "tomato", "other"]
     end
 
     it 'value options none selected' do
       @v.group.set []
-      @v.group.value.should eql []
-      @v.group.value(:label).should eql []
-      @v.group.value(:label, :index, :value).should eql []
-    end
-
-    it 'options by default' do
-      @v.group.options.should eql ["cucumber", "tomato", "other"]
+      expect(@v.group.value).to eq []
+      expect(@v.group.value :label).to eq :label => []
+      expect(@v.group.value :label, :index, :value).to eq :label => [], :index => [], :value => []
     end
 
     it 'options by opts single' do
-      @v.group.options(:value).should eql [{:value=>"cucumber"}, {:value=>"tomato"}, {:value=>"other"}]
-      @v.group.options([:value]).should eql [{:value=>"cucumber"}, {:value=>"tomato"}, {:value=>"other"}]
+      v = [{:value => 'cucumber'}, {:value => 'tomato'}, {:value => 'other'}]
+      expect(@v.group.options :value).to eq v
+      expect(@v.group.options [:value]).to eq v
     end
 
     it 'options by label' do
-      @v.group.options(:label).should eql [{:label=>"Cucumberama"}, {:label=>"Tomatorama"}, {:label=>"Other"}]
-      @v.group.options([:label]).should eql [{:label=>"Cucumberama"}, {:label=>"Tomatorama"}, {:label=>"Other"}]
+      v = [{:label => 'Cucumberama'}, {:label => 'Tomatorama'}, {:label => 'Other'}]
+      expect(@v.group.options :label).to eq v
+      expect(@v.group.options [:label]).to eq v
     end
 
     it 'options by opts many' do
-      expected = [{:value=>"cucumber", :index=>0, :label=>"Cucumberama", :text=>"Cucumberama"},
-                  {:value=>"tomato", :index=>1, :label=>"Tomatorama", :text=>"Tomatorama"},
-                  {:value=>"other", :index=>2, :label=>"Other", :text=>"Other"}]
+      v = [{:value => 'cucumber', :index => 0, :label => 'Cucumberama', :text => 'Cucumberama'},
+           {:value => 'tomato', :index => 1, :label => 'Tomatorama', :text => 'Tomatorama'},
+           {:value => 'other', :index => 2, :label => 'Other', :text => 'Other'}]
 
-      @v.group.options(:value, :index, :label, :text).should eql expected
-      @v.group.options([:value, :index, :label, :text]).should eql expected
+      expect(@v.group.options :value, :index, :label, :text).to eq v
+      expect(@v.group.options [:value, :index, :label, :text]).to eq v
     end
   end
 end
