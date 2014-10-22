@@ -2,70 +2,66 @@ require 'spec_helper'
 
 describe Domkey::View do
 
-  class DomIspackage
+  class DomExampleView
     include Domkey::View
-    #pageobject is package
+
+    #pageobject facade on single watir element
     dom(:street) { text_field(id: 'street1') }
     dom(:city) { text_field(id: 'city1') }
   end
 
-  class DomIsHashOfDom # or doom
+  class DomkeyExampleView
     include Domkey::View
 
-    # Possible api to compose pageobject with pair of hash => lambda definition
-    dom(:address) do
-      {
-          street: -> { text_field(id: 'street1') },
-          city:   -> { text_field(id: 'city1') }
-      }
-    end
+    #page object composed of more than one single elements (alternative is to have a view for it)
+    domkey :address, street: -> { text_field(id: 'street1') }, city: -> { text_field(id: 'city1') }
 
-    ## alternative api design
-
-    #dom(:address) do
-    #  Proc.new { Hash.new(:street => dom(:street) { text_field(id: 'street2') }) }
-    #  {:street => (dom(:street) { text_field(id: 'street2') })} #literal hash
-    #end
-
-    #composed
-    #dom(:address) do
-    #  {street: street,
-    #   city:   city}
-    #end
-
-    ## pageobject is composed
-    #domkey(:address) do
-    #  dom(:street) { text_field(id: 'street1') }
-    #  dom(:city) { text_field(id: 'city') }
-    #end
   end
 
+  ## alternative api design
+
+  #dom(:address) do
+  #  Proc.new { Hash.new(:street => dom(:street) { text_field(id: 'street2') }) }
+  #  {:street => (dom(:street) { text_field(id: 'street2') })} #literal hash
+  #end
+
+  #composed
+  #dom(:address) do
+  #  {street: street,
+  #   city:   city}
+  #end
+
+  ## pageobject is composed
+  #domkey(:address) do
+  #  dom(:street) { text_field(id: 'street1') }
+  #  dom(:city) { text_field(id: 'city') }
+  #end
 
   before :all do
     goto_html("test.html")
   end
 
-  it 'dom is package' do
-    view = DomIspackage.new
-    view.should respond_to(:street)
-    view.street.should be_kind_of(Domkey::View::PageObject)
+  it 'dom is proc for single watir element' do
+    view = DomExampleView.new
+    expect(view).to respond_to(:street)
+    expect(view.street).to be_a(Domkey::View::PageObject)
 
     # talk to browser
     view.street.set 'hello dom'
-    view.street.value.should eql 'hello dom'
+    expect(view.street.value).to eq 'hello dom'
   end
 
-  it 'dom is hash of dom' do
-    view = DomIsHashOfDom.new
+  it 'domkey is hash of procs' do
+    view = DomkeyExampleView.new
 
-    view.should respond_to(:address)
+    expect(view).to respond_to(:address)
 
-    view.address.package.should respond_to(:each_pair)
-    view.address.package.should_not be_empty
+    expect(view.address.package).to respond_to(:each_pair)
+    expect(view.address.package).to_not be_empty
 
     view.address.package.each_pair do |k, v|
-      k.should be_kind_of(Symbol)
-      v.should be_kind_of(Domkey::View::PageObject) #should respond to set and value
+      expect(k).to be_a(Symbol)
+      expect(v).to be_a(Domkey::View::PageObject)
     end
 
     view.address.element.should respond_to(:each_pair)
@@ -73,18 +69,16 @@ describe Domkey::View do
       v.should be_kind_of(Watir::TextField) #resolve suitecase
     end
 
-
-    view.address.element.keys.should eql [:street, :city]
+    expect(view.address.element.keys).to eq [:street, :city]
 
     # talk to browser
-    value = {street: 'Quantanemera', city: 'Austin'}
-    view.address.set value
-    v = view.address.value
-    v.should eql value
+    payload = {street: 'Quantanemera', city: 'Austin'}
+    view.address.set payload
+    expect(view.address.value).to eq payload
 
     #set partial address (omit some keys)
     view.address.set street: 'Lamarski'
-    view.address.value.should eql street: 'Lamarski', city: 'Austin'
+    expect(view.address.value).to eq street: 'Lamarski', city: 'Austin'
 
   end
 end

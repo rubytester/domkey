@@ -25,6 +25,13 @@ module Domkey
         end
       end
 
+      # PageObject factory
+      def domkey(key, hash)
+        send :define_method, key do
+          PageObject.new hash, Proc.new { browser }
+        end
+      end
+
       # custome inner Binder class for the current view
       # used to create custom binder hooks for :set, :value, :options actions
       def binder &blk
@@ -75,13 +82,13 @@ module Domkey
     # for getting value or options for each pageobject signaled by symbol
     def hashified(payload)
       case payload
-        when Symbol
-          {payload => nil}
-        when Array
-          #array of symbols
-          Hash[payload.map { |v| [v, nil] }]
-        when Hash
-          payload
+      when Symbol
+        {payload => nil}
+      when Array
+        #array of symbols
+        Hash[payload.map { |v| [v, nil] }]
+      when Hash
+        payload
       end
     end
 
