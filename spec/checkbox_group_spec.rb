@@ -25,8 +25,10 @@ describe Domkey::View::CheckboxGroup do
     @v = CheckboxGroupExampleView.new
 
     # precondition on distinct group
-    @v.group.count.should == 3
-    @v.group.to_a.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+    expect(@v.group).to have(3).items
+    @v.group.to_a.each do |e|
+      expect(e).to be_a(Domkey::View::PageObject)
+    end
     # clear all selections first
     @v.group.set false
   end

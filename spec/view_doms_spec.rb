@@ -14,16 +14,18 @@ describe Domkey::View do
 
   it 'doms collection' do
     view = DomsExample.new
-    view.should respond_to(:streets)
-    view.streets.should be_kind_of(Domkey::View::PageObjectCollection)
-    view.streets.each { |e| e.should be_kind_of(Domkey::View::PageObject) }
-    view.streets.should_not respond_to(:value) # or should it?
-    view.streets.should_not respond_to(:set) # or should it?
+    expect(view).to respond_to(:streets)
+    expect(view.streets).to be_a(Domkey::View::PageObjectCollection)
+    view.streets.each do |e|
+      expect(e).to be_a(Domkey::View::PageObject)
+    end
+    expect(view.streets).to_not respond_to(:value) # or should it?
+    expect(view.streets).to_not respond_to(:set) # or should it?
 
 
     # talk to the browser
     view.streets.each { |e| e.set "hello" }
-    view.streets.map { |e| e.value }.should eql ["hello", "hello", "hello"]
+    expect(view.streets.map { |e| e.value }).to eq ["hello", "hello", "hello"]
   end
 
 end

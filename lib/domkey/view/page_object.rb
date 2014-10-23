@@ -93,28 +93,12 @@ module Domkey
       def initialize_this package
         if package.respond_to?(:each_pair) #hash
           Hash[package.map { |key, package| [key, PageObject.new(package, container)] }]
+        elsif package.respond_to?(:package, true) #pageobject
+          return package.package
+        elsif package.respond_to?(:call) #proc
+          package
         else
-          if package.respond_to?(:call) #proc
-            begin
-              # peek inside suitcase that is proc. XXX ouch, ugly
-              peeked_inside = package.call
-            rescue StandardError
-              return package #suitecase exploded, proc returned
-            end
-            if peeked_inside.kind_of?(Hash)
-              return initialize_this peeked_inside
-            elsif peeked_inside.kind_of?(Watir::Container)
-              return lambda { peeked_inside }
-            elsif peeked_inside.kind_of?(PageObject)
-              return peeked_inside.package
-            else
-              fail Exception::Error, "package must be kind of hash, watirelement or pageobject but I got this: #{package}"
-            end
-          elsif package.respond_to?(:package, true) #pageobject
-            return package.package
-          else
-            fail Exception::Error, "package must be kind of hash, watirelement or pageobject but I got this: #{package}"
-          end
+          fail Exception::Error, "package must be kind of hash, pageobject or watirelement but I got this: #{package}"
         end
       end
     end

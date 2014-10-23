@@ -15,8 +15,8 @@ describe "read only elements" do
 
     it 'value' do
       v = SpanView.new
-      v.spanny.value.should eql "Text In Span"
-      v.value(:spanny).should eql spanny: 'Text In Span'
+      expect(v.spanny.value).to eq "Text In Span"
+      expect(v.value :spanny).to eq spanny: 'Text In Span'
     end
   end
 end

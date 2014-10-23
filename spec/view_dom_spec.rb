@@ -30,16 +30,16 @@ describe Domkey::View do
 
   context 'dom for single element' do
 
-    before :all do
+    before :each do
       @view = SingleDom.new
     end
 
     it 'view responds to dom' do
-      @view.should respond_to(:street)
+      expect(@view).to respond_to(:street)
     end
 
     it 'dom returns PageObject' do
-      @view.street.should be_kind_of(Domkey::View::PageObject)
+      expect(@view.street).to be_a(Domkey::View::PageObject)
     end
 
     context 'payload should driver set value and options' do
@@ -47,8 +47,8 @@ describe Domkey::View do
       it "text_field" do
         payload = {:street => 'Aha'}
         @view.set payload
-        @view.value(payload).should eql(payload)
-        @view.options(payload).should eql(:street => []) #not opiton selectable page object
+        expect(@view.value payload).to eq payload
+        expect(@view.options payload).to eq :street => [] #not opiton selectable page object
       end
 
       context "option selectable" do
@@ -56,16 +56,20 @@ describe Domkey::View do
         it 'select_list' do
           payload = {:multilist => {:text => 'Polish'}}
           @view.set payload
-          @view.value(payload).should eql :multilist => {:text => ["English", "Norwegian", "Polish"]}
-          @view.options(payload).should eql({:multilist => [{:text => "Danish"}, {:text => "English"}, {:text => "Norwegian"}, {:text => "Polish"}, {:text => "Swedish"}]})
+          expect(@view.value payload).to eq :multilist => {:text => ["English", "Norwegian", "Polish"]}
+          expect(@view.options payload).to eq :multilist => [{:text => "Danish"},
+                                                             {:text => "English"},
+                                                             {:text => "Norwegian"},
+                                                             {:text => "Polish"},
+                                                             {:text => "Swedish"}]
         end
 
         it 'checkbox group' do
           # has 2 qualifiers
           payload = {:cbg => {:label => 'Tomatorama', :index => 1}}
           @view.set(payload)
-          @view.value(payload).should eql :cbg => {:label => ["Tomatorama", "Other"], :index => [1, 2]}
-          @view.options(payload).should eql :cbg => [{:label => "Cucumberama", :index => 0}, {:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]
+          expect(@view.value payload).to eq :cbg => {:label => ["Tomatorama", "Other"], :index => [1, 2]}
+          expect(@view.options payload).to eq :cbg => [{:label => "Cucumberama", :index => 0}, {:label => "Tomatorama", :index => 1}, {:label => "Other", :index => 2}]
         end
 
       end
@@ -78,11 +82,11 @@ describe Domkey::View do
     end
 
     it 'view semantic descriptor returns view' do
-      @view.container.should be_kind_of(Domkey::View)
+      expect(@view.container).to be_a(Domkey::View)
     end
 
     it 'view within view is a page object' do
-      @view.container.street.should be_kind_of(Domkey::View::PageObject)
+      expect(@view.container.street).to be_a(Domkey::View::PageObject)
     end
 
     it 'value requires args' do
@@ -91,12 +95,8 @@ describe Domkey::View do
 
     it 'setting and value args' do
       @view.container.set street: 'Nowy Świat'
-
-      v = @view.container.value :street
-      v.should eql({:street => "Nowy Świat"})
-
-      v = @view.container.value [:street]
-      v.should eql({:street => "Nowy Świat"})
+      expect(@view.container.value :street).to eq :street => "Nowy Świat"
+      expect(@view.container.value [:street]).to eq :street => "Nowy Świat"
     end
   end
 end

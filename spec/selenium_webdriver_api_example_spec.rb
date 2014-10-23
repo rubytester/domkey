@@ -7,7 +7,7 @@ require 'spec_helper'
 describe 'Selenium::WebDriver API Example' do
 
   before :all do
-    Domkey.browser.goto("file://" + __dir__ + "/../html/test.html")
+    goto_html('test.html')
     @driverpackage = -> { Domkey.browser.driver }
   end
 
@@ -17,11 +17,11 @@ describe 'Selenium::WebDriver API Example' do
       package = lambda { find_element(id: 'street1') }
       street  = Domkey::View::PageObject.new package, @driverpackage
 
-      street.package.should be_kind_of(Proc)
-      street.element.should be_kind_of(Selenium::WebDriver::Element) #one default element
+      expect(street.package).to be_a(Proc)
+      expect(street.element).to be_a(Selenium::WebDriver::Element) #one default element
 
       street.element.send_keys 'Lamar'
-      street.element.attribute('value').should eql 'Lamar'
+      expect(street.element.attribute('value')).to eq 'Lamar'
     end
 
     it 'package is pageobject' do
@@ -31,12 +31,12 @@ describe 'Selenium::WebDriver API Example' do
       pageobject = Domkey::View::PageObject.new webdriver_element, @driverpackage
       street     = Domkey::View::PageObject.new pageobject, @driverpackage
 
-      street.package.should be_kind_of(Proc)
-      street.element.should be_kind_of(Selenium::WebDriver::Element)
+      expect(street.package).to be_a(Proc)
+      expect(street.element).to be_a(Selenium::WebDriver::Element)
 
       street.element.clear
       street.element.send_keys 'zooom'
-      street.element.attribute('value').should eql 'zooom'
+      expect(street.element.attribute('value')).to eq 'zooom'
     end
   end
 end

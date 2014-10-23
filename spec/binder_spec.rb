@@ -26,9 +26,8 @@ describe Domkey::View::Binder do
     dom(:state) { text_field(id: 'state1') }
 
     # example of not found element
-    dom(:keyed_state) do
-      {state: -> { text_field(id: 'state1') }}
-    end
+    domkey :keyed_state, state: -> { text_field(id: 'state1') }
+
 
     # semantic descriptor that returns another view
     # the other view has PageObjects that participate in this view
@@ -165,7 +164,7 @@ describe Domkey::View::Binder do
       it 'binder class in view' do
         view       = WithBinderClassMethodView.new
         metabinder = WithBinderClassMethodView::Binder.new
-        metabinder.should respond_to(:before_city)
+        expect(metabinder).to respond_to(:before_city)
       end
 
       it 'view invokes it for actions' do
@@ -183,7 +182,7 @@ describe Domkey::View::Binder do
       binder.set
 
       extracted = binder.value
-      extracted.should eql payload
+      expect(extracted).to eq payload
     end
 
     it 'when view has undefined key' do
@@ -194,33 +193,31 @@ describe Domkey::View::Binder do
     end
 
     it 'for view within a view' do
-      payload = {city:     'Austin', street: 'Lamar',
-                 shipping: {city: 'Georgetown', street: 'Austin'}
-      }
+      payload = {city:     'Austin',
+                 street:   'Lamar',
+                 shipping: {
+                     city:   'Georgetown',
+                     street: 'Austin'}}
 
       binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
       binder.set
 
-      extracted = binder.value
-      extracted.should eql payload
-
+      expect(binder.value).to eq payload
     end
 
     it 'for view view view' do
 
-      payload = {city:     'Austin', street: 'Lamar',
-                 shipping: {city:          'Georgetown', street: 'Austin',
+      payload = {city:     'Austin',
+                 street:   'Lamar',
+                 shipping: {city:          'Georgetown',
+                            street:        'Austin',
                             # this is view within a view within original view
-                            delivery_date: {month: 'delivery thing'}}
-      }
+                            delivery_date: {month: 'delivery thing'}}}
 
       binder = Domkey::View::Binder.new payload: payload, view: AddressView.new
       binder.set
 
-
-      extracted = binder.value
-      extracted.should eql payload
-
+      expect(binder.value).to eq payload
     end
 
     context 'hooks' do
@@ -261,8 +258,7 @@ describe Domkey::View::Binder do
       it 'when pageobject does not have selectable options' do
         payload = {city: '', street: ''}
         binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
-        binder.options.should eql({:city => [], :street => []})
-        binder.options
+        expect(binder.options).to eq :city => [], :street => []
       end
 
       context 'when pageobject has selectable options' do
@@ -270,25 +266,34 @@ describe Domkey::View::Binder do
         it 'default options' do
           payload = {fruit: 'tomato'}
           binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
-          binder.options.should eql(:fruit => ["cucumber", "tomato", "other"])
+          expect(binder.options).to eq :fruit => ["cucumber", "tomato", "other"]
         end
 
         it 'options with specific qualifier' do
           # qualifed means asking for :text, :value, :label, :index (other than default)
           payload = {fruit: :text}
           binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
-          binder.options.should eql(:fruit => [{:text => "Cucumberama"}, {:text => "Tomatorama"}, {:text => "Other"}])
+          expect(binder.options).to eq :fruit => [{:text => "Cucumberama"}, {:text => "Tomatorama"}, {:text => "Other"}]
         end
 
         it 'options with 2 specific qualifiers' do
           # qualifed means asking for :text, :value, :label, :index (other than default)
           payload = {fruit: [:text, :value]}
           binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
-          binder.options.should eql(:fruit => [{:text => "Cucumberama", :value => "cucumber"}, {:text => "Tomatorama", :value => "tomato"}, {:text => "Other", :value => "other"}])
+          expect(binder.options).to eq :fruit => [{:text => "Cucumberama", :value => "cucumber"},
+                                                  {:text => "Tomatorama", :value => "tomato"},
+                                                  {:text => "Other", :value => "other"}]
         end
 
+        it "payload used for set can extract options" do
+          payload = {fruit: {:text  => 'somefaketext',
+                             :value => 'somefakevalue'}}
+          binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
+          expect(binder.options).to eq :fruit => [{:text => "Cucumberama", :value => "cucumber"},
+                                                  {:text => "Tomatorama", :value => "tomato"},
+                                                  {:text => "Other", :value => "other"}]
+        end
       end
     end
   end
-
 end

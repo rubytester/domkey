@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe 'PageObject Decorators' do
 
   # domain specific page objects composed from regular page object
@@ -77,7 +76,7 @@ describe 'PageObject Decorators' do
   end
 
 
-  before :all do
+  before :each do
     goto_html("test.html")
   end
 
@@ -85,28 +84,28 @@ describe 'PageObject Decorators' do
 
     it 'as pageobject component wrapped by composite' do
 
-      watir_object = {day:   lambda { text_field(id: 'day_field') },
-                      month: lambda { text_field(id: 'month_field') },
-                      year:  lambda { text_field(id: 'year_field') }}
+      hash = {day:   -> { text_field(id: 'day_field') },
+              month: -> { text_field(id: 'month_field') },
+              year:  -> { text_field(id: 'year_field') }}
 
-      foo = Domkey::View::PageObject.new watir_object
-      dmy = DateSelector.new foo
+      # Example of poro decorator wrapping pageobject composed of hashed keys
+      dmy  = DateSelector.new(Domkey::View::PageObject.new hash)
 
       dmy.set Date.today
-      dmy.value.should eql Date.today
+      expect(dmy.value).to eq Date.today
     end
 
     it 'inherits from pageobject and overrides set and value' do
 
-      watir_object = {day:   lambda { text_field(id: 'day_field') },
-                      month: lambda { text_field(id: 'month_field') },
-                      year:  lambda { text_field(id: 'year_field') }}
+      hash = {day:   -> { text_field(id: 'day_field') },
+              month: -> { text_field(id: 'month_field') },
+              year:  -> { text_field(id: 'year_field') }}
 
-      #foo = Domkey::Page::PageObject.new watir_object, @container
-      dmy          = DateSelectorPageObject.new watir_object
+      #example of subclassing PageObject with override set and value
+      dmy  = DateSelectorPageObject.new hash
 
       dmy.set Date.today
-      dmy.value.should eql Date.today
+      expect(dmy.value).to eq Date.today
     end
 
   end
@@ -129,7 +128,7 @@ describe 'PageObject Decorators' do
       cbtf.set true
       cbtf.set false
       cbtf.set 'Domain Specific Behavior to set value - check checkbox and enter text'
-      cbtf.value.should eql('Domain Specific Behavior to set value - check checkbox and enter text')
+      expect(cbtf.value).to eq 'Domain Specific Behavior to set value - check checkbox and enter text'
     end
 
     context 'building array of CheckboxTextFields in the view' do
@@ -137,28 +136,28 @@ describe 'PageObject Decorators' do
       it 'algorithm from predictable pattern' do
 
         #given predictable pattern that signals the presence of pageobjects
-        divs = Domkey::View::PageObjectCollection.new lambda { divs(:id, /^feature_/) }
+        divs = Domkey::View::PageObjectCollection.new -> { divs(:id, /^feature_/) }
 
         features = divs.map do |div|
 
           #the unique identifier shared by all elements composing a PageObject
-          id           = div.element.id.split("_").last
+          id   = div.element.id.split("_").last
 
           #definiton for each PageObject
-          watir_object = {switch: -> { checkbox(id: "feature_checkbox#{id}") },
-                          blurb:  -> { text_field(id: "feature_textarea#{id}") },
-                          label:  -> { label(for: "feature_checkbox#{id}") }}
+          hash = {switch: -> { checkbox(id: "feature_checkbox#{id}") },
+                  blurb:  -> { text_field(id: "feature_textarea#{id}") },
+                  label:  -> { label(for: "feature_checkbox#{id}") }}
 
-          pageobject = Domkey::View::PageObject.new watir_object
-          #domain specific pageobject
+          pageobject = Domkey::View::PageObject.new hash
+          #domain specific pageobject decorator
           CheckboxTextField.new(pageobject)
         end
 
         # array of Domain Specific PageObjects
         features.first.set 'bla'
-        features.map { |e| e.value }.should eql ["bla", false]
-        features.map { |e| e.pageobject.element(:label).text }.should eql ["Enable Checkbox for TextArea", "Golf Course"]
-        features.find { |e| e.label == 'Golf Course' }.value.should be_false
+        expect(features.map { |e| e.value }).to eq ["bla", false]
+        expect(features.map { |e| e.pageobject.element(:label).text }).to eq ["Enable Checkbox for TextArea", "Golf Course"]
+        expect(features.find { |e| e.label == 'Golf Course' }.value).to be_false
       end
 
       # example of building Domain Specific PageObject
@@ -167,6 +166,7 @@ describe 'PageObject Decorators' do
 
         include Domkey::View
 
+        # collection
         doms(:feature_divs) { divs(:id, /^feature_/) }
 
         # returns array of CheckboxTextField pageobjects
@@ -190,10 +190,19 @@ describe 'PageObject Decorators' do
 
       it 'view factory' do
         view = DomainSpecificPageObjectView.new
-        view.features.should have(2).items
+
+        expect(view.features).to have(2).items
         view.features.each { |f| f.set true }
+        expect(view.features.map { |e| e.value }).to eq ["CheckboxTextField 1", "CheckboxTextField 2"]
+
         view.features.each { |f| f.set false }
+        expect(view.features.map { |e| e.value }).to eq [false, false]
+
         view.features.each { |f| f.set "Hello From Feature View" }
+        view.features.each do |f|
+          expect(f.value).to eq 'Hello From Feature View'
+        end
+
       end
     end
   end

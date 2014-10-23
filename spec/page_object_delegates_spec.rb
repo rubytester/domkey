@@ -16,7 +16,7 @@ describe Domkey::View::PageObject do
       it 'select' do
         o = Domkey::View::PageObject.new -> { select_list(id: 'fruit_list') }
         o.set 'Tomato'
-        o.value.should eql 'tomato'
+        expect(o.value).to eq 'tomato'
       end
 
     end
@@ -28,15 +28,15 @@ describe Domkey::View::PageObject do
       end
 
       it 'should delegate to element when element responds' do
-        @o.should respond_to(:id)
-        @o.id.should eql 'city1'
+        expect(@o).to respond_to(:id)
+        expect(@o.id).to eq 'city1'
 
-        @o.should respond_to(:click)
+        expect(@o).to respond_to(:click)
         @o.click
       end
 
       it 'should not delegate to element when element does not repsond' do
-        @o.should_not respond_to(:textaramabada)
+        expect(@o).to_not respond_to(:textaramabada)
         expect { @o.textaramabada }.to raise_error(NoMethodError)
       end
     end

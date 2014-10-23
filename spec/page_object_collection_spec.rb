@@ -8,7 +8,7 @@ describe Domkey::View::PageObjectCollection do
 
   it 'init error' do
     # TODO. tighter scope what can be a package
-    expect { Domkey::View::PageObjectCollection.new 'foo' }.to raise_error(Domkey::Exception::Error)
+    expect { Domkey::View::PageObjectCollection.new 'foo' }.to raise_error(Domkey::Exception::Error, /package must be kind of hash, watirelement or pageobject/)
   end
 
   context 'when container is browser by default' do
@@ -20,33 +20,31 @@ describe Domkey::View::PageObjectCollection do
         # package when instantiated must respond to :each
         # test sample:
         # we have 3 text_fields with class that begins with street
-        package = lambda { text_fields(class: /^street/) }
-
-        @cbs = Domkey::View::PageObjectCollection.new package
+        @cbs = Domkey::View::PageObjectCollection.new -> { text_fields(class: /^street/) }
       end
 
       it 'count or size' do
-        @cbs.count.should == 3
+        expect(@cbs.count).to be(3)
       end
 
       it 'each returns PageObject' do
         @cbs.each do |e|
-          e.should be_kind_of(Domkey::View::PageObject)
+          expect(e).to be_a(Domkey::View::PageObject)
         end
       end
 
       it 'by index returns PageObject' do
-        @cbs[0].should be_kind_of(Domkey::View::PageObject)
-        @cbs[1].should be_kind_of(Domkey::View::PageObject)
+        expect(@cbs[0]).to be_a(Domkey::View::PageObject)
+        expect(@cbs[0]).to be_a(Domkey::View::PageObject)
       end
 
       it 'find_all example' do
         # find_all of some condition
-        @cbs.find_all { |e| e.value == 'hello pageobject' }.should be_empty
+        expect(@cbs.find_all { |e| e.value == 'hello pageobject' }).to be_empty
         @cbs.first.set 'hello pageobject'
 
         # find_all returns the one we just set
-        @cbs.find_all { |e| e.value == 'hello pageobject' }.count.should eql(1)
+        expect(@cbs.find_all { |e| e.value == 'hello pageobject' }.count).to be(1)
       end
 
       it 'set one and map all example' do
@@ -54,11 +52,11 @@ describe Domkey::View::PageObjectCollection do
         @cbs[1].set 'bye bye'
 
         # map iterates and harvests value
-        @cbs.map { |e| e.value }.should eql ["hello pageobject", "bye bye", ""]
+        expect(@cbs.map { |e| e.value }).to eq ["hello pageobject", "bye bye", ""]
       end
 
       it 'element reaches to widgetry' do
-        @cbs.element.should be_kind_of(Watir::TextFieldCollection)
+        expect(@cbs.element).to be_a(Watir::TextFieldCollection)
       end
 
     end
@@ -70,46 +68,52 @@ describe Domkey::View::PageObjectCollection do
         # it becomes a keyed collection?
         # secondary usage
         # given I have city 4 and street 3 textfields
-        Domkey.browser.text_fields(class: /^street/).count.should == 3
-        Domkey.browser.text_fields(class: /^city/).count.should == 4
+        expect(Domkey.browser.text_fields(class: /^street/).count).to be(3)
+        expect(Domkey.browser.text_fields(class: /^city/).count).to be(4)
 
         # when I define my keyed collection
-        package = {street: lambda { text_fields(class: /^street/) },
-                   city:   lambda { text_fields(class: /^city/) }}
+        hash = {street: -> { text_fields(class: /^street/) },
+                city:   -> { text_fields(class: /^city/) }}
 
-        @cbs = Domkey::View::PageObjectCollection.new package
+        @cbs = Domkey::View::PageObjectCollection.new hash
       end
 
       it 'count' do
-        @cbs.count.should == 2
+        expect(@cbs.count).to be(2)
       end
 
       it 'to_a returns array of hashes' do
-        @cbs.to_a.should have(2).items
+        expect(@cbs.to_a.count).to be(2)
       end
 
       it 'each returns hash where value is a PageObjectCollection' do
         @cbs.each do |hash|
-          hash.each_pair { |k, v| v.should be_kind_of(Domkey::View::PageObjectCollection) }
+          hash.each_pair do |k, v|
+            expect(k).to be_a(Symbol)
+            expect(v).to be_a(Domkey::View::PageObjectCollection)
+          end
         end
       end
 
       it 'by index returns hash' do
-        @cbs.to_a[0].should be_kind_of(Hash)
+        expect(@cbs.to_a[0]).to be_a(Hash)
       end
 
       it 'each in key returns PageObject' do
         collection = @cbs.to_a.find { |e| e[:street] }
-        collection[:street].should be_kind_of(Domkey::View::PageObjectCollection)
-        collection[:street].each { |e| e.should be_kind_of(Domkey::View::PageObject) }
+        expect(collection[:street]).to be_a(Domkey::View::PageObjectCollection)
+
+        collection[:street].each do |e|
+          expect(e).to be_a(Domkey::View::PageObject)
+        end
       end
 
       it 'element' do
-        @cbs.element(:street).should be_kind_of(Watir::TextFieldCollection)
-        @cbs.element.should be_kind_of(Hash)
+        expect(@cbs.element :street).to be_a(Watir::TextFieldCollection)
+        expect(@cbs.element).to be_a(Hash)
         @cbs.element.each_pair do |k, v|
-          k.should be_a(Symbol)
-          v.should be_a(Watir::TextFieldCollection)
+          expect(k).to be_a(Symbol)
+          expect(v).to be_a(Watir::TextFieldCollection)
         end
       end
 
@@ -118,10 +122,8 @@ describe Domkey::View::PageObjectCollection do
     context 'package is pageobjectcollection' do
 
       it 'initialize' do
-        package              = lambda { text_fields(class: /^street/) }
-        pageobjectcollection = Domkey::View::PageObjectCollection.new package
-
-        @cbs = Domkey::View::PageObjectCollection.new pageobjectcollection
+        pageobjectcollection = Domkey::View::PageObjectCollection.new(-> { text_fields(class: /^street/) })
+        @cbs                 = Domkey::View::PageObjectCollection.new pageobjectcollection
       end
 
     end

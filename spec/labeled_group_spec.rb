@@ -32,38 +32,42 @@ describe Domkey::View::LabeledGroup do
 
   context 'radio group' do
 
-    context 'wrapped directly' do
+    context 'wrapped as LabeledGroup' do
 
       it 'set string' do
         view.tool.set 'Tomato'
-        view.tool.value.should eql ['Tomato']
+        expect(view.tool.value).to eq ['Tomato']
+        # using view payload
+        payload = {tool: ["Cucumber"]}
+        view.set payload
+        expect(view.value :tool).to eq payload
       end
 
       it 'set regex' do
         view.tool.set /umber$/
-        view.tool.value.should eql ['Cucumber']
+        expect(view.tool.value).to eq ['Cucumber']
       end
 
       it 'set array' do
         view.tool.set ['Tomato', 'Cucumber']
-        view.tool.value.should eql ['Cucumber']
+        expect(view.tool.value).to eq ['Cucumber']
       end
 
       it 'set array string and regex' do
         view.tool.set ['Tomato', /cumber$/]
-        view.tool.value.should eql ['Cucumber']
+        expect(view.tool.value).to eq ['Cucumber']
       end
 
       it 'set value text not found should error' do
-        expect { view.tool.set 'yepyep' }.to raise_error
+        expect { view.tool.set 'yepyep' }.to raise_error(Domkey::Exception::Error, /Label text to set not found/)
       end
 
       it 'set value regexp not found should error' do
-        expect { view.tool.set /fofofo/ }.to raise_error
+        expect { view.tool.set /fofofo/ }.to raise_error(Domkey::Exception::Error, /Label text to set not found/)
       end
 
       it 'options' do
-        view.tool.options.should eql ["Cucumber", "Tomato", "Other"]
+        expect(view.tool.options).to eq ["Cucumber", "Tomato", "Other"]
       end
 
     end
@@ -71,13 +75,13 @@ describe Domkey::View::LabeledGroup do
     context 'to_labeled' do
 
       it 'set string' do
-        view.tool.to_labeled.set 'Tomato'
-        view.tool.to_labeled.value.should eql ['Tomato']
+        view.radio_group.to_labeled.set 'Tomato'
+        expect(view.radio_group.to_labeled.value).to eq ['Tomato']
       end
 
       it 'set array' do
-        view.tool.to_labeled.set ['Tomato', 'Cucumber']
-        view.tool.to_labeled.value.should eql ['Cucumber']
+        view.radio_group.to_labeled.set ['Tomato', 'Cucumber']
+        expect(view.radio_group.to_labeled.value).to eq ['Cucumber']
       end
 
     end
@@ -85,33 +89,39 @@ describe Domkey::View::LabeledGroup do
 
   context 'checkbox group' do
 
-    context 'wrapped directly' do
+    context 'wrapped as LabeledGroup' do
 
       it 'set single' do
         view.fruit.set 'Tomatorama'
-        view.fruit.value.should eql ['Tomatorama']
+        expect(view.fruit.value).to eq ['Tomatorama']
       end
 
       it 'set array' do
         view.fruit.set ['Tomatorama', 'Cucumberama']
-        view.fruit.value.should eql ['Cucumberama', 'Tomatorama']
+        expect(view.fruit.value).to eq ['Cucumberama', 'Tomatorama']
+      end
+
+      it 'set using view payload' do
+        payload = {fruit: ['Tomatorama', 'Other']}
+        view.set payload
+        expect(view.value :fruit).to eq payload
       end
 
       it 'options' do
-        view.fruit.options.should eql ["Cucumberama", "Tomatorama", "Other"]
+        expect(view.fruit.options).to eq ["Cucumberama", "Tomatorama", "Other"]
       end
     end
 
     context 'to_labeled' do
 
       it 'set single' do
-        view.fruit.to_labeled.set 'Tomatorama'
-        view.fruit.to_labeled.value.should eql ['Tomatorama']
+        view.checkbox_group.to_labeled.set 'Tomatorama'
+        expect(view.checkbox_group.to_labeled.value).to eq ['Tomatorama']
       end
 
       it 'set array' do
-        view.fruit.to_labeled.set ['Tomatorama', 'Cucumberama']
-        view.fruit.to_labeled.value.should eql ['Cucumberama', 'Tomatorama']
+        view.checkbox_group.to_labeled.set ['Tomatorama', 'Cucumberama']
+        expect(view.checkbox_group.to_labeled.value).to eq ['Cucumberama', 'Tomatorama']
       end
     end
   end
