@@ -57,5 +57,19 @@ module Domkey
         end
       end
     end
+
+    module ClassMethods
+
+      # factory create PageObject SelectList in your current view respecting current watir container
+      # example:
+      # select_list(:fruit) { select_list(id: 'fruit') }
+      #--
+      # notice we build Domkey::View::SelectList PageObject that acts as a facade for Watir::SelectList
+      def select_list(key, &package)
+        send :define_method, key do
+          SelectList.new package, -> { watir_container }
+        end
+      end
+    end
   end
 end

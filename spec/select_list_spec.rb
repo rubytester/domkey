@@ -6,13 +6,13 @@ describe Domkey::View::SelectList do
 
     include Domkey::View
 
-    def multilist
-      SelectList.new -> { select_list(id: 'multiselect') }
-    end
+    select_list(:singlelist) { select_list(id: 'fruit_list') }
 
-    def singlelist
-      SelectList.new -> { select_list(id: 'fruit_list') }
-    end
+    select_list(:multilist) { select_list(id: 'multiselect') }
+    # example of building SelectList as a method, factory respects watir_container
+    # def multilist
+    #   SelectList.new -> { select_list(id: 'multiselect') }, -> { watir_container }
+    # end
 
   end
 

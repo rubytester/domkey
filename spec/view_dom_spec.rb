@@ -6,8 +6,10 @@ describe Domkey::View do
     include Domkey::View
     dom(:street) { text_field(class: 'street1') }
 
+    # or you can use factory method:
+    # select_list(:multilist) { select_list(id: 'multiselect') }
     def multilist
-      SelectList.new -> { select_list(id: 'multiselect') }
+      SelectList.new -> { select_list(id: 'multiselect') }, -> { watir_container }
     end
 
     checkbox_group(:cbg) { checkboxes(name: 'fruit') }
