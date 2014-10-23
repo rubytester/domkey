@@ -14,6 +14,6 @@ module Domkey
 
   # sets current browser for testing session
   def self.browser=(b)
-    @browser = browser
+    @browser = b
   end
 end
