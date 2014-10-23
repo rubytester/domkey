@@ -9,14 +9,8 @@ describe Domkey::View::CheckboxGroup do
 
   class CheckboxGroupExampleView
     include Domkey::View
-
-    def group
-      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-    end
-
-    def not_valid_group
-      CheckboxGroup.new -> { checkboxes(name: /^fruit/) }
-    end
+    checkbox_group(:group) { checkboxes(name: 'fruit') }
+    checkbox_group(:not_valid_group) { checkboxes(name: /^fruit/) }
   end
 
   before :each do

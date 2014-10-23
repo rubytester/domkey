@@ -22,5 +22,18 @@ module Domkey
         end
       end
     end
+
+    module ClassMethods
+
+      # factory create PageObject CheckboxGroup in your current view
+      # example:
+      # checkbox_group(:fruit) { checkboxes(name: 'fruit') }
+      #
+      def checkbox_group(key, &package)
+        send :define_method, key do
+          CheckboxGroup.new package, -> { watir_container }
+        end
+      end
+    end
   end
 end

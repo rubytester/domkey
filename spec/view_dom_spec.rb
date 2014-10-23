@@ -10,9 +10,7 @@ describe Domkey::View do
       SelectList.new -> { select_list(id: 'multiselect') }
     end
 
-    def cbg
-      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-    end
+    checkbox_group(:cbg) { checkboxes(name: 'fruit') }
 
     def container
       SingleDomContainer.new browser.div(id: 'container')

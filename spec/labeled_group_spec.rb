@@ -14,9 +14,7 @@ describe Domkey::View::LabeledGroup do
       LabeledGroup.new(radio_group)
     end
 
-    def checkbox_group
-      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-    end
+    checkbox_group(:checkbox_group) { checkboxes(name: 'fruit') }
 
     #labeled checkbox_group with fruit: as semantic descriptor
     def fruit
