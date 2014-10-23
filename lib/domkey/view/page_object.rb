@@ -102,5 +102,29 @@ module Domkey
         end
       end
     end
+
+    module ClassMethods
+
+      # PageObject factory where package is a single watir element wrapper
+      # example:
+      #   dom(:foo) {text_field(id: 'hello_world')}
+      #
+      def dom(key, &package)
+        send :define_method, key do
+          PageObject.new package, -> { watir_container }
+        end
+      end
+
+      # PageObject factory where package is a keyed hash of watir element procs. Capture elements that compose this PageObject
+      # example:
+      # domkey :foo, switch: -> { checkbox(id: 'feature_checkbox1') }, blurb: -> { textarea(id: 'feature_textarea1') }}
+      # builds a PageObject where package is a hash of two elements with keys :switch and :blurb
+      def domkey(key, hash)
+        send :define_method, key do
+          PageObject.new hash, -> { watir_container }
+        end
+      end
+
+    end
   end
 end

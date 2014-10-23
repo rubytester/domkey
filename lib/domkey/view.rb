@@ -9,38 +9,7 @@ module Domkey
 
   module View
 
-    module ClassMethods
-
-      # PageObjectCollection factory
-      def doms(key, &package)
-        send :define_method, key do
-          PageObjectCollection.new package, -> { watir_container }
-        end
-      end
-
-      # PageObject factory
-      def dom(key, &package)
-        send :define_method, key do
-          PageObject.new package, -> { watir_container }
-        end
-      end
-
-      # PageObject factory
-      def domkey(key, hash)
-        send :define_method, key do
-          PageObject.new hash, -> { watir_container }
-        end
-      end
-
-      # custome inner Binder class for the current view
-      # used to create custom binder hooks for :set, :value, :options actions
-      def binder &blk
-        klass = self.const_set("Binder", Class.new(::Domkey::View::Binder))
-        klass.module_eval &blk
-      end
-
-    end
-
+    # module ClassMethods provides page objects class factory methods in the context of a class that includes Domkey::View
     def self.included(klass)
       klass.extend(ClassMethods)
     end
