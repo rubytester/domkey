@@ -23,5 +23,19 @@ module Domkey
       end
 
     end
+
+    module ClassMethods
+
+      # factory create PageObject RadioGroup in your current view respecting current container
+      # example:
+      # radio_group(:tool) { radios(name: 'tool') }
+      #
+      def radio_group(key, &package)
+        send :define_method, key do
+          RadioGroup.new package, -> { watir_container }
+        end
+      end
+    end
+
   end
 end

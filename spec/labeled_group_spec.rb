@@ -5,9 +5,7 @@ describe Domkey::View::LabeledGroup do
   class LabeledGroupExampleView
     include Domkey::View
 
-    def radio_group
-      RadioGroup.new -> { radios(name: 'tool') }
-    end
+    radio_group(:radio_group) { radios(name: 'tool') }
 
     #labeled radio_group with tool: as semantic descriptor
     def tool
