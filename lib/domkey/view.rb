@@ -15,17 +15,17 @@ module Domkey
     end
 
     # @param [Watir::Element] (false) browser becomes ultimate container for all when no watir container provided
-    def initialize watir_container=false
+    def initialize watir_container=nil
       @watir_container = watir_container
     end
 
     # @return [Watir::Browser]
     def browser
-      Domkey.browser
+      watir_container.browser
     end
 
     def watir_container
-      @watir_container ||= browser
+      @watir_container ||= Domkey.browser
     end
 
     def set payload
