@@ -146,6 +146,22 @@ module Domkey
 
       # custom inner Binder class for the current view
       # used to create custom binder hooks for :set, :value, :options actions
+      # example:
+      #
+      #     class MyView
+      #       include Domkey::View
+      #       dom(:foo) { text_field(id: 'foo')}
+      #       binder do
+      #         # provide your hooks here for custom binder
+      #         # example
+      #         def before_foo
+      #           # do stuff before interating with pageobject :foo in this view
+      #         end
+      #       end
+      #     end
+      #     view = MyView.new
+      #     view.set :foo => 'foo value' # ensures before_foo will be called in the custom binder
+
       def binder &blk
         klass = self.const_set("Binder", Class.new(::Domkey::View::Binder))
         klass.module_eval &blk
