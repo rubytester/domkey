@@ -18,7 +18,7 @@ end
 MyPage.new(browser)
 
 # Example: if you instantiate your page with portion of DOM you limit the view scope where page objects can be found.
-MyPage.new(browser.div(id:, 'somediv'))
+MyPage.new(browser.div(id: 'somediv'))
 ```
 
 ## Simple PageObject
