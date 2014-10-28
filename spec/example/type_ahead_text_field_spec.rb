@@ -2,10 +2,38 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'rspec'
 require 'domkey'
 
-# Example: developing a domain specific page object called TypeAheadTextField
-# TypeAheadTextFields is a pageobject that is a collaboration of two elements:
-# text_field were you send some keys and for each key we display a list of candidates to pick from.
-# the original text we "seed" and then look at what options are to pick from. we can call those "leaves"
+=begin
+DISCLAIMER: This is a live website example of developoing a Domain Specific Page Object
+
+We are modeling a text field with type ahead on homeaway.com website
+A similar behavior can be seeon on google.com or bing.com where you start typing a text into text field
+and with each character you type and a select list comes up prompting you to select an entry
+being filtere by what you have typed in so far.
+
+
+Let's call this Domain Specific PageObject a TypeAheadTextField
+
+Let's say that this TypeAheadTextFields is a pageobject that is a collaboration of two watir elements:
+- text_field were you send some keys. let's call it "seed" text
+- and for each :seed we grow a selection of leaves to pick from. let's call them "leaves" to follow the seed, leaves growing metaphor
+
+To set this object measns
+- to seed it with some text
+- and pick an entry in leaves
+
+To ask for options in this object means:
+- to seed it with some text
+- and return the leaves presented as array of text
+
+To ask for value of this object means:
+- just return the value of text_field
+
+
+With the above spec we can develop this Semantic PageObject.
+=end
+
+
+# subclass Domkey::View::PageObject to make your own semantic object
 class TypeAheadTextField < Domkey::View::PageObject
 
   # @return array of visible text to select from
@@ -32,7 +60,7 @@ class TypeAheadTextField < Domkey::View::PageObject
 
   private
 
-  # with each char send keys default strategy
+  # with each char send keys (this is default strategy but you can make a different strategy)
   def set_seed seed
     package[:seed].element.clear
     seed.each_char do |char|
@@ -46,19 +74,28 @@ class TypeAheadTextField < Domkey::View::PageObject
   end
 end
 
+
+# Optionally register a factory method to construct you Domain Specific PageObject
+# this factory method is availabe in the view
+# this means that in the View you can build TypeAheadTextField objects using type_ahead_text_field method.
+# it's a shortcut, you don't have to use it.
+Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
+
 class ExampleView
   include Domkey::View
 
   dom(:seed) { text_field(id: 'searchKeywords') }
   dom(:leaves) { ul(class_name: "typeahead dropdown-menu") }
 
+  # @return TypeAheadTextField object constructed in this view scope
   def finder
-    TypeAheadTextField.new :seed => seed, :leaves => leaves
+    TypeAheadTextField.new({:seed => seed, :leaves => leaves}, -> { watir_container })
   end
 
-  # type_ahead_text_field :region,
-  #                       seed:   -> { text_field(id: 'searchKeywords') },
-  #                       leaves: -> { ul(class_name: "typeahead dropdown-menu") }
+  # optionally construct TypeAheadTextField with factory method you have registered earlier
+  type_ahead_text_field :finder_from_factory,
+                        seed:   -> { text_field(id: 'searchKeywords') },
+                        leaves: -> { ul(class_name: "typeahead dropdown-menu") }
 end
 
 
@@ -102,5 +139,13 @@ describe TypeAheadTextField do
     expect(f.value).to eq "Austinmer, Australia"
   end
 
+
+  it "type_ahead_text_field factory method" do
+    expect(ExampleView).to respond_to(:type_ahead_text_field)
+    expect(ExampleView.new).to respond_to(:finder_from_factory)
+
+    leaves = {:finder_from_factory => ["Poland, Europe (678)", "Poland, Maine (8)", "Poland Springs, Maine (3)"]}
+    expect(view.options :finder_from_factory => {:seed => 'Poland'}).to eq leaves
+  end
 
 end
