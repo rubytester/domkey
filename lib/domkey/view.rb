@@ -2,14 +2,14 @@ module Domkey
 
   module View
 
-    module ClassMethods
+    module FactoryMethods
       # class factory methods for custom page objects in the view
     end
 
     # example:
     # Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
     def self.register_domkey_factory page_object_factory_method, page_object_klass
-      ClassMethods.module_eval %Q{
+      FactoryMethods.module_eval %Q{
         def #{page_object_factory_method}(key, hash_of_callable_packages)
           send :define_method, key do
             #{page_object_klass}.new hash_of_callable_packages, -> { watir_container }
@@ -21,7 +21,7 @@ module Domkey
     # example:
     # Domkey::View.register_dom_factory :select_list, SelectList
     def self.register_dom_factory page_object_factory_method, page_object_klass
-      ClassMethods.module_eval %Q{
+      FactoryMethods.module_eval %Q{
         def #{page_object_factory_method}(key, &callable_package)
           send :define_method, key do
             #{page_object_klass}.new callable_package, -> { watir_container }
@@ -31,9 +31,9 @@ module Domkey
     end
 
 
-    # module ClassMethods provides page objects class factory methods in the context of a class that includes Domkey::View
+    # module FactoryMethods provides page objects class factory methods in the context of a class that includes Domkey::View
     def self.included(klass)
-      klass.extend(ClassMethods)
+      klass.extend(FactoryMethods)
     end
 
     # @param [Watir::Element] (false) browser becomes ultimate container for all when no watir container provided

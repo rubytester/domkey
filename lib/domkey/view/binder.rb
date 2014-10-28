@@ -142,7 +142,7 @@ module Domkey
       end
     end
 
-    module ClassMethods
+    module FactoryMethods
 
       # custom inner Binder class for the current view
       # used to create custom binder hooks for :set, :value, :options actions
