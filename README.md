@@ -6,20 +6,32 @@ Watir-Webdriver is the Bee's Knees! Now with Domain Specific PageObject Factory!
 
 # Usage
 
-Create your view class and include Domkey::View. Your class can now be instantiated with Watir Element as a container for page objects. Your view becomes a Page or some part of a page depending on what Watir Element was used to provide the container.
-
-
 ```ruby
-class MyPage
+class MyPageView
   include Domkey::View
 end
-
-# Example: if you instantiate your page with Watir::Browser your view scope is for the entire DOM. PageObjects can live anywhere on the page.
-MyPage.new(browser)
-
-# Example: if you instantiate your page with portion of DOM you limit the view scope where page objects can be found.
-MyPage.new(browser.div(id: 'somediv'))
 ```
+
+Create a view class and include Domkey::View. Now you can create PageObjects in your view. Let's say you have a Watir text_field that means 'First Name' for a customer
+
+```ruby
+class MyPageView
+  include Domkey::View
+  dom(:first_name) { text_field(id: 'fn') }
+end
+```
+
+Your view needs a watir container in which page objects are scoped to, by default we'll use a Watir Browser. If you instantiate your view with Watir::Browser your view container is for the entire DOM of that browser.
+
+```ruby
+view = MyPageView.new
+view.first_name #=> should be a PageObject encapsulating a text_field
+```
+
+In Domkey you can create two types of PageObjects that encapuslate interacting with dom elements:
+
+- Simple PageObject: just a wrapper for a watir element or colletion of watir elements
+- Domain Specific PageObjects: where you model widgets composed of several watir_elements
 
 ## Simple PageObject
 
@@ -30,7 +42,7 @@ Indicate what PageObject you have in the view: Create pageobject with factory me
 - `dom`: creates a facade to a watir element definition
 - `radio_group`: a facade to a collection of radios with the same name treating them as one pageobject
 - `checkbox_group`: like radio_group but for checkboxes collection
-- `select_list`: wrapper for Watir::SelectList
+- `select_list`: for single and multiselect lists
 - `doms`: collection of watir elements
 
 Example:
@@ -40,45 +52,58 @@ class MyPage
   include Domkey::View
   dom(:first_name) { text_field(id: 'f_name') }
   dom(:last_name) { text_field(id: 'f_name') }
-  domkey :billing_name, first_name: first_name, last_name: last_name
+  domkey :billing_name, first_name: -> { text_field(id: 'f_name') }, last_name: -> { text_field(id: 'f_name') }
   radio_group(:fruit) { radios(name: 'fruit') }
 end
 ```
 
-Interacting with PageObjects:
-
-PageObject is an object that responds to :set, :value and :options.
-
-- You can interact with it directly, checking its presence, sending data to it or quering it for the current value or options.
-- Orr you can send data payload to view which will set the pageobject with desired value
-
-```ruby
-page = MyPage.new
-page.set :fruit => "atomato"
-```
-
-The above will set the radio with value 'atomato' in 'fruit' radio_group
-
-```ruby
-page = MyPage.new
-page.set :fruit => {label: "Tomato"}
-```
-
-The above will also set the radio but the one that has corresponing visible label for radio in a radio_group
-
-Payload is a simple hash object, similar to json structure
-
 ## Domain Specific PageObject
 
-Simple wrappers around watir elements are a bit too simplistic way to abstract your application. Apps today use a collaboration of visual elements to make a cohenrent behavior at a higher level than single elements. For example a pageobject like TypeAheadTextField could be a type of object to model the way you type google queries. You enter some text in a text_field and you end up being presented with something that acts like a select_list but in fact is a div with ul playing a role of a listbox
-You can model that with Domkey::View::PageObject as a single unit encapsulating the interaction with this thing we may call TypeAheadTextField
+Simple wrappers around watir elements are a bit too simplistic way to abstract your application. Apps today use a collaboration of visual elements to make a coherent behavior at a higher level than single dom elements. For example a pageobject like TypeAheadTextField could be a type of object to model the way you type google search terms, You enter some text in a text_field and you end up being presented with something that acts like a select_list but in fact is a div with ul playing a role of a listbox.
+You can model that Widget using Domkey::View::PageObject as a single unit encapsulating the interaction with this thing we may call TypeAheadTextField (see spec/examples/ for more info)
 
-Example: would be nice here
+How do you create a Domain Specific PageObject?
+- create a class subclassing from Domkey::View::PageObject.
+- Implement 3 methods. :set, :value, :options.
+- register factory method in your view that creates your type of Object
+
+```ruby
+class TextAheadTextField < Domkey::View::PageObject
+
+  def set *value
+    # implement
+  end
+  def value *opts
+    #implement
+  end
+
+  def options *opts
+    # implement
+  end
+
+end
+Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
+
+# and in your view class
+class MyPageView
+  include Domkey::View
+  # example of 2 elements that collaborate
+  type_ahead_text_field :finder, seed: -> {text_field(id: 'searchby'}, leaves: -> { ul(id: 'list' }
+end
+```
+
+Please see examples. Actually run examples and specs to see it all work.
+
+## Interacting with PageObjects
+
+
+- You can interact with pageobject directly, checking its presence, sending data to it or quering it for the current value or options.
+- Or you can send data payload to view which will set the pageobject with desired value
+
+Payload is a simple hash object, similar to json structure. See examples in spec files.
 
 ## Dev
 
 Run unit tests with `bundle exec rake`.
 
 The tests that use git submodule `watirspec` are in progress. The intention is to show pageobject usage for watirspec files.
-
-
