@@ -57,16 +57,9 @@ module Domkey
       end
     end
 
-    module ClassMethods
-
-      # PageObjectCollection factory where package is a watir elements collection
-      # example:
-      # doms(:streets) { text_fields(class: 'street1') }
-      def doms(key, &package)
-        send :define_method, key do
-          PageObjectCollection.new package, -> { watir_container }
-        end
-      end
-    end
+    # PageObjectCollection factory where package is a watir elements collection
+    # example:
+    # doms(:streets) { text_fields(class: 'street1') }
+    register_dom_factory :doms, PageObjectCollection
   end
 end
