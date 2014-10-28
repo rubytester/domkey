@@ -9,6 +9,22 @@ module Domkey
 
   module View
 
+    module ClassMethods
+      # class factory methods for custom page objects in the view
+    end
+
+    # example:
+    # Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
+    def self.register_domkey_factory page_object_factory_method, page_object_klass
+      ClassMethods.module_eval %Q{
+        def #{page_object_factory_method}(key, package)
+          send :define_method, key do
+            #{page_object_klass}.new package, -> { watir_container }
+          end
+        end
+      }
+    end
+
     # module ClassMethods provides page objects class factory methods in the context of a class that includes Domkey::View
     def self.included(klass)
       klass.extend(ClassMethods)

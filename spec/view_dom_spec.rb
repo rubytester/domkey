@@ -99,8 +99,37 @@ describe Domkey::View do
       expect(@view.container.value [:street]).to eq :street => "Nowy Świat"
     end
   end
-end
 
+  context 'register_domkey_factory' do
+
+    # develop custom page object in this container
+    module RegisterDomkeyExample
+
+      class MyPageObject < Domkey::View::PageObject
+
+      end
+      # and register it with View so you can have factory shortcut constructor
+      Domkey::View.register_domkey_factory :page_object_with_hash, RegisterDomkeyExample::MyPageObject
+    end
+
+    class RegisterDomkeyFactoryView
+      include Domkey::View
+
+      # then this factory method should be available in View
+      page_object_with_hash :po_with_hash_example, key: -> { "fake key value" }
+    end
+
+    it 'class method exists for view' do
+      expect(RegisterDomkeyFactoryView).to respond_to(:page_object_with_hash)
+    end
+
+    it 'view constructed method for the object after being instantiated' do
+      view = RegisterDomkeyFactoryView.new
+      expect(view).to respond_to(:po_with_hash_example)
+      expect(view.po_with_hash_example).to be_a(RegisterDomkeyExample::MyPageObject)
+    end
+  end
+end
 #require 'benchmark'
 #Benchmark.bm do |bm|
 #  howmany = 50
