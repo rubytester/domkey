@@ -23,9 +23,23 @@ module DomkeySpecHelper
 
 end
 
+
+module Domkey
+
+  # close browser on exit to cleanup after yourself
+  def self.close_browser_on_exit
+    return if @_close_browser_on_exit
+    at_exit {
+      if @browser && @browser.exists?
+        @browser.close
+      end
+    }
+    @_close_browser_on_exit = true
+  end
+end
+
+Domkey.close_browser_on_exit
+
 RSpec.configure do |config|
   config.include DomkeySpecHelper
-  config.after :all do
-    Domkey.browser.close
-  end
 end
