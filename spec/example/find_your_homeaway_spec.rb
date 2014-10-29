@@ -149,3 +149,47 @@ describe TypeAheadTextField do
   end
 
 end
+
+
+# LIVE EXAMPLE
+
+class ArriveDepartDateRange < Domkey::View::PageObject
+  expected_package_keys :arrive, :depart, :skipdates
+end
+
+class FindYourHomeAwayView
+  include Domkey::View
+  type_ahead_text_field :area,
+                        seed:   -> { text_field(id: 'searchKeywords') },
+                        leaves: -> { ul(class_name: "typeahead dropdown-menu") }
+  dom(:arrive) { text_field(id: 'mastHeadstartDateInput') }
+  dom(:depart) { text_field(id: 'mastHeadendDateInput') }
+  dom(:skipdates) { checkbox(name: 'skipDates') }
+  select_list(:sleeps) { select_list(name: 'sleepsInput') }
+
+
+  def submit
+    watir_container.a(class_name: 'btn btn-primary btn-large search-btn').click
+  end
+end
+
+describe FindYourHomeAwayView do
+
+  before :each do
+    Domkey.browser.goto "http://homeaway.com"
+  end
+
+  it 'payload example' do
+    payload = {
+        area:   {seed: 'Austin', leaves: {index: 3}},
+        arrive: "10/10/1970",
+        depart: '10/10/1971',
+        sleeps: {text: '4+'}
+    }
+
+    view = FindYourHomeAwayView.new
+    view.set payload
+    view.submit
+
+  end
+end
