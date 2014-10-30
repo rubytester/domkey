@@ -52,8 +52,8 @@ module Domkey
       def set
         @payload.each_pair do |key, value|
           @key, @value = key, value
-          b, a      = "before_#{key}".to_sym, "after_#{key}".to_sym
-          bs, s, as = "before_set_#{key}".to_sym, "set_#{key}".to_sym, "after_set_#{key}".to_sym
+          b, a         = "before_#{key}".to_sym, "after_#{key}".to_sym
+          bs, s, as    = "before_set_#{key}".to_sym, "set_#{key}".to_sym, "after_set_#{key}".to_sym
           __send__(b) if respond_to?(b)
           __send__(bs) if respond_to?(bs)
           respond_to?(s) ? __send__(s) : set_pageobject
@@ -69,8 +69,8 @@ module Domkey
         extracted = {}
         @payload.each_pair do |key, value|
           @key, @value = key, value
-          b, a      = "before_#{key}".to_sym, "after_#{key}".to_sym
-          bv, v, av = "before_value_#{key}".to_sym, "value_#{key}".to_sym, "after_value_#{key}".to_sym
+          b, a         = "before_#{key}".to_sym, "after_#{key}".to_sym
+          bv, v, av    = "before_value_#{key}".to_sym, "value_#{key}".to_sym, "after_value_#{key}".to_sym
           __send__(b) if respond_to?(b)
           __send__(bv) if respond_to?(bv)
           extracted[key] = respond_to?(v) ? __send__(v) : value_for_pageobject
@@ -88,8 +88,8 @@ module Domkey
         extracted = {}
         @payload.each_pair do |key, value|
           @key, @value = key, value
-          b, a      = "before_#{key}".to_sym, "after_#{key}".to_sym
-          bo, o, ao = "before_options_#{key}".to_sym, "options_#{key}".to_sym, "after_options_#{key}".to_sym
+          b, a         = "before_#{key}".to_sym, "after_#{key}".to_sym
+          bo, o, ao    = "before_options_#{key}".to_sym, "options_#{key}".to_sym, "after_options_#{key}".to_sym
           __send__(b) if respond_to?(b)
           __send__(bo) if respond_to?(bo)
           extracted[key] = respond_to?(o) ? __send__(o) : options_for_pageobject
@@ -140,6 +140,33 @@ module Domkey
       rescue Watir::Wait::TimeoutError => e
         raise Exception::NotFoundError, "Binder expected pageobject: '#{@view.class}##{@key}' to be present: #{e.message}"
       end
+    end
+
+    module FactoryMethods
+
+      # custom inner Binder class for the current view
+      # used to create custom binder hooks for :set, :value, :options actions
+      # example:
+      #
+      #     class MyView
+      #       include Domkey::View
+      #       dom(:foo) { text_field(id: 'foo')}
+      #       binder do
+      #         # provide your hooks here for custom binder
+      #         # example
+      #         def before_foo
+      #           # do stuff before interating with pageobject :foo in this view
+      #         end
+      #       end
+      #     end
+      #     view = MyView.new
+      #     view.set :foo => 'foo value' # ensures before_foo will be called in the custom binder
+
+      def binder &blk
+        klass = self.const_set("Binder", Class.new(::Domkey::View::Binder))
+        klass.module_eval &blk
+      end
+
     end
   end
 end

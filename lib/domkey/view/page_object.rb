@@ -6,27 +6,27 @@ module Domkey
 
   module View
 
-    # PageObject represents an semantically essential area in a View
-    # It is an object that responds to set and value as the main way of sending data to it.
+    # PageObject represents a semantically essential watir elements package in a View
+    # It is an object that responds to set, value and options as the main way of sending data to it.
     # it is composed of one or more watir elements.
-    # PageObject encapuslates the widgetry of DOM elements to provide semantic interfact to the user of the widgetry
+    # PageObject encapuslates the widgetry of DOM elements to provide semantic interface to the user of the widgetry
     #
     # Compose PageObject with package and container
     #
     # What is a container? it's a proc, a callable object that plays a role of a container for package widgetry
     # container can be one of:
-    # - browser (default)
+    # - a proc holding watir element. Defaults to browser as ultimate container for all elements
     # - a pageobject
     #
     # What is package? it's a proc of DOM elements widgetry that can be found inside the container
     # package can be one of the following:
-    #   - definition of single watir element i.e. `-> { text_field(:id, 'foo')}`
+    #   - a proc holding definition of a single watir element i.e. `-> { text_field(:id, 'foo')}`
     #   - a pageobject i.e. previously instantiated definition
-    #   - hash where key defines subelement and value a definition or pageobject
+    #   - a hash where key is the name of PageObject that collaborates and value a proc for watier element or pageobject
     #
     # Usage:
     # Clients would not usually instantate this class.
-    # A client class which acts as a View would use a :dom factory method to create PageObjects
+    # A client class which acts as a View would use dom factory methods to create PageObjects
     # Example:
     #
     #        class MyView
@@ -102,5 +102,16 @@ module Domkey
         end
       end
     end
+
+    # PageObject factory where package is a single watir element wrapper
+    # example:
+    #   dom(:foo) {text_field(id: 'hello_world')}
+    register_dom_factory :dom, PageObject
+
+    # PageObject factory where package is a keyed hash of watir element procs. Capture elements that compose this PageObject
+    # example:
+    # domkey :foo, switch: -> { checkbox(id: 'feature_checkbox1') }, blurb: -> { textarea(id: 'feature_textarea1') }}
+    # builds a PageObject where package is a hash of two elements with keys :switch and :blurb
+    register_domkey_factory :domkey, PageObject
   end
 end

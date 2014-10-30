@@ -22,5 +22,10 @@ module Domkey
         end
       end
     end
+
+    # factory create PageObject CheckboxGroup in your current view
+    # example:
+    # checkbox_group(:fruit) { checkboxes(name: 'fruit') }
+    register_dom_factory :checkbox_group, CheckboxGroup
   end
 end

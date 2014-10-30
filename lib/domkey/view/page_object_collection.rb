@@ -56,5 +56,10 @@ module Domkey
         end
       end
     end
+
+    # PageObjectCollection factory where package is a watir elements collection
+    # example:
+    # doms(:streets) { text_fields(class: 'street1') }
+    register_dom_factory :doms, PageObjectCollection
   end
 end

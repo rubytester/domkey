@@ -23,5 +23,10 @@ module Domkey
       end
 
     end
+
+    # factory create PageObject RadioGroup in your current view respecting current container
+    # example:
+    # radio_group(:tool) { radios(name: 'tool') }
+    register_dom_factory :radio_group, RadioGroup
   end
 end

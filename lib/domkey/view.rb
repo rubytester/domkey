@@ -1,62 +1,53 @@
-require 'domkey/view/page_object'
-require 'domkey/view/page_object_collection'
-require 'domkey/view/radio_group'
-require 'domkey/view/checkbox_group'
-require 'domkey/view/select_list'
-require 'domkey/view/binder'
-
 module Domkey
 
   module View
 
-    module ClassMethods
-
-      # PageObjectCollection factory
-      def doms(key, &package)
-        send :define_method, key do
-          PageObjectCollection.new package, -> { watir_container }
-        end
-      end
-
-      # PageObject factory
-      def dom(key, &package)
-        send :define_method, key do
-          PageObject.new package, -> { watir_container }
-        end
-      end
-
-      # PageObject factory
-      def domkey(key, hash)
-        send :define_method, key do
-          PageObject.new hash, -> { watir_container }
-        end
-      end
-
-      # custome inner Binder class for the current view
-      # used to create custom binder hooks for :set, :value, :options actions
-      def binder &blk
-        klass = self.const_set("Binder", Class.new(::Domkey::View::Binder))
-        klass.module_eval &blk
-      end
-
+    module FactoryMethods
+      # class factory methods for custom page objects in the view
     end
 
+    # example:
+    # Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
+    def self.register_domkey_factory page_object_factory_method, page_object_klass
+      FactoryMethods.module_eval %Q{
+        def #{page_object_factory_method}(key, hash_of_callable_packages)
+          send :define_method, key do
+            #{page_object_klass}.new hash_of_callable_packages, -> { watir_container }
+          end
+        end
+      }
+    end
+
+    # example:
+    # Domkey::View.register_dom_factory :select_list, SelectList
+    def self.register_dom_factory page_object_factory_method, page_object_klass
+      FactoryMethods.module_eval %Q{
+        def #{page_object_factory_method}(key, &callable_package)
+          send :define_method, key do
+            #{page_object_klass}.new callable_package, -> { watir_container }
+          end
+        end
+      }
+    end
+
+
+    # module FactoryMethods provides page objects class factory methods in the context of a class that includes Domkey::View
     def self.included(klass)
-      klass.extend(ClassMethods)
+      klass.extend(FactoryMethods)
     end
 
     # @param [Watir::Element] (false) browser becomes ultimate container for all when no watir container provided
-    def initialize watir_container=false
+    def initialize watir_container=nil
       @watir_container = watir_container
     end
 
     # @return [Watir::Browser]
     def browser
-      Domkey.browser
+      watir_container.browser
     end
 
     def watir_container
-      @watir_container ||= browser
+      @watir_container ||= Domkey.browser
     end
 
     def set payload

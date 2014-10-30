@@ -31,11 +31,7 @@ describe Domkey::View::Binder do
       ShippingAddressView.new
     end
 
-    # semantic descriptor that returns PageObject
-    def fruit
-      CheckboxGroup.new -> { checkboxes(name: 'fruit') }
-    end
-
+    checkbox_group(:fruit) { checkboxes(name: 'fruit') }
   end
 
   class ShippingAddressView

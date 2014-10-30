@@ -89,7 +89,7 @@ describe 'PageObject Decorators' do
               year:  -> { text_field(id: 'year_field') }}
 
       # Example of poro decorator wrapping pageobject composed of hashed keys
-      dmy  = DateSelector.new(Domkey::View::PageObject.new hash)
+      dmy  = DateSelector.new(Domkey::View::PageObject.new hash, -> { Domkey.browser })
 
       dmy.set Date.today
       expect(dmy.value).to eq Date.today
@@ -102,7 +102,7 @@ describe 'PageObject Decorators' do
               year:  -> { text_field(id: 'year_field') }}
 
       #example of subclassing PageObject with override set and value
-      dmy  = DateSelectorPageObject.new hash
+      dmy  = DateSelectorPageObject.new hash, -> { Domkey.browser }
 
       dmy.set Date.today
       expect(dmy.value).to eq Date.today
@@ -114,8 +114,8 @@ describe 'PageObject Decorators' do
 
     it 'as pageobject component wrapped by composite' do
 
-      pageobject = Domkey::View::PageObject.new switch: -> { checkbox(id: 'feature_checkbox1') },
-                                                blurb:  -> { textarea(id: 'feature_textarea1') }
+      hash       = {switch: -> { checkbox(id: 'feature_checkbox1') }, blurb: -> { textarea(id: 'feature_textarea1') }}
+      pageobject = Domkey::View::PageObject.new hash, -> { Domkey.browser }
 
       # turn switch on and enter text in text area
       pageobject.set switch: true, blurb: 'I am a blurb text after you turn on switch'
@@ -136,7 +136,7 @@ describe 'PageObject Decorators' do
       it 'algorithm from predictable pattern' do
 
         #given predictable pattern that signals the presence of pageobjects
-        divs = Domkey::View::PageObjectCollection.new -> { divs(:id, /^feature_/) }
+        divs = Domkey::View::PageObjectCollection.new -> { divs(:id, /^feature_/) }, -> { Domkey.browser }
 
         features = divs.map do |div|
 
@@ -148,7 +148,7 @@ describe 'PageObject Decorators' do
                   blurb:  -> { text_field(id: "feature_textarea#{id}") },
                   label:  -> { label(for: "feature_checkbox#{id}") }}
 
-          pageobject = Domkey::View::PageObject.new hash
+          pageobject = Domkey::View::PageObject.new hash, -> { Domkey.browser }
           #domain specific pageobject decorator
           CheckboxTextField.new(pageobject)
         end
@@ -170,12 +170,18 @@ describe 'PageObject Decorators' do
         doms(:feature_divs) { divs(:id, /^feature_/) }
 
         # returns array of CheckboxTextField pageobjects
+        # as you see this is a collection of custom pageobjects accessible with method :features
+        # all objects are created at runtime.
         def features
           ids = feature_divs.map { |e| e.element.id.split("_").last }
           ids.map do |i|
-            pageobject = PageObject.new switch: -> { checkbox(id: "feature_checkbox#{i}") },
-                                        blurb:  -> { text_field(id: "feature_textarea#{i}") },
-                                        label:  -> { label(for: "feature_checkbox#{i}") }
+            hash       = {
+                switch: -> { checkbox(id: "feature_checkbox#{i}") },
+                blurb:  -> { text_field(id: "feature_textarea#{i}") },
+                label:  -> { label(for: "feature_checkbox#{i}") }
+            }
+            # generic domkey pageobject but not a method in the view
+            pageobject = PageObject.new hash, -> { watir_container }
             CheckboxTextField.new(pageobject)
           end
         end

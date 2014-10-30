@@ -1,6 +1,12 @@
 require 'domkey/version'
 require 'watir-webdriver'
 require 'domkey/view'
+require 'domkey/view/page_object'
+require 'domkey/view/page_object_collection'
+require 'domkey/view/radio_group'
+require 'domkey/view/checkbox_group'
+require 'domkey/view/select_list'
+require 'domkey/view/binder'
 require 'domkey/exception'
 
 module Domkey

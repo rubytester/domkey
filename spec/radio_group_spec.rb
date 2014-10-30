@@ -6,14 +6,14 @@ describe Domkey::View::RadioGroup do
     include Domkey::View
 
     # one named radio group
-    def group
-      RadioGroup.new -> { radios(name: 'tool') }
-    end
+    radio_group(:group) { radios(name: 'tool') }
 
     # no good. collection resolves to more than one coherent group
-    def not_valid_group
-      RadioGroup.new -> { radios(name: /^tool/) }
-    end
+    radio_group(:not_valid_group) { radios(name: /^tool/) }
+    # example of bulding a method without factory helper
+    # def not_valid_group
+    #   RadioGroup.new -> { radios(name: /^tool/) }, -> { watir_container }
+    # end
   end
 
   before :each do

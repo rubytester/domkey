@@ -6,6 +6,27 @@ module Domkey
 
         attr_accessor :package, :container
 
+        module ClassMethods
+
+          # optionally when building a new Domain Specific PageObject
+          # validate your package hash kesy used in initializing your pageobject
+          # example:
+          #     class MyCustomThing < Domkey::View::PageObject
+          #       package_keys :foo, :bar
+          #     end
+          #     MyCustomThink.new package, container
+          # when you instantiate your pageobject it will validate your package is a hash with keys :foo, :bar
+          def package_keys *keys
+            send :define_method, :package_keys do
+              keys
+            end
+          end
+        end
+
+        def self.included(klass)
+          klass.extend(ClassMethods)
+        end
+
         # initialize PageObject or PageObjectCollection
         # for PageObject expects WebdriverElement a single element definition i.e text_field, checkbox
         # for PageObjectCollection expects WebdriverElement a collection definition i.e. text_fields, checkboxes
@@ -16,6 +37,7 @@ module Domkey
         def initialize package, container=lambda { Domkey.browser }
           @container = container
           @package   = initialize_this package
+          validate_package_keys
         end
 
         # access widgetry of watir elements composing this page object
@@ -29,6 +51,13 @@ module Domkey
         end
 
         private
+
+        def validate_package_keys
+          return unless respond_to?(:package_keys)
+          fail ArgumentError, "Package must be a kind of hash" unless package.respond_to?(:keys)
+          return if (package_keys - package.keys).empty?
+          fail ArgumentError, "Package must supply keys: #{package_keys.inspect} but got: #{package.keys.inspect}"
+        end
 
         # talks to the browser
         # returns runtime element in a specified container
