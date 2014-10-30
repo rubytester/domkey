@@ -53,7 +53,7 @@ module Domkey
         private
 
         def validate_package_keys
-          return unless respond_to?(:package_keys)
+          return unless defined? package_keys
           fail ArgumentError, "Package must be a kind of hash" unless package.respond_to?(:keys)
           return if (package_keys - package.keys).empty?
           fail ArgumentError, "Package must supply keys: #{package_keys.inspect} but got: #{package.keys.inspect}"
