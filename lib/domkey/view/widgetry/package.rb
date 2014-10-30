@@ -47,6 +47,16 @@ module Domkey
           validate_package_keys
         end
 
+        # @return Watir::Browser
+        def browser
+          watir_container.browser
+        end
+
+        # @return Watir::Element scope for this PageObject
+        def watir_container
+          container_instantiator
+        end
+
         def container
           @container ||= Domkey.browser
         end
