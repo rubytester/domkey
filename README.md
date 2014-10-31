@@ -6,6 +6,10 @@ Watir-Webdriver is the Bee's Knees! Now with Domain Specific PageObject Factory!
 
 # Usage
 
+Domkey is a library that helps you build Domain Specific PageObjects for system testing your application.
+
+PageObject is composed of one or more watir elements and models them as one semantic unit. It is an object that responds to set, value and options as the main way of sending data to it. PageObject is presented in a container which by default is a Watir::Browser but can be any Watir::Element, or PageObject. A collection of PageObjects live in a View class which models a Context.
+
 ```ruby
 class MyPageView
   include Domkey::View
