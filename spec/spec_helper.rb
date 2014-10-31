@@ -9,10 +9,6 @@ SimpleCov.command_name "test:units"
 
 module DomkeySpecHelper
 
-  def goto_watirspec file
-    goto("file://" + __dir__ + "/watirspec/html/#{file}")
-  end
-
   def goto_html file
     goto("file://" + __dir__ + "/html/#{file}")
   end

@@ -115,5 +115,3 @@ Payload is a simple hash object, similar to json structure. See examples in spec
 ## Dev
 
 Run unit tests with `bundle exec rake`.
-
-The tests that use git submodule `watirspec` are in progress. The intention is to show pageobject usage for watirspec files.
