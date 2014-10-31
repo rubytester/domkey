@@ -21,13 +21,14 @@ describe Domkey::View::PageObject do
     end
   end
 
-  context 'when container is browser by default and' do
+  context 'package' do
 
-    it 'package is package' do
+    it 'init as proc' do
       package = -> { text_field(id: 'street1') }
       street  = Domkey::View::PageObject.new package
 
       expect(street.package).to be_a(Proc)
+      # resolve proc to watir element
       expect(street.element).to be_a(Watir::TextField) #one default element
 
       # talk to browser
@@ -36,13 +37,13 @@ describe Domkey::View::PageObject do
       expect(street.options).to be_empty # by default options are empty
     end
 
-    it 'package is pageobject' do
+    it 'init as pageobject' do
       # setup
-      watir_object = -> { text_field(id: 'street1') }
-      pageobject   = Domkey::View::PageObject.new watir_object
+      package    = -> { text_field(id: 'street1') }
+      pageobject = Domkey::View::PageObject.new package
 
       # test
-      street       = Domkey::View::PageObject.new pageobject
+      street     = Domkey::View::PageObject.new pageobject
 
       expect(street.package).to be_a(Proc)
       expect(street.element).to be_a(Watir::TextField)
@@ -54,7 +55,7 @@ describe Domkey::View::PageObject do
       expect(street.options).to be_empty
     end
 
-    it 'package is hash where values are packages' do
+    it 'init as hash where values are packages' do
       hash    = {street1: -> { text_field(id: 'street1') },
                  city:    -> { text_field(id: 'city1') }}
       address = Domkey::View::PageObject.new hash
