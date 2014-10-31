@@ -9,7 +9,7 @@ module Domkey
         module ClassMethods
 
           # optionally when building a new Domain Specific PageObject
-          # validate your package hash kesy used in initializing your pageobject
+          # validate your package hash keys used in initializing your pageobject
           # example:
           #     class MyCustomThing < Domkey::View::PageObject
           #       package_keys :foo, :bar
