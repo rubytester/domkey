@@ -12,7 +12,7 @@ module Domkey
       FactoryMethods.module_eval %Q{
         def #{page_object_factory_method}(key, hash_of_callable_packages)
           send :define_method, key do
-            #{page_object_klass}.new hash_of_callable_packages, -> { watir_container }
+            #{page_object_klass}.new hash_of_callable_packages, watir_container
           end
         end
       }
@@ -24,7 +24,7 @@ module Domkey
       FactoryMethods.module_eval %Q{
         def #{page_object_factory_method}(key, &callable_package)
           send :define_method, key do
-            #{page_object_klass}.new callable_package, -> { watir_container }
+            #{page_object_klass}.new callable_package, watir_container
           end
         end
       }
