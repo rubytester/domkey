@@ -106,6 +106,8 @@ describe Domkey::View::PageObject do
       c = Domkey.browser.div(id: 'container')
       o = Domkey::View::PageObject.new -> { text_field(class: 'city') }, c
       expect(o.watir_container).to be_a(Watir::Div)
+      # browser is Watir::Browser
+      expect(o.browser).to be_a(Watir::Browser)
     end
 
     it 'proc wrapping watir element which becomes container' do
