@@ -12,6 +12,8 @@ describe 'PageObject Decorators' do
   # behavior of set and value
   class DateSelectorPageObject < Domkey::View::PageObject
 
+    package_keys :year, :month, :day
+
     def set value
       package.each_pair { |k, po| po.set(value.send(k)) }
     end
