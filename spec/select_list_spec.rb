@@ -121,6 +121,11 @@ describe Domkey::View::SelectList do
         expect { @widget.set :hello_world => 'hello world' }.to raise_error(Domkey::Exception::NotImplementedError, /Unknown option qualifier/)
       end
 
+      it 'value by unimplmented qualifier' do
+        @widget.set "2"
+        expect { @widget.value :hello_world => 'hello world' }.to raise_error(Domkey::Exception::NotImplementedError, /Unknown option qualifier/)
+      end
+
     end
 
     it 'set regexp acts on value' do

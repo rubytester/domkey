@@ -207,5 +207,15 @@ describe Domkey::View::CheckboxGroup do
       expect(@v.group.options :value, :index, :label, :text).to eq v
       expect(@v.group.options [:value, :index, :label, :text]).to eq v
     end
+
+    it 'set by unimplmemented qualifier' do
+      expect { @v.group.set :hello_world => 'hello world' }.to raise_error(Domkey::Exception::NotImplementedError, /Unknown option qualifier/)
+    end
+
+    it 'value by unimplmented qualifier' do
+      @v.group.set true
+      expect { @v.group.value :hello_world => 'hello world' }.to raise_error(Domkey::Exception::NotImplementedError, /Unknown option qualifier/)
+    end
+
   end
 end

@@ -27,9 +27,17 @@ module Domkey
       def value_by_options opts
         so        = element.selected_options
         qs_and_vs = opts.map do |qualifier|
-          [qualifier, so.map { |o| o.send(qualifier) }]
+          [qualifier, so.map { |o| option_value_by_qualifier(o, qualifier) }]
         end
         Hash[qs_and_vs]
+      end
+
+      def option_value_by_qualifier o, qualifier
+        if o.respond_to?(qualifier)
+          o.send(qualifier)
+        else
+          fail Exception::NotImplementedError, "Unknown option qualifier: #{qualifier.inspect}"
+        end
       end
 
       def value_by_default

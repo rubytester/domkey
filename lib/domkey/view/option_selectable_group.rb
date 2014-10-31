@@ -50,7 +50,7 @@ module Domkey
                       when :value
                         e.value
                       else
-                        fail "do not know what u want"
+                        fail Exception::NotImplementedError, "Unknown option qualifier: #{qualifier.inspect}"
                       end
           end
           [qualifier, qvalue]
