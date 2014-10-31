@@ -91,14 +91,14 @@ module Domkey
       # @api private
       # Recursive. Examines each packages and turns each Proc into PageObject
       def initialize_this package
-        if package.respond_to?(:each_pair) #hash
+        if package.kind_of?(Hash)
           Hash[package.map { |key, package| [key, PageObject.new(package, container)] }]
-        elsif package.respond_to?(:package, true) #pageobject
+        elsif package.kind_of?(PageObject)
           return package.package
-        elsif package.respond_to?(:call) #proc
+        elsif package.kind_of?(Proc)
           package
         else
-          fail Exception::Error, "package must be kind of hash, pageobject or watirelement but I got this: #{package}"
+          fail Exception::Error, "package must be kind of Hash, PageObject or Watir::Element but I got this: #{package}"
         end
       end
     end

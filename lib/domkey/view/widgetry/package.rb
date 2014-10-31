@@ -9,7 +9,7 @@ module Domkey
         module ClassMethods
 
           # optionally when building a new Domain Specific PageObject
-          # validate your package hash kesy used in initializing your pageobject
+          # validate your package hash keys used in initializing your pageobject
           # example:
           #     class MyCustomThing < Domkey::View::PageObject
           #       package_keys :foo, :bar
@@ -30,14 +30,35 @@ module Domkey
         # initialize PageObject or PageObjectCollection
         # for PageObject expects WebdriverElement a single element definition i.e text_field, checkbox
         # for PageObjectCollection expects WebdriverElement a collection definition i.e. text_fields, checkboxes
-        # @param package [Proc(WebdriverElement)]
+        # For Simple PageObject
+        # @param package [Proc(Watir::Element)]
         # @param package [PageObject]
-        # @param package [Hash{Symbol => Proc(WebdriverElement)]
+        #
+        # For Domain Specific PageObject
+        # @param package [Hash{Symbol => Proc(Watir::Element)]
         # @param package [Hash{Symbol => PageObject]
-        def initialize package, container=lambda { Domkey.browser }
+        #
+        # @param container [Watir::Element] any elment in browser. Defaults to Domkey.browser (late binding)
+        # @param container [Proc(Watir::Element)]
+        # @param container [PageObject]
+        def initialize package, container=nil
           @container = container
           @package   = initialize_this package
           validate_package_keys
+        end
+
+        # @return Watir::Browser
+        def browser
+          watir_container.browser
+        end
+
+        # @return Watir::Element scope for this PageObject
+        def watir_container
+          container_instantiator
+        end
+
+        def container
+          @container ||= Domkey.browser
         end
 
         # access widgetry of watir elements composing this page object
@@ -70,7 +91,13 @@ module Domkey
         # returns runtime container element in a browser/driver
         # @return [WebdriverElement]
         def container_instantiator
-          container.respond_to?(:call) ? container.call : container.send(:instantiator)
+          if container.kind_of?(Proc)
+            container.call
+          elsif container.kind_of?(PageObject)
+            container.send(:instantiator)
+          else
+            container
+          end
         end
       end
     end

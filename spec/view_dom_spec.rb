@@ -9,18 +9,19 @@ describe Domkey::View do
     # or you can use factory method:
     # select_list(:multilist) { select_list(id: 'multiselect') }
     def multilist
-      SelectList.new -> { select_list(id: 'multiselect') }, -> { watir_container }
+      SelectList.new -> { select_list(id: 'multiselect') }, watir_container
     end
 
     checkbox_group(:cbg) { checkboxes(name: 'fruit') }
 
-    def container
-      SingleDomContainer.new browser.div(id: 'container')
+    def nested_view
+      SingleDomNestedView.new browser.div(id: 'container')
     end
   end
 
-  class SingleDomContainer
+  class SingleDomNestedView
     include Domkey::View
+    # street exists in parent view and also in this nested view
     dom(:street) { text_field(class: 'street1') }
   end
 
@@ -82,21 +83,27 @@ describe Domkey::View do
     end
 
     it 'view semantic descriptor returns view' do
-      expect(@view.container).to be_a(Domkey::View)
+      expect(@view.nested_view).to be_a(Domkey::View)
     end
 
     it 'view within view is a page object' do
-      expect(@view.container.street).to be_a(Domkey::View::PageObject)
+      expect(@view.nested_view.street).to be_a(Domkey::View::PageObject)
     end
 
+    it 'pageobject in nested view adopts container from parent view' do
+      expect(@view.nested_view.watir_container).to be_a(Watir::Div)
+      expect(@view.nested_view.street.watir_container).to be_a(Watir::Div)
+    end
+
+
     it 'value requires args' do
-      expect { @view.container.value }.to raise_error
+      expect { @view.nested_view.value }.to raise_error
     end
 
     it 'setting and value args' do
-      @view.container.set street: 'Nowy Świat'
-      expect(@view.container.value :street).to eq :street => "Nowy Świat"
-      expect(@view.container.value [:street]).to eq :street => "Nowy Świat"
+      @view.nested_view.set street: 'Nowy Świat'
+      expect(@view.nested_view.value :street).to eq :street => "Nowy Świat"
+      expect(@view.nested_view.value [:street]).to eq :street => "Nowy Świat"
     end
   end
 
