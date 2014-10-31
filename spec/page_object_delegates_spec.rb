@@ -42,4 +42,20 @@ describe Domkey::View::PageObject do
     end
 
   end
+
+  context 'wrapping hash of elements' do
+
+    before :all do
+      @o = Domkey::View::PageObject.new city: -> { text_field(id: 'city1') }, notthere: -> { 'bad not there element' }
+    end
+
+    it 'should delegate to element in first key' do
+      expect(@o).to respond_to(:id)
+      expect(@o.id).to eq 'city1'
+
+      expect(@o).to respond_to(:click)
+      @o.click
+    end
+
+  end
 end
