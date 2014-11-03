@@ -5,6 +5,15 @@ module Domkey
       # PageObject delegate to Watir::Element
       module ElementDelegator
 
+        # warning: ActiveResource provides Object#present?
+        def present?
+          _element.present?
+        end
+
+        def wait_until_present(timeout = nil)
+          _element.wait_until_present
+        end
+
         # @api private
         # delegate to watir element if element responds to message
         def method_missing(message, *args, &block)
