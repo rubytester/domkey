@@ -159,7 +159,7 @@ describe 'PageObject Decorators' do
         features.first.set 'bla'
         expect(features.map { |e| e.value }).to eq ["bla", false]
         expect(features.map { |e| e.pageobject.element(:label).text }).to eq ["Enable Checkbox for TextArea", "Golf Course"]
-        expect(features.find { |e| e.label == 'Golf Course' }.value).to be_false
+        expect(features.find { |e| e.label == 'Golf Course' }.value).to be_falsey
       end
 
       # example of building Domain Specific PageObject
@@ -199,7 +199,7 @@ describe 'PageObject Decorators' do
       it 'view factory' do
         view = DomainSpecificPageObjectView.new
 
-        expect(view.features).to have(2).items
+        expect(view.features.size).to eq(2)
         view.features.each { |f| f.set true }
         expect(view.features.map { |e| e.value }).to eq ["CheckboxTextField 1", "CheckboxTextField 2"]
 

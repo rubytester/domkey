@@ -19,7 +19,7 @@ describe Domkey::View::CheckboxGroup do
     @v = CheckboxGroupExampleView.new
 
     # precondition on distinct group
-    expect(@v.group).to have(3).items
+    expect(@v.group.size).to eq(3)
     @v.group.to_a.each do |e|
       expect(e).to be_a(Domkey::View::PageObject)
     end
