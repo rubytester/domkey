@@ -3,27 +3,26 @@ require 'rspec'
 require 'domkey'
 
 =begin
-DISCLAIMER: This is a live website example of developoing a Domain Specific Page Object
+EXAMPLE:
 
-We are modeling a text field with type ahead on homeaway.com website
-A similar behavior can be seeon on google.com or bing.com where you start typing a text into text field
-and with each character you type and a select list comes up prompting you to select an entry
-being filtere by what you have typed in so far.
+This is a live website example of developing a Domain Specific Page Object
 
+We are modeling a text field with type ahead on homeaway.com website - a similar behavior can be seen on google.com or bing.com
+Start typing a text into a text field and with each character a select list appears prompting you to select an entry filterd by what you have typed in so far.
 
 Let's call this Domain Specific PageObject a TypeAheadTextField
 
 Let's say that this TypeAheadTextFields is a pageobject that is a collaboration of two watir elements:
-- text_field were you send some keys. let's call it "seed" text
-- and for each :seed we grow a selection of leaves to pick from. let's call them "leaves" to follow the seed, leaves growing metaphor
+- text_field were you send some keys. let's call it text :seed
+- and for each :seed we grow a selection of entries to pick from. let's call them :leaves to follow the :seed, leaves growing metaphor
 
-To set this object measns
-- to seed it with some text
-- and pick an entry in leaves
+To set this object means:
+- to :seed it with some text
+- and pick an entry in :leaves
 
 To ask for options in this object means:
-- to seed it with some text
-- and return the leaves presented as array of text
+- to :seed it with some text
+- and return the :leaves presented as array of text entries
 
 To ask for value of this object means:
 - just return the value of text_field
@@ -60,7 +59,7 @@ class TypeAheadTextField < Domkey::View::PageObject
 
   private
 
-  # with each char send keys (this is default strategy but you can make a different strategy)
+  # with each char send keys (a default input strategy)
   def set_seed seed
     package[:seed].element.clear
     seed.each_char do |char|
@@ -78,7 +77,6 @@ end
 # Optionally register a factory method to construct you Domain Specific PageObject
 # this factory method is availabe in the view
 # this means that in the View you can build TypeAheadTextField objects using type_ahead_text_field method.
-# it's a shortcut, you don't have to use it.
 Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
 
 class ExampleView
@@ -89,7 +87,7 @@ class ExampleView
 
   # @return TypeAheadTextField object constructed in this view scope
   def finder
-    TypeAheadTextField.new({:seed => seed, :leaves => leaves}, -> { watir_container })
+    TypeAheadTextField.new({:seed => seed, :leaves => leaves}, watir_container)
   end
 
   # optionally construct TypeAheadTextField with factory method you have registered earlier
@@ -112,16 +110,21 @@ describe TypeAheadTextField do
   let(:view) { ExampleView.new }
 
   it "options" do
-    f        = view.finder
-    leaves   = f.options :seed => 'Austin'
+    f      = view.finder
+    leaves = f.options :seed => 'Austin'
 
     # expected may change
-    expected = ["Austin area, Texas (1681)",
-                "Austin, Texas (1221)",
-                "Austin, Quebec (6)",
-                "Austinmer, Australia (5)",
-                "Austinville, Virginia (2)"]
-    expect(leaves).to eq expected
+    # we should get 5 items to select from
+    # example:
+    #["Austin area, Texas (1681)",
+    # "Austin, Texas (1221)",
+    # "Austin, Quebec (6)",
+    # "Austinmer, Australia (5)",
+    # "Austinville, Virginia (2)"]
+
+    expect(leaves.size).to eq 5
+    expect(leaves.find { |e| e.match("Austinmer, Australia") }).not_to be_falsey
+
   end
 
 
@@ -143,9 +146,16 @@ describe TypeAheadTextField do
   it "type_ahead_text_field factory method" do
     expect(ExampleView).to respond_to(:type_ahead_text_field)
     expect(ExampleView.new).to respond_to(:finder_from_factory)
+  end
 
-    leaves = {:finder_from_factory => ["Poland, Europe (678)", "Poland, Maine (8)", "Poland Springs, Maine (3)"]}
-    expect(view.options :finder_from_factory => {:seed => 'Poland'}).to eq leaves
+  it 'type_ahead_text_field usage' do
+    # example leaves options as text
+    # ["Poland, Europe (678)",
+    #  "Poland, Maine (8)",
+    #  "Poland Springs, Maine (3)"]
+    payload = view.options :finder_from_factory => {:seed => 'Poland'}
+    leaves  = payload[:finder_from_factory]
+    expect(leaves.find { |e| e.match("Europe") }).not_to be_falsey
   end
 
 end
@@ -154,7 +164,7 @@ end
 # LIVE EXAMPLE
 
 class ArriveDepartDateRange < Domkey::View::PageObject
-  expected_package_keys :arrive, :depart, :skipdates
+  package_keys :arrive, :depart, :skipdates
 end
 
 class FindYourHomeAwayView
