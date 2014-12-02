@@ -140,7 +140,7 @@ describe Domkey::View::Binder do
       it 'view invokes it for actions' do
         payload = {city: 'Bla'}
         view    = WithBinderClassMethodView.new
-        WithBinderClassMethodView::Binder.any_instance.should_receive(:before_city)
+        expect_any_instance_of(WithBinderClassMethodView::Binder).to receive(:before_city)
         view.set payload
       end
     end
@@ -194,31 +194,31 @@ describe Domkey::View::Binder do
 
       it 'set' do
         binder = BinderKeyHooks.new payload: {city: 'Austin'}, view: AddressView.new
-        binder.should_receive(:before_city).with(no_args).once
-        binder.should_receive(:before_set_city).with(no_args).once
-        binder.should_receive(:set_city).with(no_args).once
-        binder.should_receive(:after_set_city).with(no_args).once
-        binder.should_receive(:after_city).with(no_args).once
+        expect(binder).to receive(:before_city).with(no_args).once
+        expect(binder).to receive(:before_set_city).with(no_args).once
+        expect(binder).to receive(:set_city).with(no_args).once
+        expect(binder).to receive(:after_set_city).with(no_args).once
+        expect(binder).to receive(:after_city).with(no_args).once
         binder.set
       end
 
       it 'value' do
         binder = BinderKeyHooks.new payload: {city: 'Austin'}, view: AddressView.new
-        binder.should_receive(:before_city).with(no_args).once
-        binder.should_receive(:before_value_city).with(no_args).once
-        binder.should_receive(:value_city).with(no_args).once
-        binder.should_receive(:after_value_city).with(no_args).once
-        binder.should_receive(:after_city).with(no_args).once
+        expect(binder).to receive(:before_city).with(no_args).once
+        expect(binder).to receive(:before_value_city).with(no_args).once
+        expect(binder).to receive(:value_city).with(no_args).once
+        expect(binder).to receive(:after_value_city).with(no_args).once
+        expect(binder).to receive(:after_city).with(no_args).once
         binder.value
       end
 
       it 'options' do
         binder = BinderKeyHooks.new payload: {city: 'Austin'}, view: AddressView.new
-        binder.should_receive(:before_city).with(no_args).once
-        binder.should_receive(:before_options_city).with(no_args).once
-        binder.should_receive(:options_city).with(no_args).once
-        binder.should_receive(:after_options_city).with(no_args).once
-        binder.should_receive(:after_city).with(no_args).once
+        expect(binder).to receive(:before_city).with(no_args).once
+        expect(binder).to receive(:before_options_city).with(no_args).once
+        expect(binder).to receive(:options_city).with(no_args).once
+        expect(binder).to receive(:after_options_city).with(no_args).once
+        expect(binder).to receive(:after_city).with(no_args).once
         binder.options
       end
     end
