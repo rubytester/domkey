@@ -34,7 +34,7 @@ module Domkey
 
       def option_value_by_qualifier o, qualifier
         if o.respond_to?(qualifier)
-          o.send(qualifier)
+          o.__send__(qualifier)
         else
           fail Exception::NotImplementedError, "Unknown option qualifier: #{qualifier.inspect}"
         end
@@ -50,7 +50,7 @@ module Domkey
 
       def options_by opts
         element.options.map do |o|
-          Hash[opts.map { |opt| [opt, o.send(opt)] }]
+          Hash[opts.map { |opt| [opt, o.__send__(opt)] }]
         end
       end
 

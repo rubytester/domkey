@@ -103,7 +103,7 @@ module Domkey
 
       def when_view_responds_to_key
         if @view.respond_to?(@key)
-          @view.send(@key)
+          @view.__send__(@key)
         else
           raise Exception::NotImplementedError, "View doesn't respond to #{@key}, expected '#{@view.class}##{@key}' to be defined"
         end

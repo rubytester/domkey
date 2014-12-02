@@ -94,7 +94,7 @@ module Domkey
           if container.kind_of?(Proc)
             container.call
           elsif container.kind_of?(PageObject)
-            container.send(:instantiator)
+            container.__send__(:instantiator)
           else
             container
           end

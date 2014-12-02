@@ -75,7 +75,7 @@ module Domkey
             when :label, :text
               [o, LabelMapper.find(e).element.text]
             else
-              [o, e.send(o)]
+              [o, e.__send__(o)]
             end
           end
           result << Hash[v]
