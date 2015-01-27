@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-# methods each pageobject should have
+# methods each page_component should have
 # set value options elements
 
-describe Domkey::View::PageObject do
+describe Domkey::View::Component do
 
   before :all do
     goto_html("test.html")
@@ -14,7 +14,7 @@ describe Domkey::View::PageObject do
     context 'dispatcher bridges set value and options messages' do
 
       it 'select' do
-        o = Domkey::View::PageObject.new -> { select_list(id: 'fruit_list') }
+        o = Domkey::View::Component.new -> { select_list(id: 'fruit_list') }
         o.set 'Tomato'
         expect(o.value).to eq 'tomato'
       end
@@ -24,7 +24,7 @@ describe Domkey::View::PageObject do
     context 'delegate unimplmemented messages' do
 
       before :all do
-        @o = Domkey::View::PageObject.new -> { text_field(id: 'city1') }
+        @o = Domkey::View::Component.new -> { text_field(id: 'city1') }
       end
 
       it 'should delegate to element when element responds' do
@@ -46,7 +46,7 @@ describe Domkey::View::PageObject do
   context 'wrapping hash of elements' do
 
     before :all do
-      @o = Domkey::View::PageObject.new city: -> { text_field(id: 'city1') }, notthere: -> { 'bad not there element' }
+      @o = Domkey::View::Component.new city: -> { text_field(id: 'city1') }, notthere: -> { 'bad not there element' }
     end
 
     it 'should delegate to element in first key' do

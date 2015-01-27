@@ -5,7 +5,7 @@ module Domkey
   module View
 
     #OptionsSelectable CheckboxGroup, RadioGroup
-    class OptionSelectableGroup < PageObjectCollection
+    class OptionSelectableGroup < ComponentCollection
 
       include OptionSelectable
 
@@ -90,13 +90,13 @@ module Domkey
       end
 
 
-      # @yield [PageObject]
+      # @yield [Component]
       def each(&blk)
         validate_scope
         super(&blk)
       end
 
-      # @return [Array<PageObject>]
+      # @return [Array<Component>]
       def to_a
         validate_scope
         super

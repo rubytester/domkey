@@ -4,19 +4,19 @@ module Domkey
 
     class LabelMapper
 
-      # return collection of PageObjects for label locators corresponding to id of each element in a collection
-      # @param [Array<PageObject>]
-      # @param [PageObjectCollection]
-      # @return [Array<PageObject>] where each PageObject is a locator for label for an id of a PageObject passed in parameters
+      # return collection of Components for label locators corresponding to id of each element in a collection
+      # @param [Array<Component>]
+      # @param [ComponentCollection]
+      # @return [Array<Component>] where each Component is a locator for label for an id of a Component passed in parameters
       def self.for collection
         collection.map do |e|
-          PageObject.new -> { label(for: e.element.id) }, e.container
+          Component.new -> { label(for: e.element.id) }, e.container
         end
       end
 
-      # provide PageObject wrapping label corresponding to id of element in pageobject.
-      def self.find pageobject
-        PageObject.new -> { label(for: pageobject.element.id) }, pageobject.container
+      # provide Component wrapping label corresponding to id of element in page_component.
+      def self.find page_component
+        Component.new -> { label(for: page_component.element.id) }, page_component.container
       end
     end
   end

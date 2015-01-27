@@ -21,7 +21,7 @@ describe Domkey::View::RadioGroup do
 
     @v = RadioGroupExampleView.new
     expect(@v.group.count).to be(3)
-    @v.group.to_a.each { |e| expect(e).to be_a(Domkey::View::PageObject) }
+    @v.group.to_a.each { |e| expect(e).to be_a(Domkey::View::Component) }
   end
 
   it 'should fail when group defintion finds 2 distinct groups' do

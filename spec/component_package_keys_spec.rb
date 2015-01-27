@@ -1,25 +1,25 @@
 require 'spec_helper'
 
-describe Domkey::View::PageObject do
+describe Domkey::View::Component do
 
   context "package_keys" do
 
-    context "class method in pageobject" do
+    context "class method in page_component" do
 
       it "is a factory method" do
-        expect(Domkey::View::PageObject).to respond_to(:package_keys)
+        expect(Domkey::View::Component).to respond_to(:package_keys)
       end
 
       it "but base object should not implement instance method" do
-        o = Domkey::View::PageObject.new(-> { 'package' }, -> { 'container' })
+        o = Domkey::View::Component.new(-> { 'package' }, -> { 'container' })
         expect(o).to_not respond_to :package_keys
       end
     end
 
 
-    context "used by custom page object" do
+    context "used by custom page component" do
 
-      class ExpectedPackageKeysExample < Domkey::View::PageObject
+      class ExpectedPackageKeysExample < Domkey::View::Component
         package_keys :foo, :bla
       end
 
@@ -35,7 +35,7 @@ describe Domkey::View::PageObject do
         }.to raise_error(ArgumentError, /Package must supply keys/)
       end
 
-      it "happy valid page object. look ma. no errors" do
+      it "happy valid page component. look ma. no errors" do
         o = ExpectedPackageKeysExample.new({foo: -> { 'package' }, bla: -> { 'package' }}, -> { 'container' })
         expect(o).to respond_to :package_keys
         expect(o.package_keys).to eq [:foo, :bla]

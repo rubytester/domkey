@@ -4,25 +4,25 @@
     <title>TestView</title>
 </head>
 <body>
-<div class='pageobject'>
-    <p>pageobject with many elements</p>
+<div class='page_component'>
+    <p>page_component with many elements</p>
     <input type='text' id="street1" class="street1"/>
     <input type='text' id="city1" class="city" value="id city class city"/>
 </div>
 
-<div class='pageobject' id="container">
+<div class='page_component' id="container">
     <input type='text' id="street2" class="street1"/>
     <input type='text' id="city2" class="city" value="class city but div id container"/>
 </div>
 <br/>
 
-<div id='feature_1' class='pageobject'>
+<div id='feature_1' class='page_component'>
     <label for='feature_checkbox1'>Enable Checkbox for TextArea</label>
     <input id="feature_checkbox1" type="checkbox" class="check" onclick="featureEnabler('feature_checkbox1','feature_textarea1');"/><br/>
     <textarea id='feature_textarea1' cols="30" readonly disabled style="background-color:#eee">CheckboxTextField 1</textarea>
 </div>
 
-<div id='feature_2' class='pageobject'>
+<div id='feature_2' class='page_component'>
     <label for='feature_checkbox2'>Golf Course</label>
     <input id='feature_checkbox2' type='checkbox' class="check" onclick="featureEnabler('feature_checkbox2','feature_textarea2');"/><br/>
     <textarea id='feature_textarea2' cols="30" readonly disabled style="background-color:#eee">CheckboxTextField 2</textarea>

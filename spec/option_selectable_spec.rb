@@ -7,76 +7,76 @@ describe Domkey::View::OptionSelectable do
   end
 
   before :all do
-    @widget = OptionSelectableFaker.new
+    @o = OptionSelectableFaker.new
   end
 
   context 'set' do
 
     it 'set string' do
-      expect(@widget).to receive(:set_by_value)
-      @widget.set('fake')
+      expect(@o).to receive(:set_by_value)
+      @o.set('fake')
     end
 
     it 'set by symbol' do
-      expect(@widget).to receive(:set_by_symbol)
-      @widget.set :hello_world
+      expect(@o).to receive(:set_by_symbol)
+      @o.set :hello_world
     end
 
     it 'set by not implemented strategy' do
-      expect { @widget.set Object.new }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set Object.new }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'set regex' do
-      expect(@widget).to receive(:set_by_value)
-      @widget.set(/fake/)
+      expect(@o).to receive(:set_by_value)
+      @o.set(/fake/)
     end
 
     it 'set :value' do
-      expect(@widget).to receive(:set_by_value)
-      @widget.set(:value => 'fake')
+      expect(@o).to receive(:set_by_value)
+      @o.set(:value => 'fake')
     end
 
     it 'set :label' do
-      expect(@widget).to receive(:set_by_label)
-      @widget.set(:label => 'fake')
+      expect(@o).to receive(:set_by_label)
+      @o.set(:label => 'fake')
     end
 
     it 'set :text' do
-      expect(@widget).to receive(:set_by_label)
-      @widget.set(:text => 'fake')
+      expect(@o).to receive(:set_by_label)
+      @o.set(:text => 'fake')
     end
 
     it 'set :index' do
-      expect(@widget).to receive(:set_by_index)
-      @widget.set(:index => 3)
+      expect(@o).to receive(:set_by_index)
+      @o.set(:index => 3)
     end
 
     it 'string' do
-      expect { @widget.set('fake') }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set('fake') }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'regex' do
-      expect { @widget.set(/fake/) }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set(/fake/) }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it ':label' do
-      expect { @widget.set(:label => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set(:label => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it ':text' do
-      expect { @widget.set(:text => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set(:text => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it ':index' do
-      expect { @widget.set(:index => 3) }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set(:index => 3) }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it ':value' do
-      expect { @widget.set(:value => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set(:value => 'fake') }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it ':symbol' do
-      expect { @widget.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.set :hello_world }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
   end
@@ -84,21 +84,21 @@ describe Domkey::View::OptionSelectable do
   context 'value' do
 
     it 'value default' do
-      expect(@widget).to receive(:value_by_default)
-      @widget.value
+      expect(@o).to receive(:value_by_default)
+      @o.value
     end
 
     it 'value option' do
-      expect(@widget).to receive(:value_by_options)
-      @widget.value(:foo)
+      expect(@o).to receive(:value_by_options)
+      @o.value(:foo)
     end
 
     it 'default' do
-      expect { @widget.value }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.value }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'option' do
-      expect { @widget.value(:foo) }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.value(:foo) }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
 
@@ -107,21 +107,21 @@ describe Domkey::View::OptionSelectable do
   context 'options' do
 
     it 'options default' do
-      expect(@widget).to receive(:options_by_default)
-      @widget.options
+      expect(@o).to receive(:options_by_default)
+      @o.options
     end
 
     it 'options opt' do
-      expect(@widget).to receive(:options_by)
-      @widget.options(:foo)
+      expect(@o).to receive(:options_by)
+      @o.options(:foo)
     end
 
     it 'default' do
-      expect { @widget.options }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.options }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
     it 'opts' do
-      expect { @widget.options(:foo) }.to raise_error(Domkey::Exception::NotImplementedError)
+      expect { @o.options(:foo) }.to raise_error(Domkey::Exception::NotImplementedError)
     end
 
   end

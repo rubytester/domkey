@@ -8,14 +8,14 @@ module Domkey
 
         module ClassMethods
 
-          # optionally when building a new Domain Specific PageObject
-          # validate your package hash keys used in initializing your pageobject
+          # optionally when building a new Domain Specific Component
+          # validate your package hash keys used in initializing your page_component
           # example:
-          #     class MyCustomThing < Domkey::View::PageObject
+          #     class MyCustomThing < Domkey::View::Component
           #       package_keys :foo, :bar
           #     end
           #     MyCustomThink.new package, container
-          # when you instantiate your pageobject it will validate your package is a hash with keys :foo, :bar
+          # when you instantiate your page_component it will validate your package is a hash with keys :foo, :bar
           def package_keys *keys
             send :define_method, :package_keys do
               keys
@@ -27,20 +27,20 @@ module Domkey
           klass.extend(ClassMethods)
         end
 
-        # initialize PageObject or PageObjectCollection
-        # for PageObject expects WebdriverElement a single element definition i.e text_field, checkbox
-        # for PageObjectCollection expects WebdriverElement a collection definition i.e. text_fields, checkboxes
-        # For Simple PageObject
+        # initialize Component or ComponentCollection
+        # for Component expects WebdriverElement a single element definition i.e text_field, checkbox
+        # for ComponentCollection expects WebdriverElement a collection definition i.e. text_fields, checkboxes
+        # For Simple Component
         # @param package [Proc(Watir::Element)]
-        # @param package [PageObject]
+        # @param package [Component]
         #
-        # For Domain Specific PageObject
+        # For Domain Specific Component
         # @param package [Hash{Symbol => Proc(Watir::Element)]
-        # @param package [Hash{Symbol => PageObject]
+        # @param package [Hash{Symbol => Component]
         #
         # @param container [Watir::Element] any elment in browser. Defaults to Domkey.browser (late binding)
         # @param container [Proc(Watir::Element)]
-        # @param container [PageObject]
+        # @param container [Component]
         def initialize package, container=nil
           @container = container
           @package   = initialize_this package
@@ -52,7 +52,7 @@ module Domkey
           watir_container.browser
         end
 
-        # @return Watir::Element scope for this PageObject
+        # @return Watir::Element scope for this Component
         def watir_container
           container_instantiator
         end
@@ -61,7 +61,7 @@ module Domkey
           @container ||= Domkey.browser
         end
 
-        # access widgetry of watir elements composing this page object
+        # access widgetry of watir elements composing this page_component
         # @param [Symbol] (false)
         # @return [Hash{Symbol => WebdriverElement}]
         # @return [Element] raw element, i.e. Watir::Select, Watir::CheckBox (not wrapped with Dispatcher strategy)
@@ -93,7 +93,7 @@ module Domkey
         def container_instantiator
           if container.kind_of?(Proc)
             container.call
-          elsif container.kind_of?(PageObject)
+          elsif container.kind_of?(Component)
             container.__send__(:instantiator)
           else
             container

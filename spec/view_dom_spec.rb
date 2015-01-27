@@ -39,8 +39,8 @@ describe Domkey::View do
       expect(@view).to respond_to(:street)
     end
 
-    it 'dom returns PageObject' do
-      expect(@view.street).to be_a(Domkey::View::PageObject)
+    it 'dom returns Component' do
+      expect(@view.street).to be_a(Domkey::View::Component)
     end
 
     context 'payload should driver set value and options' do
@@ -49,7 +49,7 @@ describe Domkey::View do
         payload = {:street => 'Aha'}
         @view.set payload
         expect(@view.value payload).to eq payload
-        expect(@view.options payload).to eq :street => [] #not opiton selectable page object
+        expect(@view.options payload).to eq :street => [] #not opiton selectable page component
       end
 
       context "option selectable" do
@@ -77,7 +77,7 @@ describe Domkey::View do
     end
   end
 
-  context 'view method returns view that acts like pageobject' do
+  context 'view method returns view that acts like page_component' do
     before :all do
       @view = SingleDom.new
     end
@@ -86,11 +86,11 @@ describe Domkey::View do
       expect(@view.nested_view).to be_a(Domkey::View)
     end
 
-    it 'view within view is a page object' do
-      expect(@view.nested_view.street).to be_a(Domkey::View::PageObject)
+    it 'view within view is a page component' do
+      expect(@view.nested_view.street).to be_a(Domkey::View::Component)
     end
 
-    it 'pageobject in nested view adopts container from parent view' do
+    it 'page_component in nested view adopts container from parent view' do
       expect(@view.nested_view.watir_container).to be_a(Watir::Div)
       expect(@view.nested_view.street.watir_container).to be_a(Watir::Div)
     end
@@ -109,31 +109,31 @@ describe Domkey::View do
 
   context 'register_domkey_factory' do
 
-    # develop custom page object in this container
+    # develop custom page component in this container
     module RegisterDomkeyExample
 
-      class MyPageObject < Domkey::View::PageObject
+      class MyComponent < Domkey::View::Component
 
       end
       # and register it with View so you can have factory shortcut constructor
-      Domkey::View.register_domkey_factory :page_object_with_hash, RegisterDomkeyExample::MyPageObject
+      Domkey::View.register_domkey_factory :page_component_with_hash, RegisterDomkeyExample::MyComponent
     end
 
     class RegisterDomkeyFactoryView
       include Domkey::View
 
       # then this factory method should be available in View
-      page_object_with_hash :po_with_hash_example, key: -> { "fake key value" }
+      page_component_with_hash :po_with_hash_example, key: -> { "fake key value" }
     end
 
     it 'class method exists for view' do
-      expect(RegisterDomkeyFactoryView).to respond_to(:page_object_with_hash)
+      expect(RegisterDomkeyFactoryView).to respond_to(:page_component_with_hash)
     end
 
     it 'view constructed method for the object after being instantiated' do
       view = RegisterDomkeyFactoryView.new
       expect(view).to respond_to(:po_with_hash_example)
-      expect(view.po_with_hash_example).to be_a(RegisterDomkeyExample::MyPageObject)
+      expect(view.po_with_hash_example).to be_a(RegisterDomkeyExample::MyComponent)
     end
   end
 end

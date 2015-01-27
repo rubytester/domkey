@@ -5,7 +5,7 @@ describe Domkey::View do
   class DomExampleView
     include Domkey::View
 
-    #pageobject facade on single watir element
+    #page_component facade for single watir element
     dom(:street) { text_field(id: 'street1') }
     dom(:city) { text_field(id: 'city1') }
   end
@@ -13,29 +13,10 @@ describe Domkey::View do
   class DomkeyExampleView
     include Domkey::View
 
-    #page object composed of more than one single elements (alternative is to have a view for it)
+    #page component composed of more than one single elements (alternative is to have a view for it)
     domkey :address, street: -> { text_field(id: 'street1') }, city: -> { text_field(id: 'city1') }
 
   end
-
-  ## alternative api design
-
-  #dom(:address) do
-  #  Proc.new { Hash.new(:street => dom(:street) { text_field(id: 'street2') }) }
-  #  {:street => (dom(:street) { text_field(id: 'street2') })} #literal hash
-  #end
-
-  #composed
-  #dom(:address) do
-  #  {street: street,
-  #   city:   city}
-  #end
-
-  ## pageobject is composed
-  #domkey(:address) do
-  #  dom(:street) { text_field(id: 'street1') }
-  #  dom(:city) { text_field(id: 'city') }
-  #end
 
   before :all do
     goto_html("test.html")
@@ -44,7 +25,7 @@ describe Domkey::View do
   it 'dom is proc for single watir element' do
     view = DomExampleView.new
     expect(view).to respond_to(:street)
-    expect(view.street).to be_a(Domkey::View::PageObject)
+    expect(view.street).to be_a(Domkey::View::Component)
 
     # talk to browser
     view.street.set 'hello dom'
@@ -61,7 +42,7 @@ describe Domkey::View do
 
     view.address.package.each_pair do |k, v|
       expect(k).to be_a(Symbol)
-      expect(v).to be_a(Domkey::View::PageObject)
+      expect(v).to be_a(Domkey::View::Component)
     end
 
     expect(view.address.element).to respond_to(:each_pair)

@@ -2,7 +2,7 @@ module Domkey
   module View
     module OptionSelectable
 
-      # sets only the desired option(s), appends by default to already selected in multiselect pageobject
+      # sets only the desired option(s), appends by default to already selected in multiselect page_component
       # @param [String, Regexp] sets default designated option by String or Regexp
       # @param [Array<String, Regexp>] set more than one option by default strategy
       # @param [False] unselects all options
@@ -33,7 +33,7 @@ module Domkey
 
       private
 
-      # we can pass binder payload. Extract the keys from payload as qualifiers for option selectable pageobject
+      # we can pass binder payload. Extract the keys from payload as qualifiers for option selectable page_component
       def extract_option_qualifiers(opts)
         opts.map { |e| e.is_a?(Hash) ? e.keys : e }.flatten.uniq
       end
@@ -60,7 +60,7 @@ module Domkey
       end
 
       def before_set
-        # hook. client can provide actions to be taken before setting this PageObject
+        # hook. client can provide actions to be taken before setting this Component
       end
 
       # strategy for selecting OptionSelectable object

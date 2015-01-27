@@ -4,7 +4,7 @@ module Domkey
 
   module View
 
-    # RadioGroup allows you to interact with PageObjectCollection of radios as a single PageObject
+    # RadioGroup allows you to interact with ComponentCollection of radios as a single Component
     # Acts like OptionSelectable
     # Radios collection is constrained by the same name attribute
     # Behaves like a single Select list.
@@ -24,7 +24,7 @@ module Domkey
 
     end
 
-    # factory create PageObject RadioGroup in your current view respecting current container
+    # factory create Component RadioGroup in your current view respecting current container
     # example:
     # radio_group(:tool) { radios(name: 'tool') }
     register_dom_factory :radio_group, RadioGroup

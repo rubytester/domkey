@@ -26,7 +26,7 @@ describe Domkey::View::Binder do
     dom(:not_present_on_the_page) { text_field(id: 'not_present_on_the_page') }
 
     # semantic descriptor that returns another view
-    # the other view has PageObjects that participate in this view
+    # the other view has Components that participate in this view
     def shipping
       ShippingAddressView.new
     end
@@ -103,7 +103,7 @@ describe Domkey::View::Binder do
 
   context 'using payload' do
 
-    context 'waiting for pageobject to be present on the page' do
+    context 'waiting for page_component to be present on the page' do
 
       before :all do
         Watir.default_timeout = 0.1
@@ -225,13 +225,13 @@ describe Domkey::View::Binder do
 
     context 'Binder options' do
 
-      it 'when pageobject does not have selectable options' do
+      it 'when page_component does not have selectable options' do
         payload = {city: '', street: ''}
         binder  = Domkey::View::Binder.new payload: payload, view: AddressView.new
         expect(binder.options).to eq :city => [], :street => []
       end
 
-      context 'when pageobject has selectable options' do
+      context 'when page_component has selectable options' do
 
         it 'default options' do
           payload = {fruit: 'tomato'}

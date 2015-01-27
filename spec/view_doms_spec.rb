@@ -15,9 +15,9 @@ describe Domkey::View do
   it 'doms collection' do
     view = DomsExample.new
     expect(view).to respond_to(:streets)
-    expect(view.streets).to be_a(Domkey::View::PageObjectCollection)
+    expect(view.streets).to be_a(Domkey::View::ComponentCollection)
     view.streets.each do |e|
-      expect(e).to be_a(Domkey::View::PageObject)
+      expect(e).to be_a(Domkey::View::Component)
     end
     expect(view.streets).to_not respond_to(:value) # or should it?
     expect(view.streets).to_not respond_to(:set) # or should it?

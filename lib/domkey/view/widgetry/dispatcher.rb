@@ -15,11 +15,11 @@ module Domkey
       end
 
       # Widgetry::Dispatcher is a communication object responsible for
-      # receiving and transmitting messages to PageObject Element.
+      # receiving and transmitting messages to Component Element.
       # Client should subclass and provide desired interaction strategy that may differ from provided by default
       class Dispatcher < SimpleDelegator
 
-        # @param [Element] thing that needs to be set i.e. Watir::Select, Watir::CheckBox etc...
+        # @param [Element] object that needs to be set i.e. Watir::Select, Watir::CheckBox etc...
         def initialize(object)
           __setobj__(object)
         end
