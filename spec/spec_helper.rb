@@ -20,21 +20,12 @@ module DomkeySpecHelper
 end
 
 
-module Domkey
+Domkey.close_browser_on_exit
 
-  # close browser on exit to cleanup after yourself
-  def self.close_browser_on_exit
-    return if @_close_browser_on_exit
-    at_exit {
-      if @browser && @browser.exists?
-        @browser.close
-      end
-    }
-    @_close_browser_on_exit = true
-  end
+Domkey::Browser.factory do
+  Watir::Browser.new :chrome #local binary
 end
 
-Domkey.close_browser_on_exit
 
 RSpec.configure do |config|
   config.include DomkeySpecHelper
