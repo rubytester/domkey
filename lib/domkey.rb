@@ -22,14 +22,4 @@ module Domkey
     @browser = b
   end
 
-  # close browser on exit to cleanup after yourself
-  def self.close_browser_on_exit
-    return if @_close_browser_on_exit
-    at_exit {
-      if @browser && @browser.exists?
-        @browser.close
-      end
-    }
-    @_close_browser_on_exit = true
-  end
 end

@@ -20,8 +20,6 @@ module DomkeySpecHelper
 end
 
 
-Domkey.close_browser_on_exit
-
 Domkey::Browser.factory do
   Watir::Browser.new :chrome #local binary
 end
