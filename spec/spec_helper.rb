@@ -19,12 +19,6 @@ module DomkeySpecHelper
 
 end
 
-
-Domkey::Browser.factory do
-  Watir::Browser.new :chrome #local binary
-end
-
-
 RSpec.configure do |config|
   config.include DomkeySpecHelper
 end

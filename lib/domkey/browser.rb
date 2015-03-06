@@ -8,26 +8,19 @@ module Domkey
       # new browser comes from registered factory
       def new
         if @browser_factory
-          @browser_factory.call
+          @browser_factory.factory
         else
-          fail Domkey::Exception::NotImplementedError, 'expected a default factory for getting new browser session. please define'
+          Watir::Browser.new
         end
 
       end
 
-      # register default way to get new browser session
-      # example: remote chrome session
-      #     Domkey::Browser.factory do
-      #       Watir::Browser.new :chrome, :url => 'http://localhost:4444/wd/hub'
-      #     end
+      # register object that creates new browser session
+      # object must respond to :factory method
+      #     Domkey::Browser.factory = obj
       #
-      # example: local default browser
-      #     Domkey::Browser.factory do
-      #       Watir::Browser.new
-      #     end
-      #
-      def factory(&blk)
-        @browser_factory = blk
+      def factory= object_responds_to_factory
+        @browser_factory = object_responds_to_factory
       end
 
     end
