@@ -1,9 +1,7 @@
-require 'spec_helper'
-
-# methods each pageobject should have
+# methods each page_component should have
 # set value options elements
 
-describe Domkey::View::PageObject do
+describe Domkey::View::Component do
 
   before :all do
     goto_html("test.html")
@@ -13,11 +11,11 @@ describe Domkey::View::PageObject do
 
     it 'bad proc for package argument' do
       # wrong definition but it's a proc and we don't peek inside
-      expect { Domkey::View::PageObject.new -> { 'foo' } }.not_to raise_error
+      expect { Domkey::View::Component.new -> { 'foo' } }.not_to raise_error
     end
 
     it 'bad object for package argument' do
-      expect { Domkey::View::PageObject.new(Object.new) }.to raise_error(Domkey::Exception::Error)
+      expect { Domkey::View::Component.new(Object.new) }.to raise_error(Domkey::Exception::Error)
     end
   end
 
@@ -25,7 +23,7 @@ describe Domkey::View::PageObject do
 
     it 'as proc' do
       package = -> { text_field(id: 'street1') }
-      street  = Domkey::View::PageObject.new package
+      street  = Domkey::View::Component.new package
 
       expect(street.package).to be_a(Proc)
       # resolve proc to watir element
@@ -37,13 +35,13 @@ describe Domkey::View::PageObject do
       expect(street.options).to be_empty # by default options are empty
     end
 
-    it 'as pageobject' do
+    it 'as page_component' do
       # setup
       package    = -> { text_field(id: 'street1') }
-      pageobject = Domkey::View::PageObject.new package
+      page_component = Domkey::View::Component.new package
 
       # test
-      street     = Domkey::View::PageObject.new pageobject
+      street     = Domkey::View::Component.new page_component
 
       expect(street.package).to be_a(Proc)
       expect(street.element).to be_a(Watir::TextField)
@@ -58,12 +56,12 @@ describe Domkey::View::PageObject do
     it 'as hash where values are packages' do
       hash    = {street1: -> { text_field(id: 'street1') },
                  city:    -> { text_field(id: 'city1') }}
-      address = Domkey::View::PageObject.new hash
+      address = Domkey::View::Component.new hash
 
       expect(address.package).to respond_to(:each_pair)
       address.package.each_pair do |k, v|
         expect(k).to be_a(Symbol)
-        expect(v).to be_a(Domkey::View::PageObject)
+        expect(v).to be_a(Domkey::View::Component)
       end
 
       # elements
@@ -76,13 +74,13 @@ describe Domkey::View::PageObject do
       # talk to browser
       expect(address.options).to eq :street1 => [], :city => []
 
-      # pageobject.set value
+      # page_component.set value
       # sends values to each element.set value
       payload = {:street1 => 'Hashstreet', :city => 'Hashcity'}
       address.set payload
 
-      ## pageobject.value => returns value from the page
-      # asks each element for its value and aggregates value for entire pageobject
+      ## page_component.value => returns value from the page
+      # asks each element for its value and aggregates value for entire page_component
       expect(address.value).to eq payload
 
       # individual
@@ -98,13 +96,13 @@ describe Domkey::View::PageObject do
   context 'container initialize' do
 
     it 'default browser becomes container' do
-      o = Domkey::View::PageObject.new -> { div(:id, 'container') }
+      o = Domkey::View::Component.new -> { div(:id, 'container') }
       expect(o.watir_container).to be_a(Watir::Browser)
     end
 
     it 'watir element becomes container' do
       c = Domkey.browser.div(id: 'container')
-      o = Domkey::View::PageObject.new -> { text_field(class: 'city') }, c
+      o = Domkey::View::Component.new -> { text_field(class: 'city') }, c
       expect(o.watir_container).to be_a(Watir::Div)
       # browser is Watir::Browser
       expect(o.browser).to be_a(Watir::Browser)
@@ -112,16 +110,16 @@ describe Domkey::View::PageObject do
 
     it 'proc wrapping watir element which becomes container' do
       c = -> { Domkey.browser.div(id: 'container') }
-      o = Domkey::View::PageObject.new -> { text_field(class: 'city') }, c
+      o = Domkey::View::Component.new -> { text_field(class: 'city') }, c
       expect(o.watir_container).to be_a(Watir::Div)
     end
 
-    it 'pageobject package should become container' do
+    it 'page_component package should become container' do
       browser   = -> { Domkey.browser }
-      container = Domkey::View::PageObject.new -> { div(:id, 'container') }, browser
+      container = Domkey::View::Component.new -> { div(:id, 'container') }, browser
 
       e    = -> { text_field(class: 'city') }
-      city = Domkey::View::PageObject.new e, container
+      city = Domkey::View::Component.new e, container
 
       expect(city.watir_container).to be_a(Watir::Div)
 

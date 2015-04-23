@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Domkey::View::SelectList do
 
   class SelectListExampleView

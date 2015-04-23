@@ -4,7 +4,7 @@ module Domkey
 
   module View
 
-    # CheckboxGroup allows you to interact with PageObjectCollection of checkboxes as a single PageObject.
+    # CheckboxGroup allows you to interact with ComponentCollection of checkboxes as a single Component.
     # Acts like OptionSelectable
     # Checkboxes collection is constrained by the same name attribute
     # Behaves like a multi Select list.
@@ -23,7 +23,7 @@ module Domkey
       end
     end
 
-    # factory create PageObject CheckboxGroup in your current view
+    # factory create Component CheckboxGroup in your current view
     # example:
     # checkbox_group(:fruit) { checkboxes(name: 'fruit') }
     register_dom_factory :checkbox_group, CheckboxGroup

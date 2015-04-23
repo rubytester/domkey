@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 # OptionSelectable object is an object that responds to options and is selectable by its options
 # RadioGroup, SelectList, CheckboxGroup.
 # CheckboxGroup acts like Multi Select
@@ -21,7 +19,7 @@ describe Domkey::View::CheckboxGroup do
     # precondition on distinct group
     expect(@v.group.size).to eq(3)
     @v.group.to_a.each do |e|
-      expect(e).to be_a(Domkey::View::PageObject)
+      expect(e).to be_a(Domkey::View::Component)
     end
     # clear all selections first
     @v.group.set false

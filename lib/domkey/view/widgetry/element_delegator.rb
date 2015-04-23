@@ -2,7 +2,7 @@ module Domkey
   module View
     module Widgetry
 
-      # PageObject delegate to Watir::Element
+      # Component delegate to Watir::Element
       module ElementDelegator
 
         # warning: ActiveResource provides Object#present?
@@ -32,7 +32,7 @@ module Domkey
 
         private
 
-        # for PageObject constructed with hash keys
+        # for Component constructed with hash keys
         # extract first element as representative element.
         # XXX Sloppy strategy. Got better idea?
         def _element

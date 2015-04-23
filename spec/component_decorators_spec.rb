@@ -1,16 +1,8 @@
-require 'spec_helper'
+describe 'Component Decorators' do
 
-describe 'PageObject Decorators' do
-
-  # domain specific page objects composed from regular page object
-  # PageObject is a type of object that responds to set and value.
-  # it is the Role it plays
-  # DateSelector is a type of decoration for domain specific pageobject
-
-
-  #example of specialized domain specific pageobject.
+  # example of specialized domain specific page_component.
   # behavior of set and value
-  class DateSelectorPageObject < Domkey::View::PageObject
+  class DateSelectorComponent < Domkey::View::Component
 
     package_keys :year, :month, :day
 
@@ -26,30 +18,31 @@ describe 'PageObject Decorators' do
   end
 
 
+  # Plain Ruby Decorator Example
   class CheckboxTextField
 
-    attr_reader :pageobject
+    attr_reader :page_component
 
-    def initialize(pageobject)
-      @pageobject = pageobject
+    def initialize(page_component)
+      @page_component = page_component
     end
 
     def label
-      pageobject.element(:label).text
+      page_component.element(:label).text
     end
 
     def set value
-      return pageobject.set switch: false unless value
+      return page_component.set switch: false unless value
       if value.kind_of? String
-        pageobject.set switch: true, blurb: value
+        page_component.set switch: true, blurb: value
       else
-        pageobject.set switch: true
+        page_component.set switch: true
       end
     end
 
     def value
-      if pageobject.element(:switch).set?
-        v = pageobject.element(:blurb).value
+      if page_component.element(:switch).set?
+        v = page_component.element(:blurb).value
         v == '' ? true : v
       else
         false
@@ -58,21 +51,22 @@ describe 'PageObject Decorators' do
   end
 
 
+  # Plain Ruby Decorator Example
   class DateSelector
 
-    attr_reader :pageobject
+    attr_reader :page_component
 
-    def initialize(pageobject)
-      @pageobject = pageobject
+    def initialize(page_component)
+      @page_component = page_component
     end
 
 
     def set value
-      pageobject.set day: value.day, month: value.month, year: value.year
+      page_component.set day: value.day, month: value.month, year: value.year
     end
 
     def value
-      h = pageobject.value
+      h = page_component.value
       Date.parse "%s/%s/%s" % [h[:year], h[:month], h[:day]]
     end
   end
@@ -84,27 +78,25 @@ describe 'PageObject Decorators' do
 
   context 'DateSelector' do
 
-    it 'as pageobject component wrapped by composite' do
+    it 'example poro decorator wrapping page_component composed of hashed keys' do
 
       hash = {day:   -> { text_field(id: 'day_field') },
               month: -> { text_field(id: 'month_field') },
               year:  -> { text_field(id: 'year_field') }}
 
-      # Example of poro decorator wrapping pageobject composed of hashed keys
-      dmy  = DateSelector.new(Domkey::View::PageObject.new hash)
+      dmy = DateSelector.new Domkey::View::Component.new(hash)
 
       dmy.set Date.today
       expect(dmy.value).to eq Date.today
     end
 
-    it 'inherits from pageobject and overrides set and value' do
+    it 'example of subclass which overrides set and value' do
 
       hash = {day:   -> { text_field(id: 'day_field') },
               month: -> { text_field(id: 'month_field') },
               year:  -> { text_field(id: 'year_field') }}
 
-      #example of subclassing PageObject with override set and value
-      dmy  = DateSelectorPageObject.new hash
+      dmy = DateSelectorComponent.new hash
 
       dmy.set Date.today
       expect(dmy.value).to eq Date.today
@@ -114,18 +106,23 @@ describe 'PageObject Decorators' do
 
   context 'CheckboxTextField' do
 
-    it 'as pageobject component wrapped by composite' do
+    it 'example domain specific 3 states for setting a component' do
 
-      hash       = {switch: -> { checkbox(id: 'feature_checkbox1') }, blurb: -> { textarea(id: 'feature_textarea1') }}
-      pageobject = Domkey::View::PageObject.new hash
+      hash           = {switch: -> { checkbox(id: 'feature_checkbox1') },
+                        blurb:  -> { textarea(id: 'feature_textarea1') }}
+      page_component = Domkey::View::Component.new hash
 
       # turn switch on and enter text in text area
-      pageobject.set switch: true, blurb: 'I am a blurb text after you turn on switch'
-      pageobject.set switch: false # => turn switch off, clear textarea blurb entry
-      pageobject.set switch: true # => turn switch on
+      page_component.set switch: true, blurb: 'I am a blurb text after you turn on switch'
+
+      # turn switch off, clear textarea blurb entry
+      page_component.set switch: false
+
+      # only turn switch on and do not enter any text
+      page_component.set switch: true
 
       # wrap with composite and handle specific behavior to set and value
-      cbtf = CheckboxTextField.new(pageobject)
+      cbtf = CheckboxTextField.new(page_component)
 
       cbtf.set true
       cbtf.set false
@@ -133,36 +130,36 @@ describe 'PageObject Decorators' do
       expect(cbtf.value).to eq 'Domain Specific Behavior to set value - check checkbox and enter text'
     end
 
-    context 'building array of CheckboxTextFields in the view' do
+    context 'dynamically building collection of CheckboxTextFields' do
 
       it 'algorithm from predictable pattern' do
 
-        #given predictable pattern that signals the presence of pageobjects
-        divs = Domkey::View::PageObjectCollection.new -> { divs(:id, /^feature_/) }
+        #given predictable pattern that signals the presence of page_components
+        divs = Domkey::View::ComponentCollection.new -> { divs(:id, /^feature_/) }
 
         features = divs.map do |div|
 
-          #the unique identifier shared by all elements composing a PageObject
+          #the unique identifier shared by all elements composing a Component
           id   = div.element.id.split("_").last
 
-          #definiton for each PageObject
+          #definiton for each Component
           hash = {switch: -> { checkbox(id: "feature_checkbox#{id}") },
                   blurb:  -> { text_field(id: "feature_textarea#{id}") },
                   label:  -> { label(for: "feature_checkbox#{id}") }}
 
-          pageobject = Domkey::View::PageObject.new hash
-          #domain specific pageobject decorator
-          CheckboxTextField.new(pageobject)
+          page_component = Domkey::View::Component.new hash
+          #domain specific page_component decorator
+          CheckboxTextField.new(page_component)
         end
 
-        # array of Domain Specific PageObjects
+        # array of Domain Specific Components
         features.first.set 'bla'
         expect(features.map { |e| e.value }).to eq ["bla", false]
-        expect(features.map { |e| e.pageobject.element(:label).text }).to eq ["Enable Checkbox for TextArea", "Golf Course"]
+        expect(features.map { |e| e.page_component.element(:label).text }).to eq ["Enable Checkbox for TextArea", "Golf Course"]
         expect(features.find { |e| e.label == 'Golf Course' }.value).to be_falsey
       end
 
-      # example of building Domain Specific PageObject
+      # example of building Domain Specific Component
       # from a predictable pattern of element collection on the page
       module CheckboxTextFieldViewFactory
 
@@ -171,33 +168,33 @@ describe 'PageObject Decorators' do
         # collection
         doms(:feature_divs) { divs(:id, /^feature_/) }
 
-        # returns array of CheckboxTextField pageobjects
-        # as you see this is a collection of custom pageobjects accessible with method :features
+        # returns array of CheckboxTextField page_components
+        # as you see this is a collection of custom page_components accessible with method :features
         # all objects are created at runtime.
         def features
           ids = feature_divs.map { |e| e.element.id.split("_").last }
           ids.map do |i|
-            hash       = {
+            hash           = {
                 switch: -> { checkbox(id: "feature_checkbox#{i}") },
                 blurb:  -> { text_field(id: "feature_textarea#{i}") },
                 label:  -> { label(for: "feature_checkbox#{i}") }
             }
-            # generic domkey pageobject but not a method in the view
-            pageobject = PageObject.new hash, watir_container
-            CheckboxTextField.new(pageobject)
+            # generic domkey page_component but not a method in the view
+            page_component = Component.new hash, watir_container
+            CheckboxTextField.new(page_component)
           end
         end
 
       end
 
-      # final client view that gets what the factory for pageobjects
-      class DomainSpecificPageObjectView
+      # final client view that gets what the factory for page_components
+      class DomainSpecificComponentView
         include CheckboxTextFieldViewFactory
 
       end
 
       it 'view factory' do
-        view = DomainSpecificPageObjectView.new
+        view = DomainSpecificComponentView.new
 
         expect(view.features.size).to eq(2)
         view.features.each { |f| f.set true }

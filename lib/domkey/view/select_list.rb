@@ -3,7 +3,7 @@ require 'domkey/view/option_selectable'
 module Domkey
   module View
 
-    class SelectList < PageObject
+    class SelectList < Component
 
       include OptionSelectable
 
@@ -66,8 +66,8 @@ module Domkey
       end
     end
 
-    # factory create PageObject SelectList in your current view respecting current watir container
-    # notice we build Domkey::View::SelectList PageObject that acts as a facade for Watir::SelectList
+    # factory create Component SelectList in your current view respecting current watir container
+    # notice we build Domkey::View::SelectList Component that acts as a facade for Watir::SelectList
     # example:
     # select_list(:fruit) { select_list(id: 'fruit') }
     register_dom_factory :select_list, SelectList

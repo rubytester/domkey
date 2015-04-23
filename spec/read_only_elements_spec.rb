@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe "read only elements" do
 
   before :each do

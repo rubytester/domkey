@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version     = Domkey::VERSION
   spec.authors     = ["rubytester", "marekj"]
   spec.email       = ["github@rubytester.com"]
-  spec.summary     = %q{Domain Specifc PageObject for Selenium Watir-Webdriver}
-  spec.description = %q{Domain Specifc PageObject for Selenium Watir-Webdriver. PageObject that models business domain first and browser code second}
+  spec.summary     = %q{Domain specifc page components for Selenium Watir-Webdriver}
+  spec.description = %q{Selenium Watir-Webdriver page components that model business domain first and browser code second}
   spec.homepage    = ''
   spec.license     = 'MIT'
 

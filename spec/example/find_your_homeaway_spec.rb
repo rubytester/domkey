@@ -5,14 +5,14 @@ require 'domkey'
 =begin
 EXAMPLE:
 
-This is a live website example of developing a Domain Specific Page Object
+This is a live website example of developing a Domain Specific Page Component
 
 We are modeling a text field with type ahead on homeaway.com website - a similar behavior can be seen on google.com or bing.com
 Start typing a text into a text field and with each character a select list appears prompting you to select an entry filterd by what you have typed in so far.
 
-Let's call this Domain Specific PageObject a TypeAheadTextField
+Let's call this a TypeAheadTextField, a domain specific page component.
 
-Let's say that this TypeAheadTextFields is a pageobject that is a collaboration of two watir elements:
+Let's say that this TypeAheadTextFields is a page component that is a collaboration of two watir elements:
 - text_field were you send some keys. let's call it text :seed
 - and for each :seed we grow a selection of entries to pick from. let's call them :leaves to follow the :seed, leaves growing metaphor
 
@@ -27,13 +27,11 @@ To ask for options in this object means:
 To ask for value of this object means:
 - just return the value of text_field
 
-
-With the above spec we can develop this Semantic PageObject.
 =end
 
 
-# subclass Domkey::View::PageObject to make your own semantic object
-class TypeAheadTextField < Domkey::View::PageObject
+# subclass Domkey::View::Component to make your own semantic page component
+class TypeAheadTextField < Domkey::View::Component
 
   # @return array of visible text to select from
   def options opts
@@ -74,7 +72,7 @@ class TypeAheadTextField < Domkey::View::PageObject
 end
 
 
-# Optionally register a factory method to construct you Domain Specific PageObject
+# Optionally register a factory method to construct you Domain Specific Component
 # this factory method is availabe in the view
 # this means that in the View you can build TypeAheadTextField objects using type_ahead_text_field method.
 Domkey::View.register_domkey_factory :type_ahead_text_field, TypeAheadTextField
@@ -163,7 +161,7 @@ end
 
 # LIVE EXAMPLE
 
-class ArriveDepartDateRange < Domkey::View::PageObject
+class ArriveDepartDateRange < Domkey::View::Component
   package_keys :arrive, :depart, :skipdates
 end
 
@@ -179,7 +177,7 @@ class FindYourHomeAwayView
 
 
   def submit
-    watir_container.a(class_name: 'btn btn-primary btn-large search-btn').click
+    watir_container.button(class_name: /search-btn/).click
   end
 end
 

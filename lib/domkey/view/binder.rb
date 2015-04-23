@@ -24,7 +24,7 @@ module Domkey
     #      view.set payload  #=> sets view.city with payload[:city] and view.fruit with payload[:fruit]
     #      view.value payload  #=> returns {city: 'Austing', fruit: 'tomato'}
     #
-    #   View uses its own binder to setup hooks when interacting with pageobjects identified by keys in payload
+    #   View uses its own binder to setup hooks when interacting with page_components identified by keys in payload
     #
     #     class MyView
     #       include Domkey::View
@@ -33,7 +33,7 @@ module Domkey
     #
     #       binder do
     #         def before_city
-    #           # code that runs before city page object is interacted
+    #           # code that runs before city page_component is interacted
     #         end
     #       end
     #       payload = {city: 'Mordor'}
@@ -48,7 +48,7 @@ module Domkey
         @view    = view
       end
 
-      # set each pageobject in the view with the value from the payload
+      # set each page_component in the view with the value from the payload
       def set
         @payload.each_pair do |key, value|
           @key, @value = key, value
@@ -56,14 +56,14 @@ module Domkey
           bs, s, as    = "before_set_#{key}".to_sym, "set_#{key}".to_sym, "after_set_#{key}".to_sym
           __send__(b) if respond_to?(b)
           __send__(bs) if respond_to?(bs)
-          respond_to?(s) ? __send__(s) : set_pageobject
+          respond_to?(s) ? __send__(s) : set_page_component
           __send__(as) if respond_to?(as)
           __send__(a) if respond_to?(a)
         end
       end
 
-      # extracts value for each pageobject identified by the payload key => value pair
-      # where value may be a specific qualifier to extract for option selectable pageobjects
+      # extracts value for each page_component identified by the payload key => value pair
+      # where value may be a specific qualifier to extract for option selectable page_components
       # @return [Hash] payload
       def value
         extracted = {}
@@ -73,7 +73,7 @@ module Domkey
           bv, v, av    = "before_value_#{key}".to_sym, "value_#{key}".to_sym, "after_value_#{key}".to_sym
           __send__(b) if respond_to?(b)
           __send__(bv) if respond_to?(bv)
-          extracted[key] = respond_to?(v) ? __send__(v) : value_for_pageobject
+          extracted[key] = respond_to?(v) ? __send__(v) : value_for_page_component
           __send__(av) if respond_to?(av)
           __send__(a) if respond_to?(a)
         end
@@ -81,8 +81,8 @@ module Domkey
       end
 
 
-      # extracts options for each pageobject identified by the payload key => value pair
-      # where value may be a specific option qualifier to extract for option selectable pageobjects
+      # extracts options for each page_component identified by the payload key => value pair
+      # where value may be a specific option qualifier to extract for option selectable page_components
       # @return [Hash] payload
       def options
         extracted = {}
@@ -92,7 +92,7 @@ module Domkey
           bo, o, ao    = "before_options_#{key}".to_sym, "options_#{key}".to_sym, "after_options_#{key}".to_sym
           __send__(b) if respond_to?(b)
           __send__(bo) if respond_to?(bo)
-          extracted[key] = respond_to?(o) ? __send__(o) : options_for_pageobject
+          extracted[key] = respond_to?(o) ? __send__(o) : options_for_page_component
           __send__(ao) if respond_to?(ao)
           __send__(a) if respond_to?(a)
         end
@@ -109,7 +109,7 @@ module Domkey
         end
       end
 
-      def options_for_pageobject
+      def options_for_page_component
         object = when_view_responds_to_key
         if object.method(:options).parameters.empty?
           expected_to_be_present(object).options
@@ -118,11 +118,11 @@ module Domkey
         end
       end
 
-      def set_pageobject
+      def set_page_component
         expected_to_be_present(when_view_responds_to_key).set @value
       end
 
-      def value_for_pageobject
+      def value_for_page_component
         object = when_view_responds_to_key
         if object.method(:value).parameters.empty?
           expected_to_be_present(object).value
@@ -131,14 +131,14 @@ module Domkey
         end
       end
 
-      # we expect pageobject to be present for interaction
+      # we expect page_component to be present for interaction
       # if not present we raise NotFoundError.
       # Use Watir.default_timeout value to wait until element present
       def expected_to_be_present(object)
         object.wait_until_present if object.respond_to?(:wait_until_present)
         object
       rescue Watir::Wait::TimeoutError => e
-        raise Exception::NotFoundError, "Binder expected pageobject: '#{@view.class}##{@key}' to be present: #{e.message}"
+        raise Exception::NotFoundError, "Binder expected page_component: '#{@view.class}##{@key}' to be present: #{e.message}"
       end
     end
 
@@ -155,7 +155,7 @@ module Domkey
       #         # provide your hooks here for custom binder
       #         # example
       #         def before_foo
-      #           # do stuff before interating with pageobject :foo in this view
+      #           # do stuff before interating with page_component :foo in this view
       #         end
       #       end
       #     end

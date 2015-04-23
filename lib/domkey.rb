@@ -1,8 +1,8 @@
 require 'domkey/version'
-require 'watir-webdriver'
+require 'domkey/browser'
 require 'domkey/view'
-require 'domkey/view/page_object'
-require 'domkey/view/page_object_collection'
+require 'domkey/view/component'
+require 'domkey/view/component_collection'
 require 'domkey/view/radio_group'
 require 'domkey/view/checkbox_group'
 require 'domkey/view/select_list'
@@ -14,12 +14,12 @@ module Domkey
   # current browser for testing session
   def self.browser
     return @browser if (@browser && @browser.exist?)
-    # simple browser
-    @browser = Watir::Browser.new
+    @browser = Browser.new
   end
 
   # sets current browser for testing session
   def self.browser=(b)
     @browser = b
   end
+
 end
