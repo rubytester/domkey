@@ -24,5 +24,11 @@ module Domkey
       end
 
     end
+
+    class Factory
+      def factory
+        raise NotImplementedError, "Responsibility of a subclass"
+      end
+    end
   end
 end

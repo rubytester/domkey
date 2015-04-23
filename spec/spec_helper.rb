@@ -18,6 +18,20 @@ module DomkeySpecHelper
 
 end
 
+
+class LocalChromeBrowser < Domkey::Browser::Factory
+  def factory
+    Watir::Browser.new :chrome
+  end
+end
+
+end
+
+Domkey::Browser.factory = LocalChromeBrowser.new
+
 RSpec.configure do |config|
   config.include DomkeySpecHelper
+  config.after(:suite) do
+    Domkey.browser.quit
+  end
 end
