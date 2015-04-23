@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 # methods each page_component should have
 # set value options elements
 

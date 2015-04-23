@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 # OptionSelectable object is an object that responds to options and is selectable by its options
 # RadioGroup, SelectList, CheckboxGroup.
 # CheckboxGroup acts like Multi Select

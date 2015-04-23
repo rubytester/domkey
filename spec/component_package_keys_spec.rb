@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Domkey::View::Component do
 
   context "package_keys" do

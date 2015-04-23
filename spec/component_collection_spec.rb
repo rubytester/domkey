@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Domkey::View::ComponentCollection do
 
   before :all do

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'Component Decorators' do
 
   # example of specialized domain specific page_component.
